@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introducir Contraseña</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script>
+        function formatLink() {
+            const linkInput = document.getElementById('enlace');
+            let link = linkInput.value.trim();
+            if (link && !link.startsWith('http://') && !link.startsWith('https://')) {
+                linkInput.value = 'https://' + link;
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="navigation">
+        <a href='index.html'><button>Inicio</button></a>
+        <a href='ver-passwords.php'><button>Ver Contraseñas</button></a>
+    </div>
+
+    <img src="https://ebone.es/wp-content/uploads/2024/11/Logo-Grupo-Lineas-cuadrado-1500px.png" alt="Logo Grupo Ebone" class="logo">
+    <h1>Almacenar nueva contraseña</h1>
+    <form action="guardar.php" method="post" onsubmit="formatLink()">
+        <label for="linea_de_negocio">Línea de Negocio:</label>
+        <input type="text" id="linea_de_negocio" name="linea_de_negocio" required><br>
+
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" required><br>
+
+        <label for="descripcion">Descripción:</label>
+        <textarea id="descripcion" name="descripcion"></textarea><br>
+
+        <label for="usuario">Usuario:</label>
+        <input type="text" id="usuario" name="usuario" required><br>
+
+        <label for="password">Contraseña:</label>
+        <input type="password" id="password" name="password" required>
+        <div class="password-buttons">
+            <button type="button" onclick="togglePasswordVisibility()">Mostrar</button>
+            <button type="button" onclick="pastePassword()">Pegar Contraseña</button>
+        </div><br>
+
+        <label for="enlace">Enlace:</label>
+        <input type="text" id="enlace" name="enlace" required><br>
+
+        <label for="info_adicional">Info Adicional:</label>
+        <textarea id="info_adicional" name="info_adicional"></textarea><br>
+        <button type="submit">Guardar</button>
+    </form>
+
+    <script>
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('password');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+            } else {
+                passwordInput.type = 'password';
+            }
+        }
+
+        function pastePassword() {
+            navigator.clipboard.readText().then(text => {
+                document.getElementById('password').value = text;
+            }).catch(err => {
+                alert('No se pudo pegar la contraseña. Asegúrate de que el portapapeles tenga texto.');
+            });
+        }
+    </script>
+</body>
+</html>

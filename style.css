@@ -1,0 +1,157 @@
+/* General Styles */
+body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* Form Styles */
+form {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    width: 100%;
+    padding-right: 20px;
+}
+
+label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+input, textarea, button {
+    width: 96%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: 'Montserrat', sans-serif;
+}
+
+button {
+    background-color: #23AAC5;
+    color: white;
+    border: none;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+button:hover {
+    background-color: #158ca3;
+}
+
+/* Password Buttons */
+.password-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+.password-buttons button {
+    width: auto;
+    padding: 10px 15px;
+}
+
+/* Table Styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table, th, td {
+    border: 1px solid #ccc;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    background-color: #f8f9fa;
+}
+
+/* Logo Styles */
+.logo {
+    max-width: 300px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+/* Tabla para mostrar las contraseñas */
+.table-container {
+    overflow-x: auto;
+    margin: 20px 0;
+    max-width: 90%;
+}
+
+.tabla-passwords {
+    max-width: 90%;
+    border-collapse: collapse;
+    min-width: 800px; /* Asegura que no se reduzca demasiado */
+}
+
+.tabla-passwords th, .tabla-passwords td {
+    border: 1px solid #ccc;
+    padding: 0px;
+    text-align: left;
+}
+
+.tabla-passwords th {
+    background-color: #f8f9fa;
+}
+
+
+/* Estilo botón borrar contraseña */
+.delete-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2em;
+    color: #23AAC5;
+}
+
+.delete-btn:hover {
+    color: #158ca3;
+}
+
+/* Estilos menú */
+.navigation {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-start;
+}
+
+.navigation button {
+    white-space: nowrap; /* Impide que el texto se divida en varias líneas */
+    text-align: center; /* Centra el texto en el botón */
+    padding: 10px 20px; /* Espaciado interno */
+    font-size: 14px; /* Ajusta el tamaño del texto para que no sea demasiado grande */
+    font-weight: 700;
+    background-color: #23AAC5; /* Color de fondo */
+    color: white; /* Color del texto */
+    border: none; /* Sin bordes */
+    border-radius: 4px; /* Bordes redondeados */
+    cursor: pointer; /* Indicador de clic */
+}
+
+
+.navigation button:hover {
+    background-color: #158ca3;
+}
