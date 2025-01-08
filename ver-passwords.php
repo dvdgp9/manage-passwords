@@ -60,8 +60,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <td><a href='" . htmlspecialchars($row['enlace']) . "' target='_blank'>" . htmlspecialchars($row['enlace']) . "</a></td>
                                 <td>" . htmlspecialchars($row['info_adicional'] ?? 'N/A') . "</td>
                                 <td>
-                                    <a href='edit-password.php?id=" . $row['id'] . "'><button class='modify-btn'>✏️</button></a>
-                                    <button class='delete-btn' data-id='" . $row['id'] . "'>🗑️</button>
+                                    <div class='button-container'>
+                                        <a href='edit-password.php?id=" . $row['id'] . "'><button class='modify-btn'>✏️</button></a>
+                                        <button class='delete-btn' data-id='" . $row['id'] . "'>🗑️</button>
+                                    </div>
                                 </td>
                             </tr>";
                     }
