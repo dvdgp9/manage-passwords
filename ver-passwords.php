@@ -1,4 +1,7 @@
 <?php
+// Include the config file
+require_once 'config.php';
+
 // Hardcoded master password (change this to a secure password)
 $master_password = 'contraEBO';
 
@@ -9,19 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Verify the password
     if ($entered_password === $master_password) {
         // Password is correct, proceed to display the passwords
-        // Database connection details
-        $host = 'localhost'; // Usually 'localhost'
-        $dbname = 'passworddb';
-        $user = 'passuser';
-        $pass = 'userpassdb';
-
-        // Connect to the database
-        try {
-            $pdo = new PDO("mysql:host=$host;dbname=$dbname", $user, $pass);
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch (PDOException $e) {
-            die("Error connecting to the database: " . $e->getMessage());
-        }
+        $pdo = getDBConnection();
 
         // Fetch all passwords from the database
         $sql = "SELECT * FROM `passwords-manager`"; // Use backticks for the table name
@@ -68,7 +59,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <td>" . htmlspecialchars($row['password']) . "</td>
                                 <td><a href='" . htmlspecialchars($row['enlace']) . "' target='_blank'>" . htmlspecialchars($row['enlace']) . "</a></td>
                                 <td>" . htmlspecialchars($row['info_adicional'] ?? 'N/A') . "</td>
-                                <td><button class='delete-btn' data-id='" . $row['id'] . "'>🗑️</button></td>
+                                <td>
+                                    <a href='edit-password.php?id=" . $row['id'] . "'><button class='modify-btn'>✏️</button></a>
+                                    <button class='delete-btn' data-id='" . $row['id'] . "'>🗑️</button>
+                                </td>
                             </tr>";
                     }
 

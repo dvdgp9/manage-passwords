@@ -155,3 +155,17 @@ th {
 .navigation button:hover {
     background-color: #158ca3;
 }
+
+/* Style for the Modify button */
+.modify-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2em;
+    color: #23AAC5;
+    margin-right: 10px;
+}
+
+.modify-btn:hover {
+    color: #158ca3;
+}
