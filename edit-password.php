@@ -1,4 +1,6 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 // Include the config file
 require_once 'config.php';
@@ -30,15 +32,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nombre = $_POST['nombre'];
     $descripcion = $_POST['descripcion'] ?? null;
     $usuario = $_POST['usuario'];
-    $password_new = $_POST['password'];
+    $password_new = $_POST['password']; // Get the new password from the form
     $enlace = $_POST['enlace'];
     $info_adicional = $_POST['info_adicional'] ?? null;
 
-    // Encrypt the new password if it's changed
-    if (!empty($password_new)) {
-        $password_encrypted = encrypt($password_new); // Encrypt the new password
+    // If the password field is left blank, keep the existing encrypted password
+    if (empty($password_new)) {
+        $password_encrypted = $password['password']; // Use the existing encrypted password
     } else {
-        $password_encrypted = $password['password']; // Keep the existing encrypted password
+        $password_encrypted = encrypt($password_new); // Encrypt the new password
     }
 
     // Format the link
@@ -64,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ':nombre' => $nombre,
             ':descripcion' => $descripcion,
             ':usuario' => $usuario,
-            ':password' => $password_hashed,
+            ':password' => $password_encrypted, // Use the encrypted password
             ':enlace' => $enlace,
             ':info_adicional' => $info_adicional,
             ':id' => $passwordId
