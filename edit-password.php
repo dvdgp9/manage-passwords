@@ -36,9 +36,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Encrypt the new password if it's changed
     if (!empty($password_new)) {
-        $password_hashed = password_hash($password_new, PASSWORD_BCRYPT);
+        $password_encrypted = encrypt($password_new); // Encrypt the new password
     } else {
-        $password_hashed = $password['password']; // Keep the existing password
+        $password_encrypted = $password['password']; // Keep the existing encrypted password
     }
 
     // Format the link

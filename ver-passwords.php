@@ -51,12 +51,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </tr>";
 
                     foreach ($passwords as $row) {
+                        $decrypted_password = decrypt($row['password']); // Decrypt the password
                         echo "<tr>
                                 <td>" . htmlspecialchars($row['linea_de_negocio']) . "</td>
                                 <td>" . htmlspecialchars($row['nombre']) . "</td>
                                 <td>" . htmlspecialchars($row['descripcion'] ?? 'N/A') . "</td>
                                 <td>" . htmlspecialchars($row['usuario']) . "</td>
-                                <td>" . htmlspecialchars($row['password']) . "</td>
+                                <td>" . htmlspecialchars($decrypted_password) . "</td>
                                 <td><a href='" . htmlspecialchars($row['enlace']) . "' target='_blank'>" . htmlspecialchars($row['enlace']) . "</a></td>
                                 <td>" . htmlspecialchars($row['info_adicional'] ?? 'N/A') . "</td>
                                 <td>

@@ -4,7 +4,7 @@ require_once 'config.php';
 
 // Connect to the database
 $pdo = getDBConnection();
-}
+
 
 // Validate mandatory fields
 if (empty($_POST['linea_de_negocio']) || empty($_POST['nombre']) || empty($_POST['usuario']) || empty($_POST['password']) || empty($_POST['enlace'])) {
@@ -12,7 +12,7 @@ if (empty($_POST['linea_de_negocio']) || empty($_POST['nombre']) || empty($_POST
 }
 
 // Encrypt the password
-$password = password_hash($_POST['password'], PASSWORD_BCRYPT);
+$password = encrypt($_POST['password']); // Encrypt the password
 
 // Format the link
 $enlace = $_POST['enlace'];
