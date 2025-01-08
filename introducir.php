@@ -26,29 +26,30 @@
     <h1>Almacenar nueva contraseña</h1>
     <form action="guardar.php" method="post" onsubmit="formatLink()">
         <label for="linea_de_negocio">Línea de Negocio:</label>
-        <input type="text" id="linea_de_negocio" name="linea_de_negocio" required><br>
+
+        <input type="text" id="linea_de_negocio" name="linea_de_negocio" placeholder="General, ES, CF, EFit,..." required><br>
 
         <label for="nombre">Nombre:</label>
-        <input type="text" id="nombre" name="nombre" required><br>
+        <input type="text" id="nombre" name="nombre" placeholder="Ej: Facebook, Gmail, Canva,..." required><br>
 
         <label for="descripcion">Descripción:</label>
-        <textarea id="descripcion" name="descripcion"></textarea><br>
+        <textarea id="descripcion" name="descripcion" placeholder="Describe para qué es esta cuenta"></textarea><br>
 
         <label for="usuario">Usuario:</label>
-        <input type="text" id="usuario" name="usuario" required><br>
+        <input type="text" id="usuario" name="usuario" placeholder="Ej: usuario@example.com" required><br>
 
         <label for="password">Contraseña:</label>
-        <input type="password" id="password" name="password" required>
+        <input type="password" id="password" name="password" placeholder="Introduce la contraseña" required>
         <div class="password-buttons">
             <button type="button" onclick="togglePasswordVisibility()">Mostrar</button>
             <button type="button" onclick="pastePassword()">Pegar Contraseña</button>
         </div><br>
 
         <label for="enlace">Enlace:</label>
-        <input type="text" id="enlace" name="enlace" required><br>
+        <input type="text" id="enlace" name="enlace" placeholder="Ej: example.com" required><br>
 
         <label for="info_adicional">Info Adicional:</label>
-        <textarea id="info_adicional" name="info_adicional"></textarea><br>
+        <textarea id="info_adicional" name="info_adicional" placeholder="Ej: Pregunta de seguridad: Nombre de tu mascota"></textarea><br>
         <button type="submit">Guardar</button>
     </form>
 

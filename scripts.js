@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Script loaded successfully!'); // Test message
 
     const deleteButtons = document.querySelectorAll('.delete-btn');
 
