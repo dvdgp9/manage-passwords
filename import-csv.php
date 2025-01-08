@@ -1,20 +1,9 @@
 <?php
-// Configuración de la base de datos
-        $host = 'localhost'; // Usually 'localhost'
-        $dbname = 'passworddb';
-        $user = 'passuser';
-        $pass = 'userpassdb';
-        $charset = 'utf8mb4';
+// Include the config file
+require_once 'config.php';
 
-
-// Conexión directa a la base de datos
-try {
-    $dsn = "mysql:host=$host;dbname=$dbname;charset=$charset";
-    $pdo = new PDO($dsn, $user, $pass);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    die('Error al conectar a la base de datos: ' . $e->getMessage());
-}
+// Connect to the database
+$pdo = getDBConnection();
 
 // Procesar archivo CSV
 if (($handle = fopen('accesos.csv', 'r')) !== false) {

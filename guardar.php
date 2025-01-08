@@ -1,16 +1,9 @@
 <?php
-// Database connection details
-$host = 'localhost'; // Usually 'localhost'
-$dbname = 'passworddb';
-$user = 'passuser';
-$pass = 'userpassdb';
+// Include the config file
+require_once 'config.php';
 
 // Connect to the database
-try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $user, $pass);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    die("Error connecting to the database: " . $e->getMessage());
+$pdo = getDBConnection();
 }
 
 // Validate mandatory fields
