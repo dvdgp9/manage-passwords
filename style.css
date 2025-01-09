@@ -101,21 +101,32 @@ th {
 }
 
 .tabla-passwords {
-    max-width: 90%;
+    width: 100%;
     border-collapse: collapse;
-    min-width: 800px; /* Asegura que no se reduzca demasiado */
+    table-layout: fixed; /* Ensure the table respects column widths */
 }
 
 .tabla-passwords th, .tabla-passwords td {
     border: 1px solid #ccc;
-    padding: 0px;
+    padding: 10px;
     text-align: left;
+    word-wrap: break-word; /* Break long words to prevent overflow */
 }
 
 .tabla-passwords th {
     background-color: #f8f9fa;
 }
 
+/* Ajustar anchura de algunas columnas */
+.tabla-passwords th:nth-child(2), .tabla-passwords td:nth-child(2) {
+    width: 15% !important; /* Adjust the width of the second column */
+}
+.tabla-passwords th:nth-child(3), .tabla-passwords td:nth-child(3) {
+    width: 15% !important; /* Adjust the width of the third column */
+}
+.tabla-passwords th:nth-child(8), .tabla-passwords td:nth-child(8) {
+    width: 10% !important; /* Adjust the width of the eighth column */
+}
 
 /* Estilo botón borrar contraseña */
 .delete-btn {
