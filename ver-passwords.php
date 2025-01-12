@@ -1,5 +1,7 @@
 <?php
-session_start();
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+session_start(); // Must be at the very top
 
 // Set session timeout to 5 minutes (300 seconds)
 $inactive = 300; // 5 minutes in seconds
@@ -130,6 +132,7 @@ echo "<!DOCTYPE html>
         <label for='search'>Buscar:</label>
         <input type='text' id='search' name='search' placeholder='Buscar por nombre, usuario, descripción, etc.'>
         <button type='submit'>Buscar</button>
+        <button type='button' id='clear-search' class='clear-search-btn'>Borrar búsqueda</button>
     </form>
 
     <div class='table-container'>

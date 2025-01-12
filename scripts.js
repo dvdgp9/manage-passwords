@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
-
+    // Handle delete buttons
     const deleteButtons = document.querySelectorAll('.delete-btn');
-
     deleteButtons.forEach(button => {
         button.addEventListener('click', function() {
             const passwordId = this.getAttribute('data-id');
@@ -31,4 +30,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    // Handle clear search button
+    const clearSearchButton = document.getElementById('clear-search');
+    if (clearSearchButton) {
+        clearSearchButton.addEventListener('click', function() {
+            window.location.href = 'ver-passwords.php';
+        });
+    }
 });
