@@ -1,6 +1,20 @@
 <?php
-// Start the session
 session_start();
+
+// Set session timeout to 5 minutes (300 seconds)
+$inactive = 300; // 5 minutes in seconds
+
+// Check if the session has a last activity time
+if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > $inactive)) {
+    // Session has expired, destroy it and redirect to the password prompt
+    session_unset(); // Unset all session variables
+    session_destroy(); // Destroy the session
+    header('Location: ver-passwords.php'); // Redirect to the password prompt
+    exit;
+}
+
+// Update the last activity time
+$_SESSION['last_activity'] = time();
 
 // Include the config file
 require_once 'config.php';
@@ -19,6 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Password is correct, set authenticated flag in session
         $_SESSION['authenticated'] = true;
         $authenticated = true;
+        $_SESSION['last_activity'] = time(); // Update last activity time
     } else {
         // Password is incorrect, show error
         echo "<!DOCTYPE html>
