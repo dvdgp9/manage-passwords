@@ -2,8 +2,10 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-require_once 'security.php';
 require_once 'config.php';
+require_once 'security.php';
+
+// Ensure the user is authenticated
 bootstrap_security(true); // require authenticated session
 
 // Check if the ID is provided in the query string
@@ -24,6 +26,14 @@ $password = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$password) {
     die("Contraseña no encontrada.");
+}
+
+// Authorization: admin or owner only
+$u = current_user();
+$isOwner = isset($password['owner_user_id']) && (int)$password['owner_user_id'] === (int)($u['id'] ?? 0);
+if (!is_admin() && !$isOwner) {
+    http_response_code(403);
+    die("No tienes permisos para editar este registro.");
 }
 
 // Handle form submission
@@ -50,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $enlace = 'https://' . $enlace;
     }
 
-    // Update the password in the database
+    // Update the password in the database (owner_user_id no se toca)
     $sql = "UPDATE `passwords_manager`
             SET linea_de_negocio = :linea_de_negocio,
                 nombre = :nombre,

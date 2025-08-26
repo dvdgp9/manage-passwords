@@ -4,30 +4,7 @@ Este documento resume el estado actual de la base de datos relevante y la propue
 
 Fecha: 2025-08-26
 
-## 1) Estado actual (confirmado)
-
-Base de datos: passworddb (asumida por contexto)
-
-Tabla principal: `passwords-manager`
-
-```sql
-CREATE TABLE `passwords-manager` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `linea_de_negocio` varchar(255) NOT NULL,
-  `nombre` varchar(255) NOT NULL,
-  `descripcion` text DEFAULT NULL,
-  `usuario` varchar(255) NOT NULL,
-  `password` text NOT NULL,
-  `enlace` varchar(255) NOT NULL,
-  `info_adicional` text DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=196 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-```
-
-- Índices: sólo PK (`id`).
-- Observaciones: sin timestamps ni `owner_user_id`; colación `utf8_general_ci`.
-
-## 2) Objetivo funcional
+## 1) Estado actual
 
 - Multiusuario con roles (admin/editor/lector).
 - Propiedad por registro (`owner_user_id`) y scoping por usuario.
@@ -99,38 +76,10 @@ CREATE TABLE IF NOT EXISTS `user_sessions` (
 
 ```sql
 ALTER TABLE `passwords_manager`
-  ADD CONSTRAINT `fk_pm_owner` FOREIGN KEY (`owner_user_id`) REFERENCES `users`(`id`) ON DELETE SET NULL;
+  ADD CONSTRAINT `fk_passwords_manager_owner` FOREIGN KEY (`owner_user_id`) REFERENCES `users`(`id`) ON DELETE SET NULL;
 ```
-
-## 4) Plan de migración (orden recomendado)
-
-1. Crear `users` y dar de alta usuario admin inicial.
-2. Renombrar `passwords-manager` → `passwords_manager`.
-3. (Opcional) Convertir a `utf8mb4_unicode_ci`.
-4. Añadir `owner_user_id`, `created_at`, `updated_at` y setear `owner_user_id` = admin en filas existentes.
-5. Crear `user_sessions`.
-6. Añadir índices y FK.
-7. Ajustar tipos/longitudes si aplica (URLs largas, columnas indexadas a 190).
-8. Actualizar la app: scoping por `owner_user_id` y gates de autorización.
-
-## 5) Parámetros de sesión persistente (confirmados)
-
-- Duración: 60 días.
-- "Recordarme": marcado por defecto.
-- Límite: 5 tokens por usuario.
-- Sin password adicional para restaurar sesión (se recomienda posibilidad de revalidación en acciones muy sensibles como cambio de credenciales).
 
 ## 6) Notas de compatibilidad y rendimiento
 
 - Collation: usar `utf8mb4_unicode_ci` en MySQL 5.7/MariaDB. Si más adelante se actualiza a MySQL 8.0+, se puede migrar a `utf8mb4_0900_ai_ci`.
 - Índices con utf8mb4: si necesitas índices compuestos, preferir VARCHAR(190) para evitar límite histórico de 767 bytes en versiones antiguas.
-
-## 7) Plan de rollback (por si acaso)
-
-- Tomar backup antes de migrar: `mysqldump -u USER -p --databases passworddb > backup.sql`.
-- Para revertir el rename: `RENAME TABLE passwords_manager TO `passwords-manager``.
-- Para eliminar cambios: `DROP TABLE user_sessions; DROP TABLE users;` (solo en entorno de pruebas, no en producción sin plan).
-
----
-
-Este documento sirve como referencia única para la migración y la implementación de multiusuario con sesiones persistentes. Cualquier ajuste de tipos o colaciones se acordará antes de ejecutar en producción.

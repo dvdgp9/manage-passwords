@@ -5,92 +5,39 @@ ini_set('display_errors', 1);
 require_once 'security.php';
 require_once 'config.php';
 
-// Bootstrap security without forcing auth yet (this page sirve login y lista)
-bootstrap_security(false);
+// Requiere autenticación con el nuevo sistema de usuarios
+bootstrap_security(true);
 
-// Master password from environment
-$master_password = $_ENV['MASTER_PASSWORD'] ?? getenv('MASTER_PASSWORD') ?? '';
-
-// Check if the user is already authenticated
-$authenticated = $_SESSION['authenticated'] ?? false;
-
-// Handle master password submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $entered_password = $_POST['master_password'];
-
-    if ($entered_password === $master_password) {
-        // Password is correct, set authenticated flag in session
-        $_SESSION['authenticated'] = true;
-        $authenticated = true;
-        $_SESSION['last_activity'] = time(); // Update last activity time
-        regenerate_session_id();
-    } else {
-        // Password is incorrect, show error
-        echo "<!DOCTYPE html>
-        <html lang='es'>
-        <head>
-            <meta charset='UTF-8'>
-            <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-            <title>Error de Acceso</title>
-            <link href='https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap' rel='stylesheet'>
-            <link rel='stylesheet' href='style.css'>
-        </head>
-        <body>
-            <img src='https://ebone.es/wp-content/uploads/2024/11/Logo-Grupo-Lineas-cuadrado-1500px.png' alt='Logo Grupo Ebone' class='logo'>
-            <h1>Error de Acceso</h1>
-            <p>La contraseña ingresada es incorrecta. <a href='ver-passwords.php'>Intentar de nuevo</a>.</p>
-        </body>
-        </html>";
-        exit;
-    }
-}
-
-// If not authenticated, show the password prompt
-if (!$authenticated) {
-    echo "<!DOCTYPE html>
-    <html lang='es'>
-    <head>
-        <meta charset='UTF-8'>
-        <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-        <title>Ver Contraseñas</title>
-        <link href='https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap' rel='stylesheet'>
-        <link rel='stylesheet' href='style.css'>
-    </head>
-    <body>
-        <img src='https://ebone.es/wp-content/uploads/2024/11/Logo-Grupo-Lineas-cuadrado-1500px.png' alt='Logo Grupo Ebone' class='logo'>
-        <h1>Acceso a Contraseñas</h1>
-        <form action='ver-passwords.php' method='post'>
-            <label for='master_password'>Contraseña Maestra:</label>
-            <input type='password' id='master_password' name='master_password' required>
-            <button type='submit'>Acceder</button>
-        </form>
-    </body>
-    </html>";
-    exit;
-}
+$user = current_user();
 
 // Fetch passwords based on search term
 $searchTerm = $_GET['search'] ?? '';
 
 $pdo = getDBConnection();
+// Construir consulta con scoping por usuario salvo admin
 $sql = "SELECT * FROM `passwords_manager`";
+$where = [];
+$params = [];
+
+if (!$user || ($user['role'] ?? '') !== 'admin') {
+    $where[] = "owner_user_id = :owner_id";
+    $params[':owner_id'] = (int)($user['id'] ?? 0);
+}
 
 if (!empty($searchTerm)) {
-    $sql .= " WHERE linea_de_negocio LIKE :search1
-              OR nombre LIKE :search2
-              OR usuario LIKE :search3
-              OR descripcion LIKE :search4";
-    $stmt = $pdo->prepare($sql);
-    // Bind the search term to each unique placeholder
-    $stmt->execute([
-        ':search1' => "%$searchTerm%",
-        ':search2' => "%$searchTerm%",
-        ':search3' => "%$searchTerm%",
-        ':search4' => "%$searchTerm%"
-    ]);
-} else {
-    $stmt = $pdo->query($sql);
+    $where[] = "(linea_de_negocio LIKE :search1 OR nombre LIKE :search2 OR usuario LIKE :search3 OR descripcion LIKE :search4)";
+    $params[':search1'] = "%$searchTerm%";
+    $params[':search2'] = "%$searchTerm%";
+    $params[':search3'] = "%$searchTerm%";
+    $params[':search4'] = "%$searchTerm%";
 }
+
+if ($where) {
+    $sql .= ' WHERE ' . implode(' AND ', $where);
+}
+
+$stmt = $pdo->prepare($sql);
+$stmt->execute($params);
 
 $passwords = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $csrf = ensure_csrf_token();
@@ -114,6 +61,7 @@ echo "<!DOCTYPE html>
             <input type='hidden' name='csrf_token' value='" . htmlspecialchars($csrf) . "'>
             <button type='submit'>Cerrar Sesión</button>
         </form>
+        <span style='margin-left:12px;'>" . htmlspecialchars(($user['email'] ?? '') . ' (' . ($user['role'] ?? '') . ')') . "</span>
     </div>
 
     <img src='https://ebone.es/wp-content/uploads/2024/11/Logo-Grupo-Lineas-cuadrado-1500px.png' alt='Logo Grupo Ebone' class='logo'>

@@ -14,6 +14,9 @@ verify_csrf_from_request();
 // Connect to the database
 $pdo = getDBConnection();
 
+$u = current_user();
+$ownerId = (int)($u['id'] ?? 0);
+
 
 // Validate mandatory fields
 if (empty($_POST['linea_de_negocio']) || empty($_POST['nombre']) || empty($_POST['usuario']) || empty($_POST['password']) || empty($_POST['enlace'])) {
@@ -29,13 +32,14 @@ if (!empty($enlace) && !str_starts_with($enlace, 'http://') && !str_starts_with(
     $enlace = 'https://' . $enlace;
 }
 
-// Insert data into the database
-$sql = "INSERT INTO `passwords_manager` (linea_de_negocio, nombre, descripcion, usuario, password, enlace, info_adicional)
-        VALUES (:linea_de_negocio, :nombre, :descripcion, :usuario, :password, :enlace, :info_adicional)";
+// Insert data into the database with owner_user_id
+$sql = "INSERT INTO `passwords_manager` (owner_user_id, linea_de_negocio, nombre, descripcion, usuario, password, enlace, info_adicional)
+        VALUES (:owner_user_id, :linea_de_negocio, :nombre, :descripcion, :usuario, :password, :enlace, :info_adicional)";
 $stmt = $pdo->prepare($sql);
 
 try {
     $stmt->execute([
+        ':owner_user_id' => $ownerId,
         ':linea_de_negocio' => $_POST['linea_de_negocio'],
         ':nombre' => $_POST['nombre'],
         ':descripcion' => $_POST['descripcion'] ?? null,
