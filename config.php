@@ -1,16 +1,38 @@
 <?php
 // config.php
 
-// Database connection details
-$host = 'localhost'; // Usually 'localhost'
-$dbname = 'passworddb';
-$user = 'passuser';
-$pass = 'userpassdb';
-$charset = 'utf8mb4';
+// Composer autoload (for vlucas/phpdotenv)
+require_once __DIR__ . '/vendor/autoload.php';
 
-// Encryption settings
-define('ENCRYPTION_KEY', 'your-32-character-encryption-key'); // Replace with a secure key
-define('ENCRYPTION_METHOD', 'AES-256-CBC'); // Encryption method
+// Load environment variables from .env if present
+if (class_exists(\Dotenv\Dotenv::class)) {
+    $dotenv = \Dotenv\Dotenv::createImmutable(__DIR__);
+    $dotenv->safeLoad();
+}
+
+// Helpers to read env
+function env_get(string $key, $default = null) {
+    return $_ENV[$key] ?? getenv($key) ?: $default;
+}
+function env_required(string $key): string {
+    $val = env_get($key);
+    if ($val === null || $val === '') {
+        http_response_code(500);
+        die("Missing required environment variable: $key");
+    }
+    return (string)$val;
+}
+
+// Database connection details from env (required)
+$host = env_required('DB_HOST');
+$dbname = env_required('DB_NAME');
+$user = env_required('DB_USER');
+$pass = env_required('DB_PASS');
+$charset = env_get('DB_CHARSET', 'utf8mb4');
+
+// Encryption settings from env
+define('ENCRYPTION_KEY', env_required('ENCRYPTION_KEY'));
+define('ENCRYPTION_METHOD', env_get('ENCRYPTION_METHOD', 'AES-256-CBC'));
 
 // DSN (Data Source Name) for PDO connection
 $dsn = "mysql:host=$host;dbname=$dbname;charset=$charset";

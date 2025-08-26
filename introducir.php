@@ -1,3 +1,8 @@
+<?php
+require_once 'security.php';
+bootstrap_security(true); // requires authenticated session
+$csrf = ensure_csrf_token();
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -25,6 +30,7 @@
     <img src="https://ebone.es/wp-content/uploads/2024/11/Logo-Grupo-Lineas-cuadrado-1500px.png" alt="Logo Grupo Ebone" class="logo">
     <h1>Almacenar nueva contraseña</h1>
     <form action="guardar.php" method="post" onsubmit="formatLink()">
+        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf); ?>">
         <label for="linea_de_negocio">Línea de Negocio:</label>
 
         <input type="text" id="linea_de_negocio" name="linea_de_negocio" placeholder="General, ES, CF, EFit,..." required><br>

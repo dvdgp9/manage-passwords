@@ -1,0 +1,9 @@
+# Ignore environment secrets and dependencies
+.env
+.env.*
+/vendor/
+/composer.lock
+# OS/editor noise
+.DS_Store
+.idea/
+.vscode/

@@ -1,28 +1,15 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-session_start(); // Must be at the very top
 
-// Set session timeout to 5 minutes (300 seconds)
-$inactive = 300; // 5 minutes in seconds
-
-// Check if the session has a last activity time
-if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > $inactive)) {
-    // Session has expired, destroy it and redirect to the password prompt
-    session_unset(); // Unset all session variables
-    session_destroy(); // Destroy the session
-    header('Location: ver-passwords.php'); // Redirect to the password prompt
-    exit;
-}
-
-// Update the last activity time
-$_SESSION['last_activity'] = time();
-
-// Include the config file
+require_once 'security.php';
 require_once 'config.php';
 
-// Hardcoded master password
-$master_password = 'contraEBO';
+// Bootstrap security without forcing auth yet (this page sirve login y lista)
+bootstrap_security(false);
+
+// Master password from environment
+$master_password = $_ENV['MASTER_PASSWORD'] ?? getenv('MASTER_PASSWORD') ?? '';
 
 // Check if the user is already authenticated
 $authenticated = $_SESSION['authenticated'] ?? false;
@@ -36,6 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['authenticated'] = true;
         $authenticated = true;
         $_SESSION['last_activity'] = time(); // Update last activity time
+        regenerate_session_id();
     } else {
         // Password is incorrect, show error
         echo "<!DOCTYPE html>
@@ -105,6 +93,7 @@ if (!empty($searchTerm)) {
 }
 
 $passwords = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$csrf = ensure_csrf_token();
 
 // Display the table with search results
 echo "<!DOCTYPE html>
@@ -113,6 +102,7 @@ echo "<!DOCTYPE html>
     <meta charset='UTF-8'>
     <meta name='viewport' content='width=device-width, initial-scale=1.0'>
     <title>Ver Contraseñas</title>
+    <meta name='csrf-token' content='" . htmlspecialchars($csrf) . "'>
     <link href='https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap' rel='stylesheet'>
     <link rel='stylesheet' href='style.css'>
 </head>
@@ -121,6 +111,7 @@ echo "<!DOCTYPE html>
         <a href='index.html'><button>Inicio</button></a>
         <a href='introducir.php'><button>Introducir Contraseña</button></a>
         <form action='logout.php' method='post' style='display: inline;'>
+            <input type='hidden' name='csrf_token' value='" . htmlspecialchars($csrf) . "'>
             <button type='submit'>Cerrar Sesión</button>
         </form>
     </div>

@@ -2,8 +2,9 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Include the config file
+require_once 'security.php';
 require_once 'config.php';
+bootstrap_security(true); // require authenticated session
 
 // Check if the ID is provided in the query string
 if (!isset($_GET['id'])) {
@@ -27,6 +28,7 @@ if (!$password) {
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    verify_csrf_from_request();
     // Validate and sanitize input
     $linea_de_negocio = $_POST['linea_de_negocio'];
     $nombre = $_POST['nombre'];
@@ -99,6 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <img src="https://ebone.es/wp-content/uploads/2024/11/Logo-Grupo-Lineas-cuadrado-1500px.png" alt="Logo Grupo Ebone" class="logo">
     <h1>Editar Contraseña</h1>
     <form action="edit-password.php?id=<?php echo $passwordId; ?>" method="post">
+        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(ensure_csrf_token()); ?>">
         <label for="linea_de_negocio">Línea de Negocio:</label>
         <input type="text" id="linea_de_negocio" name="linea_de_negocio" value="<?php echo htmlspecialchars($password['linea_de_negocio']); ?>" required><br>
 
