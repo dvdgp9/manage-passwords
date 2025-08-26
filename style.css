@@ -242,3 +242,56 @@ th {
 .clear-search-btn:hover {
     background-color: #158ca3; /* Darker red on hover */
 }
+
+/* ======= Site Header (Reusable) ======= */
+.site-header {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    background: #ffffff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    z-index: 1000;
+}
+
+.site-header__inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.site-header__brand { display: flex; align-items: center; }
+
+.brand-link { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+
+.brand-logo { height: 36px; width: 36px; object-fit: contain; }
+
+.brand-title { font-weight: 700; color: #222; font-size: 16px; }
+
+.site-header__nav { display: flex; align-items: center; gap: 12px; }
+
+.nav-link {
+    text-decoration: none;
+    color: #0f172a;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+}
+.nav-link:hover { background: #f1f5f9; }
+
+.site-header__user { display: flex; align-items: center; gap: 10px; }
+.user-label { color: #475569; font-size: 13px; }
+
+.logout-form { margin: 0; }
+.logout-btn {
+    background-color: #ef4444;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+.logout-btn:hover { background-color: #dc2626; }

@@ -42,6 +42,11 @@ $stmt->execute($params);
 $passwords = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $csrf = ensure_csrf_token();
 
+// Prepare reusable header HTML
+ob_start();
+include __DIR__ . '/header.php';
+$headerHtml = ob_get_clean();
+
 // Display the table with search results
 echo "<!DOCTYPE html>
 <html lang='es'>
@@ -54,22 +59,12 @@ echo "<!DOCTYPE html>
     <link rel='stylesheet' href='style.css'>
 </head>
 <body>
-    <div class='navigation'>
-        <a class='btn' href='index.php'>Inicio</a>
-        <a class='btn' href='introducir.php'>Introducir Contraseña</a>
-        <form action='logout.php' method='post' style='display: inline;'>
-            <input type='hidden' name='csrf_token' value='" . htmlspecialchars($csrf) . "'>
-            <button type='submit'>Cerrar Sesión</button>
-        </form>
-        <span style='margin-left:12px;'>" . htmlspecialchars(($user['email'] ?? '') . ' (' . ($user['role'] ?? '') . ')') . "</span>
-    </div>
-
-    <img src='https://ebone.es/wp-content/uploads/2024/11/Logo-Grupo-Lineas-cuadrado-1500px.png' alt='Logo Grupo Ebone' class='logo'>
+    " . $headerHtml . "
     <h1>Contraseñas Almacenadas</h1>
 
     <form action='ver-passwords.php' method='get' class='search-form'>
         <label for='search'>Buscar:</label>
-        <input type='text' id='search' name='search' placeholder='Buscar por nombre, usuario, descripción, etc.'>
+        <input type='text' id='search' name='search' placeholder='Buscar por nombre, usuario, descripción, etc.' value='" . htmlspecialchars($searchTerm, ENT_QUOTES, 'UTF-8') . "'>
         <button type='submit'>Buscar</button>
         <button type='button' id='clear-search' class='clear-search-btn'>Borrar búsqueda</button>
     </form>

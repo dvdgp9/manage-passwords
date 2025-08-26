@@ -3,6 +3,10 @@ require_once 'security.php';
 require_once 'config.php';
 bootstrap_security(true); // requires authenticated session
 $csrf = ensure_csrf_token();
+// Prepare reusable header HTML
+ob_start();
+include __DIR__ . '/header.php';
+$headerHtml = ob_get_clean();
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -23,12 +27,7 @@ $csrf = ensure_csrf_token();
     </script>
 </head>
 <body>
-    <div class="navigation">
-        <a class='btn' href='index.php'>Inicio</a>
-        <a class='btn' href='ver-passwords.php'>Ver Contraseñas</a>
-    </div>
-
-    <img src="https://ebone.es/wp-content/uploads/2024/11/Logo-Grupo-Lineas-cuadrado-1500px.png" alt="Logo Grupo Ebone" class="logo">
+    <?= $headerHtml ?>
     <h1>Almacenar nueva contraseña</h1>
     <form action="guardar.php" method="post" onsubmit="formatLink()">
         <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf); ?>">
