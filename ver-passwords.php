@@ -66,8 +66,7 @@ echo "<!DOCTYPE html>
     <form action='ver-passwords.php' method='get' class='search-form'>
         <label for='search'>Buscar:</label>
         <input type='text' id='search' name='search' placeholder='Buscar por nombre, usuario, descripción, etc.' value='" . htmlspecialchars($searchTerm, ENT_QUOTES, 'UTF-8') . "'>
-        <button type='submit'>Buscar</button>
-        <button type='button' id='clear-search' class='clear-search-btn'>Borrar búsqueda</button>
+        <button type='button' id='clear-search' class='clear-search-btn'>Limpiar</button>
     </form>
 
     <div class='table-container'>
