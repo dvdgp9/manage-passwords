@@ -2,13 +2,9 @@
 require_once 'security.php';
 require_once 'config.php';
 
-// Initialize security without forcing auth to decide where to send the user
+// Initialize security; do not auto-redirect to the list
 bootstrap_security(false);
 
-if (current_user()) {
-    header('Location: ver-passwords.php');
-    exit;
-}
-
+// Always send to login as the canonical entry point
 header('Location: login.php');
 exit;

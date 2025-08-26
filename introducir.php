@@ -23,8 +23,8 @@ $csrf = ensure_csrf_token();
 </head>
 <body>
     <div class="navigation">
-        <a href='index.php'><button>Inicio</button></a>
-        <a href='ver-passwords.php'><button>Ver Contraseñas</button></a>
+        <a class='btn' href='index.php'>Inicio</a>
+        <a class='btn' href='ver-passwords.php'>Ver Contraseñas</a>
     </div>
 
     <img src="https://ebone.es/wp-content/uploads/2024/11/Logo-Grupo-Lineas-cuadrado-1500px.png" alt="Logo Grupo Ebone" class="logo">
