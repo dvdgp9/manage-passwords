@@ -192,9 +192,14 @@ function do_logout_and_redirect(): void {
 function bootstrap_security(bool $enforceAuth = false): void {
     set_security_headers();
     start_secure_session();
-    session_sliding_timeout(900); // 15 minutes
-    // auto-login via remember-me if possible
+    // auto-login via remember-me if possible (before enforcing timeouts)
     try_auto_login_from_cookie();
+    // initialize last_activity if missing (e.g., after auto-login)
+    if (!isset($_SESSION['last_activity'])) {
+        $_SESSION['last_activity'] = time();
+    }
+    // enforce sliding timeout after attempting auto-login
+    session_sliding_timeout(900); // 15 minutes
     if ($enforceAuth) {
         require_auth();
     }

@@ -1,5 +1,6 @@
 <?php
 require_once 'security.php';
+require_once 'config.php';
 bootstrap_security(true); // requires authenticated session
 $csrf = ensure_csrf_token();
 ?>
