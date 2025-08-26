@@ -46,10 +46,20 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchForm = document.querySelector('form.search-form');
     const searchInput = document.getElementById('search');
     if (searchForm && searchInput) {
-        // Focus input for quicker UX
-        try { searchInput.focus(); } catch (e) {}
+        // Focus input for quicker UX and keep caret at end
+        try {
+            searchInput.focus();
+            const val = searchInput.value;
+            // Place caret at the end to avoid jumping to start on reload
+            if (typeof searchInput.setSelectionRange === 'function') {
+                // setSelectionRange may require a tick after focus
+                setTimeout(() => {
+                    try { searchInput.setSelectionRange(val.length, val.length); } catch (_) {}
+                }, 0);
+            }
+        } catch (e) {}
 
-        const debounce = (fn, delay = 400) => {
+        const debounce = (fn, delay = 250) => {
             let t;
             return (...args) => {
                 clearTimeout(t);
@@ -62,7 +72,7 @@ document.addEventListener('DOMContentLoaded', function() {
             searchForm.requestSubmit ? searchForm.requestSubmit() : searchForm.submit();
         };
 
-        const debouncedSubmit = debounce(submitForm, 450);
+        const debouncedSubmit = debounce(submitForm, 250);
 
         // Submit when typing stops
         searchInput.addEventListener('input', () => {
