@@ -73,7 +73,7 @@ if (!$authenticated) {
 $searchTerm = $_GET['search'] ?? '';
 
 $pdo = getDBConnection();
-$sql = "SELECT * FROM `passwords-manager`";
+$sql = "SELECT * FROM `passwords_manager`";
 
 if (!empty($searchTerm)) {
     $sql .= " WHERE linea_de_negocio LIKE :search1

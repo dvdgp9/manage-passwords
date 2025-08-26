@@ -30,7 +30,7 @@ if (!empty($enlace) && !str_starts_with($enlace, 'http://') && !str_starts_with(
 }
 
 // Insert data into the database
-$sql = "INSERT INTO `passwords-manager` (linea_de_negocio, nombre, descripcion, usuario, password, enlace, info_adicional)
+$sql = "INSERT INTO `passwords_manager` (linea_de_negocio, nombre, descripcion, usuario, password, enlace, info_adicional)
         VALUES (:linea_de_negocio, :nombre, :descripcion, :usuario, :password, :enlace, :info_adicional)";
 $stmt = $pdo->prepare($sql);
 

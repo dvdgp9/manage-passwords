@@ -17,7 +17,7 @@ $passwordId = $_GET['id'];
 $pdo = getDBConnection();
 
 // Fetch the existing password data
-$sql = "SELECT * FROM `passwords-manager` WHERE id = :id";
+$sql = "SELECT * FROM `passwords_manager` WHERE id = :id";
 $stmt = $pdo->prepare($sql);
 $stmt->execute([':id' => $passwordId]);
 $password = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Update the password in the database
-    $sql = "UPDATE `passwords-manager`
+    $sql = "UPDATE `passwords_manager`
             SET linea_de_negocio = :linea_de_negocio,
                 nombre = :nombre,
                 descripcion = :descripcion,

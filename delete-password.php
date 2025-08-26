@@ -19,7 +19,7 @@ if (isset($_POST['id'])) {
     $passwordId = $_POST['id'];
 
     // Delete the password from the database
-    $sql = "DELETE FROM `passwords-manager` WHERE id = :id";
+    $sql = "DELETE FROM `passwords_manager` WHERE id = :id";
     $stmt = $pdo->prepare($sql);
 
     try {
