@@ -55,7 +55,7 @@ echo "<!DOCTYPE html>
 </head>
 <body>
     <div class='navigation'>
-        <a href='index.html'><button>Inicio</button></a>
+        <a href='index.php'><button>Inicio</button></a>
         <a href='introducir.php'><button>Introducir Contraseña</button></a>
         <form action='logout.php' method='post' style='display: inline;'>
             <input type='hidden' name='csrf_token' value='" . htmlspecialchars($csrf) . "'>

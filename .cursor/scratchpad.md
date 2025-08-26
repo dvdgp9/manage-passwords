@@ -150,15 +150,17 @@ P2 – Medios/Mejoras
   - Integrado en `ver-passwords.php`, `introducir.php`, `guardar.php`, `edit-password.php`, `delete-password.php`, `logout.php`.
   - Añadido token CSRF en formularios y meta `<meta name="csrf-token">` + `scripts.js` envía CSRF en borrado AJAX.
   - Pendiente P0: externalizar secretos a `.env` (Composer/phpdotenv) [bloqueado por Composer no instalado].
+  - Añadido `index.php` como gateway de autenticación: si hay sesión → redirige a `ver-passwords.php`, si no → `login.php`.
+  - Actualizados enlaces de navegación de `index.html` → `index.php` en `ver-passwords.php`, `introducir.php` y `edit-password.php`.
 
 # Executor's Feedback or Assistance Requests
 
-- Validación manual solicitada (entorno local):
-  1) Acceso a `ver-passwords.php` → pedir contraseña maestra → entrar y ver listado.
-  2) Probar borrar un registro (debe pedir confirmación y recargar listado).
-  3) Abrir `Introducir Contraseña` → crear registro (form debe incluir CSRF oculto).
-  4) Editar un registro y guardar.
-  5) Cerrar sesión desde el botón (POST + CSRF) y comprobar redirección.
+- Validación manual solicitada (entorno):
+  1) Abrir `index.php` sin sesión → debe redirigir a `login.php`.
+  2) Iniciar sesión → debe redirigir automáticamente a `ver-passwords.php`.
+  3) Navegar con el botón Inicio → debe ir a `index.php` y respetar la lógica anterior.
+  4) Crear, editar y borrar registros según permisos (propietario vs admin).
+  5) Cerrar sesión (POST + CSRF) → volver a `login.php` desde `index.php`.
 - Nota: si hay errores de CSP con fuentes, avisar para ajustar la política.
 - Confirmar versión de PHP y si se permite Composer (para `vlucas/phpdotenv` y `paragonie/sodium_compat` si hiciera falta). HTTPS confirmado: activaremos HSTS y cookie Secure.
 - Aceptación del orden propuesto (P0→P1→P2) o ajustes.

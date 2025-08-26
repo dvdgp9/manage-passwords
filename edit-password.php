@@ -104,7 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
     <div class="navigation">
-        <a href="index.html"><button>Inicio</button></a>
+        <a href="index.php"><button>Inicio</button></a>
         <a href="ver-passwords.php"><button>Ver Contraseñas</button></a>
     </div>
 
