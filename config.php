@@ -47,8 +47,8 @@ function env_required(string $key): string {
 // Database connection details from env (required)
 $host = env_required('DB_HOST');
 $dbname = env_required('DB_NAME');
-$user = env_required('DB_USER');
-$pass = env_required('DB_PASS');
+$dbUser = env_required('DB_USER');
+$dbPass = env_required('DB_PASS');
 $charset = env_get('DB_CHARSET', 'utf8mb4');
 
 // Encryption settings from env
@@ -56,10 +56,10 @@ define('ENCRYPTION_KEY', env_required('ENCRYPTION_KEY'));
 define('ENCRYPTION_METHOD', env_get('ENCRYPTION_METHOD', 'AES-256-CBC'));
 
 // DSN (Data Source Name) for PDO connection
-$dsn = "mysql:host=$host;dbname=$dbname;charset=$charset";
+$dbDsn = "mysql:host=$host;dbname=$dbname;charset=$charset";
 
 // PDO options
-$options = [
+$dbOptions = [
     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
     PDO::ATTR_EMULATE_PREPARES   => false,
@@ -67,9 +67,9 @@ $options = [
 
 // Function to establish a database connection
 function getDBConnection() {
-    global $dsn, $user, $pass, $options;
+    global $dbDsn, $dbUser, $dbPass, $dbOptions;
     try {
-        return new PDO($dsn, $user, $pass, $options);
+        return new PDO($dbDsn, $dbUser, $dbPass, $dbOptions);
     } catch (PDOException $e) {
         die("Error connecting to the database: " . $e->getMessage());
     }
