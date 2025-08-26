@@ -3,15 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestor de Contraseñas</title>
+    <title>Redirigiendo…</title>
+    <meta http-equiv="refresh" content="0;url=index.php">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <img src="https://ebone.es/wp-content/uploads/2024/11/Logo-Grupo-Lineas-cuadrado-1500px.png" alt="Logo Grupo Ebone" class="logo">
-    <h1>Gestor de Contraseñas</h1>
-    <div class="navigation">
-        <a href="introducir.php"><button>Introducir Contraseña</button></a>
-        <a href="ver-passwords.php"><button>Ver Contraseñas</button></a>
-    </div>
+    <script>
+        // Prefer JS redirect for SPA-like behavior; meta refresh is fallback
+        window.location.replace('index.php');
+    </script>
+    <noscript>
+        <div style="text-align:center;margin-top:40px;">
+            <img src="https://ebone.es/wp-content/uploads/2024/11/Logo-Grupo-Lineas-cuadrado-1500px.png" alt="Logo Grupo Ebone" class="logo">
+            <h1>Redirigiendo…</h1>
+            <p>Si no eres redirigido automáticamente, haz clic en <a href="index.php">continuar</a>.</p>
+        </div>
+    </noscript>
 </body>
 </html>
