@@ -14,7 +14,7 @@ h1 {
 /* Page container to center content while keeping sticky header flush to top */
 .page {
     width: 100%;
-    max-width: 1100px;
+    max-width: 1900px;
     margin: 0 auto;
     padding: 24px 16px;
     display: flex;
