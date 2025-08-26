@@ -28,6 +28,7 @@ $headerHtml = ob_get_clean();
 </head>
 <body>
     <?= $headerHtml ?>
+    <main class="page">
     <h1>Almacenar nueva contraseña</h1>
     <form action="guardar.php" method="post" onsubmit="formatLink()">
         <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf); ?>">
@@ -58,6 +59,7 @@ $headerHtml = ob_get_clean();
         <textarea id="info_adicional" name="info_adicional" placeholder="Ej: Pregunta de seguridad: Nombre de tu mascota"></textarea><br>
         <button type="submit">Guardar</button>
     </form>
+    </main>
 
     <script>
         function togglePasswordVisibility() {
