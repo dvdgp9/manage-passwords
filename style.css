@@ -243,55 +243,216 @@ th {
     background-color: #158ca3; /* Darker red on hover */
 }
 
-/* ======= Site Header (Reusable) ======= */
+/* ======= Site Header (Senior UX Design) ======= */
 .site-header {
     position: sticky;
     top: 0;
     width: 100%;
-    background: #ffffff;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    background: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%);
+    border-bottom: 1px solid #e2e8f0;
+    backdrop-filter: blur(8px);
     z-index: 1000;
+    transition: all 0.3s ease;
 }
 
 .site-header__inner {
-    max-width: 1100px;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 10px 16px;
+    padding: 16px 24px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 16px;
+    gap: 24px;
+    min-height: 72px;
 }
 
-.site-header__brand { display: flex; align-items: center; }
+.site-header__brand {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
 
-.brand-link { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.brand-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    transition: transform 0.2s ease;
+}
+.brand-link:hover {
+    transform: translateY(-1px);
+}
 
-.brand-logo { height: 36px; width: 36px; object-fit: contain; }
+.brand-logo {
+    height: 42px;
+    width: 42px;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(35, 170, 197, 0.15);
+}
 
-.brand-title { font-weight: 700; color: #222; font-size: 16px; }
+.brand-title {
+    font-weight: 700;
+    color: #1e293b;
+    font-size: 18px;
+    letter-spacing: -0.025em;
+    background: linear-gradient(135deg, #23AAC5 0%, #158ca3 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
 
-.site-header__nav { display: flex; align-items: center; gap: 12px; }
+.site-header__nav {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 4px;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
 
 .nav-link {
     text-decoration: none;
-    color: #0f172a;
-    padding: 8px 12px;
-    border-radius: 6px;
+    color: #475569;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    position: relative;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.nav-link:hover {
+    background: #23AAC5;
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(35, 170, 197, 0.3);
+}
+.nav-link.active {
+    background: #23AAC5;
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(35, 170, 197, 0.25);
+}
+
+.site-header__user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #23AAC5 0%, #158ca3 100%);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-weight: 600;
+    font-size: 14px;
+    box-shadow: 0 2px 8px rgba(35, 170, 197, 0.2);
 }
-.nav-link:hover { background: #f1f5f9; }
 
-.site-header__user { display: flex; align-items: center; gap: 10px; }
-.user-label { color: #475569; font-size: 13px; }
-
-.logout-form { margin: 0; }
-.logout-btn {
-    background-color: #ef4444;
-    color: #fff;
-    border: none;
+.user-label {
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 500;
     padding: 8px 12px;
-    border-radius: 6px;
-    cursor: pointer;
+    background: rgba(100, 116, 139, 0.1);
+    border-radius: 8px;
+    border: 1px solid rgba(100, 116, 139, 0.2);
+    white-space: nowrap;
 }
-.logout-btn:hover { background-color: #dc2626; }
+
+.logout-form {
+    margin: 0;
+}
+
+.logout-btn {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: #ffffff;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 13px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.logout-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3);
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .site-header__inner {
+        padding: 12px 16px;
+        gap: 16px;
+        min-height: 64px;
+    }
+    
+    .brand-title {
+        display: none;
+    }
+    
+    .brand-logo {
+        height: 36px;
+        width: 36px;
+    }
+    
+    .site-header__nav {
+        gap: 2px;
+        padding: 2px;
+    }
+    
+    .nav-link {
+        padding: 8px 10px;
+        font-size: 12px;
+        gap: 4px;
+    }
+    
+    .nav-link svg {
+        width: 14px;
+        height: 14px;
+    }
+    
+    .user-label {
+        display: none;
+    }
+    
+    .user-avatar {
+        width: 28px;
+        height: 28px;
+        font-size: 12px;
+    }
+    
+    .logout-btn {
+        padding: 8px 10px;
+        font-size: 11px;
+        gap: 4px;
+    }
+    
+    .logout-btn svg {
+        width: 12px;
+        height: 12px;
+    }
+}
