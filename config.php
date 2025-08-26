@@ -1,13 +1,37 @@
 <?php
 // config.php
 
-// Composer autoload (for vlucas/phpdotenv)
-require_once __DIR__ . '/vendor/autoload.php';
+// Composer autoload (for vlucas/phpdotenv) — optional in production
+$autoload = __DIR__ . '/vendor/autoload.php';
+if (file_exists($autoload)) {
+    require_once $autoload;
+}
 
-// Load environment variables from .env if present
+// Load environment variables from .env
 if (class_exists(\Dotenv\Dotenv::class)) {
+    // Preferred: use phpdotenv if available
     $dotenv = \Dotenv\Dotenv::createImmutable(__DIR__);
     $dotenv->safeLoad();
+} else {
+    // Fallback: minimal .env loader (KEY=VALUE, lines starting with '#' ignored)
+    $envPath = __DIR__ . '/.env';
+    if (is_readable($envPath)) {
+        $lines = file($envPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if ($line === '' || str_starts_with($line, '#')) continue;
+            $pos = strpos($line, '=');
+            if ($pos === false) continue;
+            $key = trim(substr($line, 0, $pos));
+            $val = trim(substr($line, $pos + 1));
+            // strip optional surrounding quotes
+            if ((str_starts_with($val, '"') && str_ends_with($val, '"')) || (str_starts_with($val, "'") && str_ends_with($val, "'"))) {
+                $val = substr($val, 1, -1);
+            }
+            $_ENV[$key] = $val;
+            putenv($key . '=' . $val);
+        }
+    }
 }
 
 // Helpers to read env
