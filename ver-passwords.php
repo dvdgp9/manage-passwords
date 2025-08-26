@@ -60,6 +60,7 @@ echo "<!DOCTYPE html>
 </head>
 <body>
     " . $headerHtml . "
+    <main class='page'>
     <h1>Contraseñas Almacenadas</h1>
 
     <form action='ver-passwords.php' method='get' class='search-form'>
@@ -103,6 +104,7 @@ echo "<!DOCTYPE html>
 
         echo "</table>
     </div>
+    </main>
 
     <script src='scripts.js'></script>
 </body>
