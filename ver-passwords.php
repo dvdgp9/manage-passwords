@@ -55,8 +55,8 @@ echo "<!DOCTYPE html>
 </head>
 <body>
     <div class='navigation'>
-        <a href='index.php'><button>Inicio</button></a>
-        <a href='introducir.php'><button>Introducir Contraseña</button></a>
+        <a class='btn' href='index.php'>Inicio</a>
+        <a class='btn' href='introducir.php'>Introducir Contraseña</a>
         <form action='logout.php' method='post' style='display: inline;'>
             <input type='hidden' name='csrf_token' value='" . htmlspecialchars($csrf) . "'>
             <button type='submit'>Cerrar Sesión</button>
@@ -99,7 +99,7 @@ echo "<!DOCTYPE html>
                         <td>" . htmlspecialchars($row['info_adicional'] ?? 'N/A') . "</td>
                         <td>
                             <div class='button-container'>
-                                <a href='edit-password.php?id=" . $row['id'] . "'><button class='modify-btn'>✏️</button></a>
+                                <a class='modify-btn' href='edit-password.php?id=" . $row['id'] . "'>✏️</a>
                                 <button class='delete-btn' data-id='" . $row['id'] . "'>🗑️</button>
                             </div>
                         </td>
