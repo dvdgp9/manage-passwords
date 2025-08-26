@@ -1,35 +1,32 @@
 <?php
 // config.php
 
-// Composer autoload (for vlucas/phpdotenv) — optional in production
-$autoload = __DIR__ . '/vendor/autoload.php';
-if (file_exists($autoload)) {
-    require_once $autoload;
+// Composer autoload (for vlucas/phpdotenv); guard for servers without vendor/
+$__autoload = __DIR__ . '/vendor/autoload.php';
+if (file_exists($__autoload)) {
+    require_once $__autoload;
 }
 
-// Load environment variables from .env
+// Load environment variables from .env if present
 if (class_exists(\Dotenv\Dotenv::class)) {
-    // Preferred: use phpdotenv if available
     $dotenv = \Dotenv\Dotenv::createImmutable(__DIR__);
     $dotenv->safeLoad();
 } else {
-    // Fallback: minimal .env loader (KEY=VALUE, lines starting with '#' ignored)
-    $envPath = __DIR__ . '/.env';
-    if (is_readable($envPath)) {
-        $lines = file($envPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-        foreach ($lines as $line) {
-            $line = trim($line);
-            if ($line === '' || str_starts_with($line, '#')) continue;
+    // Fallback: very small .env loader (no expansion). Only for shared hosting without Composer.
+    $envFile = __DIR__ . '/.env';
+    if (is_file($envFile) && is_readable($envFile)) {
+        foreach (file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
+            if (str_starts_with(trim($line), '#')) continue;
             $pos = strpos($line, '=');
             if ($pos === false) continue;
-            $key = trim(substr($line, 0, $pos));
-            $val = trim(substr($line, $pos + 1));
-            // strip optional surrounding quotes
-            if ((str_starts_with($val, '"') && str_ends_with($val, '"')) || (str_starts_with($val, "'") && str_ends_with($val, "'"))) {
-                $val = substr($val, 1, -1);
+            $k = trim(substr($line, 0, $pos));
+            $v = trim(substr($line, $pos + 1));
+            // Strip surrounding quotes if present
+            if ((str_starts_with($v, '"') && str_ends_with($v, '"')) || (str_starts_with($v, "'") && str_ends_with($v, "'"))) {
+                $v = substr($v, 1, -1);
             }
-            $_ENV[$key] = $val;
-            putenv($key . '=' . $val);
+            $_ENV[$k] = $v;
+            putenv("$k=$v");
         }
     }
 }
