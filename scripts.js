@@ -41,4 +41,46 @@ document.addEventListener('DOMContentLoaded', function() {
             window.location.href = 'ver-passwords.php';
         });
     }
+
+    // Auto-submit search with debounce
+    const searchForm = document.querySelector('form.search-form');
+    const searchInput = document.getElementById('search');
+    if (searchForm && searchInput) {
+        // Focus input for quicker UX
+        try { searchInput.focus(); } catch (e) {}
+
+        const debounce = (fn, delay = 400) => {
+            let t;
+            return (...args) => {
+                clearTimeout(t);
+                t = setTimeout(() => fn.apply(null, args), delay);
+            };
+        };
+
+        const submitForm = () => {
+            // Use native submit to preserve GET semantics
+            searchForm.requestSubmit ? searchForm.requestSubmit() : searchForm.submit();
+        };
+
+        const debouncedSubmit = debounce(submitForm, 450);
+
+        // Submit when typing stops
+        searchInput.addEventListener('input', () => {
+            // If field cleared entirely, navigate to base to remove query param
+            if (!searchInput.value.trim()) {
+                // Avoid submitting empty query repeatedly; just go to base URL
+                window.location.href = 'ver-passwords.php';
+                return;
+            }
+            debouncedSubmit();
+        });
+
+        // Pressing Enter submits immediately (default). Escape clears
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                window.location.href = 'ver-passwords.php';
+            }
+        });
+    }
 });
