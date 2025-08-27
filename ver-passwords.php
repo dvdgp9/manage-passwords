@@ -89,7 +89,7 @@ echo "<!DOCTYPE html>
                 <th>Contraseña</th>
                 <th>Enlace</th>
                 <th>Info Adicional</th>
-                <th>Acciones</th>
+                " . ($role === 'lector' ? "" : "<th>Acciones</th>") . "
             </tr>";
 
             foreach ($passwords as $row) {
@@ -102,12 +102,7 @@ echo "<!DOCTYPE html>
                         <td>" . htmlspecialchars($decrypted_password) . "</td>
                         <td><a href='" . htmlspecialchars($row['enlace']) . "' target='_blank'>" . htmlspecialchars($row['enlace']) . "</a></td>
                         <td>" . htmlspecialchars($row['info_adicional'] ?? 'N/A') . "</td>
-                        <td>
-                            <div class='button-container'>
-                                <a class='modify-btn' href='edit-password.php?id=" . $row['id'] . "'>✏️</a>
-                                <button class='delete-btn' data-id='" . $row['id'] . "'>🗑️</button>
-                            </div>
-                        </td>
+                        " . ($role === 'lector' ? "" : "<td><div class='button-container'><a class='modify-btn' href='edit-password.php?id=" . $row['id'] . "'>✏️</a><button class='delete-btn' data-id='" . $row['id'] . "'>🗑️</button></div></td>") . "
                     </tr>";
             }
 
