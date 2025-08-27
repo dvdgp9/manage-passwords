@@ -16,6 +16,11 @@ $pdo = getDBConnection();
 
 $u = current_user();
 $ownerId = (int)($u['id'] ?? 0);
+// Selected assignees from form (optional)
+$assignees = $_POST['assignees'] ?? [];
+if (!is_array($assignees)) { $assignees = []; }
+// sanitize to unique integer IDs and remove owner if included
+$assignees = array_values(array_unique(array_filter(array_map(function($v){ return (int)$v; }, $assignees), function($v) use ($ownerId){ return $v > 0 && $v !== $ownerId; })));
 
 
 // Validate mandatory fields
@@ -32,12 +37,13 @@ if (!empty($enlace) && !str_starts_with($enlace, 'http://') && !str_starts_with(
     $enlace = 'https://' . $enlace;
 }
 
-// Insert data into the database with owner_user_id
+// Insert data into the database with owner_user_id and access rows (transaction)
 $sql = "INSERT INTO `passwords_manager` (owner_user_id, linea_de_negocio, nombre, descripcion, usuario, password, enlace, info_adicional)
         VALUES (:owner_user_id, :linea_de_negocio, :nombre, :descripcion, :usuario, :password, :enlace, :info_adicional)";
 $stmt = $pdo->prepare($sql);
 
 try {
+    $pdo->beginTransaction();
     $stmt->execute([
         ':owner_user_id' => $ownerId,
         ':linea_de_negocio' => $_POST['linea_de_negocio'],
@@ -48,6 +54,19 @@ try {
         ':enlace' => $enlace,
         ':info_adicional' => $_POST['info_adicional'] ?? null
     ]);
+
+    $passwordId = (int)$pdo->lastInsertId();
+    // Creator as owner in access table
+    $pdo->prepare('INSERT INTO passwords_access (password_id, user_id, perm) VALUES (:pid, :uid, \"owner\")')
+        ->execute([':pid' => $passwordId, ':uid' => $ownerId]);
+    // Selected assignees as editors
+    if ($assignees) {
+        $ins = $pdo->prepare('INSERT IGNORE INTO passwords_access (password_id, user_id, perm) VALUES (:pid, :uid, \"editor\")');
+        foreach ($assignees as $aid) {
+            $ins->execute([':pid' => $passwordId, ':uid' => $aid]);
+        }
+    }
+    $pdo->commit();
 
     // Display success message and saved data
     echo "<!DOCTYPE html>

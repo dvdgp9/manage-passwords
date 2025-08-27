@@ -3,6 +3,15 @@ require_once 'security.php';
 require_once 'config.php';
 bootstrap_security(true); // requires authenticated session
 $csrf = ensure_csrf_token();
+// Current user and list of users to assign
+$currentUser = current_user();
+try {
+    $pdo = getDBConnection();
+    $stmt = $pdo->query("SELECT id, email, role FROM users ORDER BY email");
+    $allUsers = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+} catch (Throwable $e) {
+    $allUsers = [];
+}
 // Prepare reusable header HTML
 ob_start();
 include __DIR__ . '/header.php';
@@ -57,6 +66,16 @@ $headerHtml = ob_get_clean();
 
         <label for="info_adicional">Info Adicional:</label>
         <textarea id="info_adicional" name="info_adicional" placeholder="Ej: Pregunta de seguridad: Nombre de tu mascota"></textarea><br>
+
+        <label for="assignees">Asignar a usuarios (multi-selección):</label>
+        <select id="assignees" name="assignees[]" multiple size="6">
+            <?php foreach ($allUsers as $u): if (($u['id'] ?? 0) == ($currentUser['id'] ?? -1)) continue; ?>
+                <option value="<?= (int)$u['id'] ?>">
+                    <?= htmlspecialchars($u['email'] . ' — ' . ($u['role'] ?? ''), ENT_QUOTES, 'UTF-8') ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+        <small style="display:block; color:#64748b; margin-top:6px;">Si no eliges nadie, solo tú (creador) tendrás acceso. Podrás compartir más tarde.</small>
         <button type="submit">Guardar</button>
     </form>
     </main>

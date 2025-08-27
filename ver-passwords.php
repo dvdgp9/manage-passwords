@@ -14,18 +14,22 @@ $user = current_user();
 $searchTerm = $_GET['search'] ?? '';
 
 $pdo = getDBConnection();
-// Construir consulta con scoping por usuario salvo admin
-$sql = "SELECT * FROM `passwords_manager`";
-$where = [];
+// Construir consulta con scoping por usuario salvo admin.
+// Para no-admin: ver credenciales compartidas (passwords_access) o globales (owner_user_id IS NULL)
 $params = [];
-
 if (!$user || ($user['role'] ?? '') !== 'admin') {
-    $where[] = "owner_user_id = :owner_id";
-    $params[':owner_id'] = (int)($user['id'] ?? 0);
+    $sql = "SELECT pm.* FROM passwords_manager pm
+            LEFT JOIN passwords_access pa
+              ON pa.password_id = pm.id AND pa.user_id = :uid";
+    $params[':uid'] = (int)($user['id'] ?? 0);
+    $where = ["(pa.user_id IS NOT NULL OR pm.owner_user_id IS NULL)"];
+} else {
+    $sql = "SELECT pm.* FROM passwords_manager pm";
+    $where = [];
 }
 
 if (!empty($searchTerm)) {
-    $where[] = "(linea_de_negocio LIKE :search1 OR nombre LIKE :search2 OR usuario LIKE :search3 OR descripcion LIKE :search4)";
+    $where[] = "(pm.linea_de_negocio LIKE :search1 OR pm.nombre LIKE :search2 OR pm.usuario LIKE :search3 OR pm.descripcion LIKE :search4)";
     $params[':search1'] = "%$searchTerm%";
     $params[':search2'] = "%$searchTerm%";
     $params[':search3'] = "%$searchTerm%";
