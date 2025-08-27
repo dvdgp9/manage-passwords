@@ -67,15 +67,25 @@ $headerHtml = ob_get_clean();
         <label for="info_adicional">Info Adicional:</label>
         <textarea id="info_adicional" name="info_adicional" placeholder="Ej: Pregunta de seguridad: Nombre de tu mascota"></textarea><br>
 
-        <label for="assignees">Asignar a usuarios (multi-selección):</label>
-        <select id="assignees" name="assignees[]" multiple size="6">
-            <?php foreach ($allUsers as $u): if (($u['id'] ?? 0) == ($currentUser['id'] ?? -1)) continue; ?>
-                <option value="<?= (int)$u['id'] ?>">
-                    <?= htmlspecialchars($u['email'] . ' — ' . ($u['role'] ?? ''), ENT_QUOTES, 'UTF-8') ?>
-                </option>
-            <?php endforeach; ?>
-        </select>
-        <small style="display:block; color:#64748b; margin-top:6px;">Si no eliges nadie, solo tú (creador) tendrás acceso. Podrás compartir más tarde.</small>
+        <section class="assignees-panel">
+            <div class="assignees-header">
+                <label>Compartir con usuarios</label>
+                <div class="assignees-actions">
+                    <button type="button" id="assign-all" class="btn-secondary">Asignar a todos</button>
+                    <button type="button" id="assign-none" class="btn-secondary">Quitar todos</button>
+                </div>
+            </div>
+            <div class="assignees-list">
+                <?php foreach ($allUsers as $u): $uid=(int)($u['id'] ?? 0); $checked = ($uid === (int)($currentUser['id'] ?? -1)); ?>
+                    <label class="assignee-item">
+                        <input type="checkbox" name="assignees[]" value="<?= $uid ?>" <?= $checked ? 'checked' : '' ?>>
+                        <span class="assignee-email"><?= htmlspecialchars($u['email'], ENT_QUOTES, 'UTF-8') ?></span>
+                        <span class="assignee-role"><?= htmlspecialchars($u['role'] ?? '', ENT_QUOTES, 'UTF-8') ?></span>
+                    </label>
+                <?php endforeach; ?>
+            </div>
+            <small class="assignees-hint">Si no eliges nadie, solo tú (creador) tendrás acceso. Podrás compartir más tarde.</small>
+        </section>
         <button type="submit">Guardar</button>
     </form>
     </main>
@@ -97,6 +107,21 @@ $headerHtml = ob_get_clean();
                 alert('No se pudo pegar la contraseña. Asegúrate de que el portapapeles tenga texto.');
             });
         }
+
+        // Assignees helpers
+        document.addEventListener('DOMContentLoaded', function() {
+            const list = document.querySelector('.assignees-list');
+            const btnAll = document.getElementById('assign-all');
+            const btnNone = document.getElementById('assign-none');
+            if (list && btnAll && btnNone) {
+                btnAll.addEventListener('click', () => {
+                    list.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
+                });
+                btnNone.addEventListener('click', () => {
+                    list.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+                });
+            }
+        });
     </script>
 </body>
 </html>
