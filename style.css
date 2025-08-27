@@ -481,3 +481,42 @@ th {
         height: 12px;
     }
 }
+
+/* ======= Auth (Login) Page ======= */
+.auth-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 48px 16px;
+    gap: 12px;
+}
+
+.auth-page .logo {
+    display: block;
+    margin: 0 auto 8px auto;
+}
+
+.auth-page h1 {
+    text-align: center;
+    margin: 8px 0 12px 0;
+}
+
+.auth-page .error {
+    text-align: center;
+}
+
+.auth-page form {
+    max-width: 420px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.auth-page form button[type="submit"] {
+    width: 100%;
+}
+
+@media (max-width: 480px) {
+    .auth-page { padding: 32px 12px; }
+    .auth-page form { max-width: 360px; }
+}

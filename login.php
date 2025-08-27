@@ -57,6 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <main class="page auth-page">
   <img src='https://ebone.es/wp-content/uploads/2024/11/Logo-Grupo-Lineas-cuadrado-1500px.png' alt='Logo Grupo Ebone' class='logo'>
   <h1>Iniciar sesión</h1>
 
@@ -82,5 +83,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <button type="submit">Entrar</button>
   </form>
+  </main>
 </body>
 </html>
