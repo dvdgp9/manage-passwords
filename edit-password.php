@@ -28,10 +28,32 @@ if (!$password) {
     die("Contraseña no encontrada.");
 }
 
-// Authorization: admin or owner only
+// Authorization with roles and assignments
 $u = current_user();
-$isOwner = isset($password['owner_user_id']) && (int)$password['owner_user_id'] === (int)($u['id'] ?? 0);
-if (!is_admin() && !$isOwner) {
+$uid = (int)($u['id'] ?? 0);
+$role = $u['role'] ?? '';
+
+$hasAssignment = false;
+try {
+    $stmtA = $pdo->prepare('SELECT perm FROM passwords_access WHERE password_id = :pid AND user_id = :uid LIMIT 1');
+    $stmtA->execute([':pid' => (int)$passwordId, ':uid' => $uid]);
+    $hasAssignment = (bool)$stmtA->fetch(PDO::FETCH_ASSOC);
+} catch (Throwable $e) {
+    $hasAssignment = false;
+}
+
+$isGlobal = !isset($password['owner_user_id']) || $password['owner_user_id'] === null;
+$canView = false;
+if (is_admin()) {
+    $canView = true;
+} elseif ($role === 'editor') {
+    $canView = $hasAssignment || $isGlobal;
+} elseif ($role === 'lector') {
+    $canView = $hasAssignment; // viewer solo ve asignadas
+}
+
+$canEdit = is_admin() || ($role === 'editor' && $canView);
+if (!$canEdit) {
     http_response_code(403);
     die("No tienes permisos para editar este registro.");
 }

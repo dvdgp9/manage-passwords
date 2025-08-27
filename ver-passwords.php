@@ -14,18 +14,24 @@ $user = current_user();
 $searchTerm = $_GET['search'] ?? '';
 
 $pdo = getDBConnection();
-// Construir consulta con scoping por usuario salvo admin.
-// Para no-admin: ver credenciales compartidas (passwords_access) o globales (owner_user_id IS NULL)
+// Construir consulta con scoping por rol
 $params = [];
-if (!$user || ($user['role'] ?? '') !== 'admin') {
+$role = $user['role'] ?? '';
+if ($role === 'admin') {
+    $sql = "SELECT pm.* FROM passwords_manager pm";
+    $where = [];
+} else {
     $sql = "SELECT pm.* FROM passwords_manager pm
             LEFT JOIN passwords_access pa
               ON pa.password_id = pm.id AND pa.user_id = :uid";
     $params[':uid'] = (int)($user['id'] ?? 0);
-    $where = ["(pa.user_id IS NOT NULL OR pm.owner_user_id IS NULL)"];
-} else {
-    $sql = "SELECT pm.* FROM passwords_manager pm";
-    $where = [];
+    if ($role === 'lector') {
+        // Viewer: solo asignadas explícitamente
+        $where = ["pa.user_id IS NOT NULL"]; 
+    } else {
+        // Editor u otros: asignadas o globales
+        $where = ["(pa.user_id IS NOT NULL OR pm.owner_user_id IS NULL)"];
+    }
 }
 
 if (!empty($searchTerm)) {

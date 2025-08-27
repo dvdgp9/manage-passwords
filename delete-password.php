@@ -18,8 +18,11 @@ $pdo = getDBConnection();
 if (isset($_POST['id'])) {
     $passwordId = (int)$_POST['id'];
 
-    // Authorization: only admin or owner can delete
+    // Authorization according to roles and assignments
     $u = current_user();
+    $uid = (int)($u['id'] ?? 0);
+    $role = $u['role'] ?? '';
+
     $stmt = $pdo->prepare('SELECT owner_user_id FROM `passwords_manager` WHERE id = :id');
     $stmt->execute([':id' => $passwordId]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -28,8 +31,27 @@ if (isset($_POST['id'])) {
         echo 'error';
         exit;
     }
-    $isOwner = isset($row['owner_user_id']) && (int)$row['owner_user_id'] === (int)($u['id'] ?? 0);
-    if (!is_admin() && !$isOwner) {
+    $isOwner = isset($row['owner_user_id']) && (int)$row['owner_user_id'] === $uid;
+    $isGlobal = !isset($row['owner_user_id']) || $row['owner_user_id'] === null;
+
+    $allowed = false;
+    if (is_admin()) {
+        $allowed = true;
+    } elseif ($role === 'editor') {
+        // Editor can delete if assigned via passwords_access or global
+        $hasAssignment = false;
+        try {
+            $stmtA = $pdo->prepare('SELECT 1 FROM passwords_access WHERE password_id = :pid AND user_id = :uid LIMIT 1');
+            $stmtA->execute([':pid' => $passwordId, ':uid' => $uid]);
+            $hasAssignment = (bool)$stmtA->fetch(PDO::FETCH_ASSOC);
+        } catch (Throwable $e) { $hasAssignment = false; }
+        $allowed = $hasAssignment || $isGlobal || $isOwner; // owner also covered
+    } else {
+        // Viewers cannot delete
+        $allowed = false;
+    }
+
+    if (!$allowed) {
         http_response_code(403);
         echo 'error';
         exit;
