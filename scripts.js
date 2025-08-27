@@ -93,4 +93,56 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    // ===== introducir.php enhancements (CSP-compliant, no inline JS) =====
+    const introducirForm = document.getElementById('form-introducir');
+    if (introducirForm) {
+        // Format link on submit (ensure protocol)
+        introducirForm.addEventListener('submit', function() {
+            const linkInput = document.getElementById('enlace');
+            if (linkInput) {
+                const val = (linkInput.value || '').trim();
+                if (val && !/^https?:\/\//i.test(val)) {
+                    linkInput.value = 'https://' + val;
+                }
+            }
+        });
+
+        // Toggle password visibility
+        const btnToggle = document.getElementById('btn-toggle-password');
+        const pwdInput = document.getElementById('password');
+        if (btnToggle && pwdInput) {
+            btnToggle.addEventListener('click', function() {
+                const isHidden = pwdInput.type === 'password';
+                pwdInput.type = isHidden ? 'text' : 'password';
+                // Update button label for better UX
+                btnToggle.textContent = isHidden ? 'Ocultar' : 'Mostrar';
+            });
+        }
+
+        // Paste password from clipboard
+        const btnPaste = document.getElementById('btn-paste-password');
+        if (btnPaste && pwdInput && navigator.clipboard && navigator.clipboard.readText) {
+            btnPaste.addEventListener('click', function() {
+                navigator.clipboard.readText()
+                    .then(text => { pwdInput.value = text; })
+                    .catch(() => {
+                        alert('No se pudo pegar la contraseña. Asegúrate de que el portapapeles tenga texto.');
+                    });
+            });
+        }
+
+        // Assignees helpers (Asignar a todos / Quitar todos)
+        const list = document.querySelector('.assignees-list');
+        const btnAll = document.getElementById('assign-all');
+        const btnNone = document.getElementById('assign-none');
+        if (list && btnAll && btnNone) {
+            btnAll.addEventListener('click', () => {
+                list.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
+            });
+            btnNone.addEventListener('click', () => {
+                list.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+            });
+        }
+    }
 });

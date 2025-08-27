@@ -25,21 +25,13 @@ $headerHtml = ob_get_clean();
     <title>Introducir Contraseña</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <script>
-        function formatLink() {
-            const linkInput = document.getElementById('enlace');
-            let link = linkInput.value.trim();
-            if (link && !link.startsWith('http://') && !link.startsWith('https://')) {
-                linkInput.value = 'https://' + link;
-            }
-        }
-    </script>
+    <script src="scripts.js" defer></script>
 </head>
 <body>
     <?= $headerHtml ?>
     <main class="page">
     <h1>Almacenar nueva contraseña</h1>
-    <form action="guardar.php" method="post" onsubmit="formatLink()">
+    <form id="form-introducir" action="guardar.php" method="post">
         <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf); ?>">
         <label for="linea_de_negocio">Línea de Negocio:</label>
 
@@ -57,8 +49,8 @@ $headerHtml = ob_get_clean();
         <label for="password">Contraseña:</label>
         <input type="password" id="password" name="password" placeholder="Introduce la contraseña" required>
         <div class="password-buttons">
-            <button type="button" onclick="togglePasswordVisibility()">Mostrar</button>
-            <button type="button" onclick="pastePassword()">Pegar Contraseña</button>
+            <button type="button" id="btn-toggle-password">Mostrar</button>
+            <button type="button" id="btn-paste-password">Pegar Contraseña</button>
         </div><br>
 
         <label for="enlace">Enlace:</label>
@@ -90,38 +82,5 @@ $headerHtml = ob_get_clean();
     </form>
     </main>
 
-    <script>
-        function togglePasswordVisibility() {
-            const passwordInput = document.getElementById('password');
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-            } else {
-                passwordInput.type = 'password';
-            }
-        }
-
-        function pastePassword() {
-            navigator.clipboard.readText().then(text => {
-                document.getElementById('password').value = text;
-            }).catch(err => {
-                alert('No se pudo pegar la contraseña. Asegúrate de que el portapapeles tenga texto.');
-            });
-        }
-
-        // Assignees helpers
-        document.addEventListener('DOMContentLoaded', function() {
-            const list = document.querySelector('.assignees-list');
-            const btnAll = document.getElementById('assign-all');
-            const btnNone = document.getElementById('assign-none');
-            if (list && btnAll && btnNone) {
-                btnAll.addEventListener('click', () => {
-                    list.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
-                });
-                btnNone.addEventListener('click', () => {
-                    list.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
-                });
-            }
-        });
-    </script>
-</body>
-</html>
+    </body>
+    </html>
