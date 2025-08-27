@@ -2,7 +2,7 @@
 
 Este documento resume el estado actual de la base de datos relevante y la propuesta objetivo para habilitar multiusuario seguro y sesión persistente (remember-me).
 
-Fecha: 2025-08-26
+Fecha: 2025-08-27
 
 ## 1) Estado actual
 
@@ -72,7 +72,43 @@ CREATE TABLE IF NOT EXISTS `user_sessions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ```
 
-### 3.4) Integridad referencial
+### 3.4) passwords_access (compartición muchos-a-muchos)
+
+Permite compartir cada credencial con múltiples usuarios y definir permiso básico.
+
+Tipos ajustados al esquema actual: `passwords_manager.id` es `INT` (signed) y `users.id` es `BIGINT UNSIGNED`.
+
+```sql
+CREATE TABLE IF NOT EXISTS passwords_access (
+  id INT NOT NULL AUTO_INCREMENT,
+  password_id INT NOT NULL,                 -- coincide con passwords_manager.id (INT)
+  user_id BIGINT(20) UNSIGNED NOT NULL,     -- coincide con users.id (BIGINT UNSIGNED)
+  perm ENUM('owner','editor','viewer') NOT NULL DEFAULT 'editor',
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uniq_password_user (password_id, user_id),
+  KEY idx_access_user (user_id),
+  CONSTRAINT fk_access_password FOREIGN KEY (password_id)
+    REFERENCES passwords_manager(id) ON DELETE CASCADE,
+  CONSTRAINT fk_access_user FOREIGN KEY (user_id)
+    REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```
+
+Backfill de propietarios existentes (idempotente):
+
+```sql
+INSERT IGNORE INTO passwords_access (password_id, user_id, perm)
+SELECT id AS password_id, owner_user_id AS user_id, 'owner'
+FROM passwords_manager
+WHERE owner_user_id IS NOT NULL;
+```
+
+Notas:
+- Los registros con `owner_user_id IS NULL` se consideran "globales" (visibles para todos) en la lógica de aplicación.
+- A futuro se puede unificar el tipo de `passwords_manager.id` a `BIGINT UNSIGNED` si interesa, con migración.
+
+### 3.5) Integridad referencial
 
 ```sql
 ALTER TABLE `passwords_manager`

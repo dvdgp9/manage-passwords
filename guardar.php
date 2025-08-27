@@ -57,13 +57,13 @@ try {
 
     $passwordId = (int)$pdo->lastInsertId();
     // Creator as owner in access table
-    $pdo->prepare('INSERT INTO passwords_access (password_id, user_id, perm) VALUES (:pid, :uid, \"owner\")')
-        ->execute([':pid' => $passwordId, ':uid' => $ownerId]);
+    $stmtOwner = $pdo->prepare('INSERT INTO passwords_access (password_id, user_id, perm) VALUES (:pid, :uid, :perm)');
+    $stmtOwner->execute([':pid' => $passwordId, ':uid' => $ownerId, ':perm' => 'owner']);
     // Selected assignees as editors
     if ($assignees) {
-        $ins = $pdo->prepare('INSERT IGNORE INTO passwords_access (password_id, user_id, perm) VALUES (:pid, :uid, \"editor\")');
+        $ins = $pdo->prepare('INSERT IGNORE INTO passwords_access (password_id, user_id, perm) VALUES (:pid, :uid, :perm)');
         foreach ($assignees as $aid) {
-            $ins->execute([':pid' => $passwordId, ':uid' => $aid]);
+            $ins->execute([':pid' => $passwordId, ':uid' => $aid, ':perm' => 'editor']);
         }
     }
     $pdo->commit();
