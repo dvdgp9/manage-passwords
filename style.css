@@ -211,9 +211,11 @@ th {
 
 /* ===== Password column: text + copy button ===== */
 .password-cell {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto;
     align-items: center;
     gap: 8px;
+    width: 100%;
 }
 
 /* Ensure inner elements in password cell have no borders/backgrounds */
@@ -225,6 +227,7 @@ th {
 .password-text {
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     font-size: 13px;
+    overflow-wrap: anywhere; /* allow wrapping within long tokens */
 }
 
 .copy-btn {
