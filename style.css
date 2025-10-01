@@ -239,6 +239,8 @@ th {
 .copy-btn:active { background: transparent !important; }
 .copy-btn:focus { outline: none; box-shadow: 0 0 0 2px rgba(35,170,197,0.35); }
 .copy-btn svg { pointer-events: none; }
+/* Oculta el rectángulo exterior del icono de copiar para evitar apariencia de borde extra */
+.copy-btn svg rect { display: none; }
 
 /* Feedback states */
 .copy-btn.copied { color: #16a34a; }
