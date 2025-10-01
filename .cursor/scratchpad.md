@@ -152,6 +152,7 @@ P2 – Medios/Mejoras
   - Pendiente P0: externalizar secretos a `.env` (Composer/phpdotenv) [bloqueado por Composer no instalado].
   - Añadido `index.php` como gateway de autenticación: si hay sesión → redirige a `ver-passwords.php`, si no → `login.php`.
   - Actualizados enlaces de navegación de `index.html` → `index.php` en `ver-passwords.php`, `introducir.php` y `edit-password.php`.
+  - [Nuevo][UX] Añadido botón de copiar en la columna de contraseña en `ver-passwords.php` (icono SVG inline estilo Untitled UI) con manejador en `scripts.js` usando `navigator.clipboard.writeText` y fallback `execCommand('copy')`. Estilos en `style.css` (`.copy-btn`, feedback `.copied`/`.copy-error`).
 
 # Executor's Feedback or Assistance Requests
 
@@ -161,6 +162,7 @@ P2 – Medios/Mejoras
   3) Navegar con el botón Inicio → debe ir a `index.php` y respetar la lógica anterior.
   4) Crear, editar y borrar registros según permisos (propietario vs admin).
   5) Cerrar sesión (POST + CSRF) → volver a `login.php` desde `index.php`.
+  6) Copiar contraseña: en `ver-passwords.php`, pulsa el botón con icono de copiar en cualquier fila → debe copiar la contraseña en texto plano al portapapeles y mostrar feedback visual verde (título "Copiado"). En caso de error, alertará.
 - Nota: si hay errores de CSP con fuentes, avisar para ajustar la política.
 - Confirmar versión de PHP y si se permite Composer (para `vlucas/phpdotenv` y `paragonie/sodium_compat` si hiciera falta). HTTPS confirmado: activaremos HSTS y cookie Secure.
 - Aceptación del orden propuesto (P0→P1→P2) o ajustes.

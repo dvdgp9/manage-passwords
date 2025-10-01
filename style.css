@@ -209,6 +209,39 @@ th {
     font-size: 12px;
 }
 
+/* ===== Password column: text + copy button ===== */
+.tabla-passwords td:nth-child(5) {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.password-text {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 13px;
+}
+
+.copy-btn {
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+    color: #23AAC5;
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+.copy-btn:hover { color: #158ca3; }
+.copy-btn:focus { outline: 2px solid rgba(35,170,197,0.35); outline-offset: 2px; }
+.copy-btn svg { pointer-events: none; }
+
+/* Feedback states */
+.copy-btn.copied { color: #16a34a; }
+.copy-btn.copy-error { color: #dc2626; }
+
 /* Search form styling */
 .search-form {
     max-width: 1100px;

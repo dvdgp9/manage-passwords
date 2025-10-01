@@ -42,6 +42,54 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Copy password buttons in table
+    const copyButtons = document.querySelectorAll('.copy-btn');
+    if (copyButtons && copyButtons.length) {
+        const copyText = async (text) => {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                await navigator.clipboard.writeText(text);
+                return true;
+            }
+            // Fallback: use a hidden textarea
+            try {
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                ta.setAttribute('readonly', '');
+                ta.style.position = 'absolute';
+                ta.style.left = '-9999px';
+                document.body.appendChild(ta);
+                ta.select();
+                const ok = document.execCommand('copy');
+                document.body.removeChild(ta);
+                return ok;
+            } catch (_) {
+                return false;
+            }
+        };
+
+        const giveFeedback = (btn, ok) => {
+            const prevTitle = btn.getAttribute('title') || '';
+            btn.classList.add(ok ? 'copied' : 'copy-error');
+            btn.setAttribute('title', ok ? 'Copiado' : 'Error al copiar');
+            // Optionally announce via aria-live in future; for now, quick visual state
+            setTimeout(() => {
+                btn.classList.remove('copied', 'copy-error');
+                btn.setAttribute('title', prevTitle || 'Copiar');
+            }, 1500);
+        };
+
+        copyButtons.forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const text = btn.getAttribute('data-password') || '';
+                const ok = await copyText(text);
+                giveFeedback(btn, ok);
+                if (!ok) {
+                    alert('No se pudo copiar la contraseña.');
+                }
+            });
+        });
+    }
+
     // Auto-submit search with debounce
     const searchForm = document.querySelector('form.search-form');
     const searchInput = document.getElementById('search');
