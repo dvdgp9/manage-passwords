@@ -67,14 +67,32 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         };
 
+        const getCheckSvg = () => (
+            `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M20 6L9 17l-5-5"></path>
+            </svg>`
+        );
+
         const giveFeedback = (btn, ok) => {
             const prevTitle = btn.getAttribute('title') || '';
+            const prevAria = btn.getAttribute('aria-label') || '';
+            const prevHtml = btn.innerHTML;
             btn.classList.add(ok ? 'copied' : 'copy-error');
             btn.setAttribute('title', ok ? 'Copiado' : 'Error al copiar');
+            btn.setAttribute('aria-label', ok ? 'Copiado' : 'Error al copiar');
+            if (ok) {
+                // Swap icon to check for a short period
+                btn.innerHTML = getCheckSvg();
+            }
             // Optionally announce via aria-live in future; for now, quick visual state
             setTimeout(() => {
                 btn.classList.remove('copied', 'copy-error');
                 btn.setAttribute('title', prevTitle || 'Copiar');
+                btn.setAttribute('aria-label', prevAria || 'Copiar contraseña');
+                if (ok) {
+                    // Restore original icon
+                    btn.innerHTML = prevHtml;
+                }
             }, 1500);
         };
 
