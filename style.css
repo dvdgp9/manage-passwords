@@ -227,15 +227,17 @@ th {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border: none;
-    background: transparent;
+    border: none !important;
+    padding: 0 !important;
+    background: transparent !important;
     color: #23AAC5;
     cursor: pointer;
     border-radius: 6px;
 }
 
-.copy-btn:hover { color: #158ca3; }
-.copy-btn:focus { outline: 2px solid rgba(35,170,197,0.35); outline-offset: 2px; }
+.copy-btn:hover { color: #158ca3; background: transparent !important; }
+.copy-btn:active { background: transparent !important; }
+.copy-btn:focus { outline: none; box-shadow: 0 0 0 2px rgba(35,170,197,0.35); }
 .copy-btn svg { pointer-events: none; }
 
 /* Feedback states */
