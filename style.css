@@ -210,10 +210,16 @@ th {
 }
 
 /* ===== Password column: text + copy button ===== */
-.tabla-passwords td:nth-child(5) {
+.password-cell {
     display: flex;
     align-items: center;
     gap: 8px;
+}
+
+/* Ensure inner elements in password cell have no borders/backgrounds */
+.password-cell * {
+    border: 0 !important;
+    background: transparent !important;
 }
 
 .password-text {
@@ -233,14 +239,16 @@ th {
     color: #23AAC5;
     cursor: pointer;
     border-radius: 6px;
+    appearance: none;
+    -webkit-appearance: none;
+    box-shadow: none !important;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .copy-btn:hover { color: #158ca3; background: transparent !important; }
 .copy-btn:active { background: transparent !important; }
 .copy-btn:focus { outline: none; box-shadow: 0 0 0 2px rgba(35,170,197,0.35); }
 .copy-btn svg { pointer-events: none; }
-/* Oculta el rectángulo exterior del icono de copiar para evitar apariencia de borde extra */
-.copy-btn svg rect { display: none; }
 
 /* Feedback states */
 .copy-btn.copied { color: #16a34a; }
