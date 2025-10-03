@@ -122,7 +122,25 @@ echo "<!DOCTYPE html>
                         </td>
                         <td><a href='" . htmlspecialchars($row['enlace']) . "' target='_blank'>" . htmlspecialchars($row['enlace']) . "</a></td>
                         <td>" . htmlspecialchars($row['info_adicional'] ?? 'N/A') . "</td>
-                        " . ($role === 'lector' ? "" : "<td><div class='button-container'><a class='modify-btn' href='edit-password.php?id=" . $row['id'] . "'>✏️</a><button class='delete-btn' data-id='" . $row['id'] . "'>🗑️</button></div></td>") . "
+                        " . ($role === 'lector' ? "" : "<td><div class='button-container'>
+                            <a class='modify-btn' href='edit-password.php?id=" . $row['id'] . "' title='Editar' aria-label='Editar'>
+                                <!-- edit-02 icon -->
+                                <svg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'>
+                                    <path d='M12 20h9'/>
+                                    <path d='M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z'/>
+                                </svg>
+                            </a>
+                            <button class='delete-btn' data-id='" . $row['id'] . "' title='Eliminar' aria-label='Eliminar'>
+                                <!-- trash-01 icon -->
+                                <svg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'>
+                                    <path d='M3 6h18'/>
+                                    <path d='M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6'/>
+                                    <path d='M10 11v6'/>
+                                    <path d='M14 11v6'/>
+                                    <path d='M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2'/>
+                                </svg>
+                            </button>
+                        </div></td>") . "
                     </tr>";
             }
 
