@@ -80,17 +80,22 @@ echo "<!DOCTYPE html>
     </form>
 
     <div class='table-container'>
-        <table class='tabla-passwords'>
-            <tr>
-                <th>Línea de Negocio</th>
-                <th>Nombre</th>
-                <th>Descripción</th>
-                <th>Usuario</th>
-                <th>Contraseña</th>
-                <th>Enlace</th>
-                <th>Info Adicional</th>
-                " . ($role === 'lector' ? "" : "<th>Acciones</th>") . "
-            </tr>";
+        <div class='table-card'>
+            <div class='table-card__inner'>
+                <table class='tabla-passwords'>
+                <thead>
+                    <tr>
+                        <th>Línea de Negocio</th>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Usuario</th>
+                        <th>Contraseña</th>
+                        <th>Enlace</th>
+                        <th>Info Adicional</th>
+                        " . ($role === 'lector' ? "" : "<th>Acciones</th>") . "
+                    </tr>
+                </thead>
+                <tbody>";
 
             foreach ($passwords as $row) {
                 $decrypted_password = decrypt($row['password']);
@@ -121,7 +126,10 @@ echo "<!DOCTYPE html>
                     </tr>";
             }
 
-        echo "</table>
+        echo "                </tbody>
+                </table>
+            </div>
+        </div>
     </div>
     </main>
 

@@ -82,95 +82,107 @@ button:hover {
 }
 
 /* Table Styles */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-
-table, th, td {
-    border: 1px solid #ccc;
-}
-
-th, td {
-    padding: 10px;
-    text-align: left;
-}
-
-th {
-    background-color: #f8f9fa;
-}
-
-/* Logo Styles */
-.logo {
-    max-width: 300px;
-    margin-top: 20px;
-    margin-bottom: 20px;
-}
-
-/* Tabla para mostrar las contraseñas */
 .table-container {
-    overflow-x: auto;
-    margin: 20px 0;
-    max-width: 95%;
-    background: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+    width: 100%;
+    margin: 24px 0 48px;
+    padding: 0 12px;
+    display: flex;
+    justify-content: center;
+}
+
+.table-card {
+    width: 100%;
+    max-width: 1200px;
+    background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
     border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    box-shadow: 0 24px 45px -32px rgba(15, 23, 42, 0.35), 0 12px 32px -20px rgba(148, 163, 184, 0.45);
+    overflow: hidden;
+    position: relative;
+}
+
+.table-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);
+}
+
+.table-card__inner {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.table-card__inner::-webkit-scrollbar {
+    height: 10px;
+}
+
+.table-card__inner::-webkit-scrollbar-track {
+    background: rgba(226, 232, 240, 0.6);
+    border-radius: 999px;
+}
+
+.table-card__inner::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #23aac5 0%, #158ca3 100%);
+    border-radius: 999px;
+}
+
+.table-card__inner::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #1c90ab 0%, #107a8f 100%);
 }
 
 .tabla-passwords {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
-    table-layout: fixed;
+    min-width: 860px;
+    background: rgba(255, 255, 255, 0.92);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+    transition: background 0.2s ease;
 }
 
-.tabla-passwords th, .tabla-passwords td {
-    padding: 16px 12px;
+.tabla-passwords thead th {
+    color: #0f172a;
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.45);
+    border-right: 1px solid rgba(148, 163, 184, 0.25);
+    white-space: nowrap;
     text-align: left;
-    word-wrap: break-word;
-    border-bottom: 1px solid #f1f5f9;
 }
 
-.tabla-passwords th {
-    background: linear-gradient(to bottom, #f8fafc 0%, #f1f5f9 100%);
-    color: #475569;
-    font-weight: 600;
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    border-bottom: 2px solid #e2e8f0;
+.tabla-passwords thead th:last-child {
+    border-right: none;
 }
 
-.tabla-passwords th:first-child {
-    border-top-left-radius: 12px;
+.tabla-passwords th,
+.tabla-passwords td {
+    text-align: left;
 }
 
-.tabla-passwords th:last-child {
-    border-top-right-radius: 12px;
+.tabla-passwords th:nth-child(3),
+.tabla-passwords td:nth-child(3) {
+    width: 16%;
+}
+
+.tabla-passwords th:nth-child(8),
+.tabla-passwords td:nth-child(8) {
+    width: 12%;
 }
 
 .tabla-passwords tbody tr {
-    transition: all 0.2s ease;
-    background-color: #ffffff;
+    background: rgba(255, 255, 255, 0.92);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+    transition: background 0.2s ease;
+}
+
+.tabla-passwords tbody tr:nth-child(even) {
+    background: rgba(248, 250, 252, 0.95);
 }
 
 .tabla-passwords tbody tr:hover {
-    background-color: #f8fafc;
-    box-shadow: 0 2px 8px rgba(35, 170, 197, 0.08);
-    transform: scale(1.001);
-}
-
-.tabla-passwords tbody tr:last-child td:first-child {
-    border-bottom-left-radius: 12px;
-}
-
-.tabla-passwords tbody tr:last-child td:last-child {
-    border-bottom-right-radius: 12px;
+    background: #f1fbfd;
 }
 
 .tabla-passwords tbody tr:last-child td {
@@ -178,127 +190,61 @@ th {
 }
 
 .tabla-passwords td {
-    color: #334155;
+    padding: 16px 20px;
     font-size: 14px;
+    line-height: 1.5;
+    color: #1f2937;
+    vertical-align: middle;
+    border-right: 1px solid rgba(226, 232, 240, 0.65);
+    word-break: break-word;
 }
 
-/* Alternate row coloring (zebra striping) - subtle */
-.tabla-passwords tbody tr:nth-child(even) {
-    background-color: #fafbfc;
+.tabla-passwords td:last-child {
+    border-right: none;
 }
 
-.tabla-passwords tbody tr:nth-child(even):hover {
-    background-color: #f8fafc;
+.tabla-passwords a {
+    color: #0f8cad;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s ease, text-decoration-color 0.2s ease;
 }
 
-/* Ajustar anchura de algunas columnas */
-.tabla-passwords th:nth-child(1), .tabla-passwords td:nth-child(1) {
-    width: 12%; /* Línea de negocio */
-}
-.tabla-passwords th:nth-child(2), .tabla-passwords td:nth-child(2) {
-    width: 14%; /* Nombre */
-}
-.tabla-passwords th:nth-child(3), .tabla-passwords td:nth-child(3) {
-    width: 16%; /* Descripción */
-}
-.tabla-passwords th:nth-child(4), .tabla-passwords td:nth-child(4) {
-    width: 12%; /* Usuario */
-}
-.tabla-passwords th:nth-child(5), .tabla-passwords td:nth-child(5) {
-    width: 16%; /* Contraseña */
-}
-.tabla-passwords th:nth-child(6), .tabla-passwords td:nth-child(6) {
-    width: 14%; /* Enlace */
-}
-.tabla-passwords th:nth-child(7), .tabla-passwords td:nth-child(7) {
-    width: 12%; /* Info adicional */
-}
-.tabla-passwords th:nth-child(8), .tabla-passwords td:nth-child(8) {
-    width: 10%; /* Acciones */
-    text-align: center;
+.tabla-passwords a:hover {
+    color: #0b7285;
+    text-decoration: underline;
+    text-decoration-color: rgba(11, 114, 133, 0.6);
 }
 
-.tabla-passwords td:nth-child(8) {
-    text-align: center;
+@media (max-width: 1100px) {
+    .table-container {
+        padding: 0;
+    }
+
+    .table-card {
+        border-radius: 16px;
+    }
+
+    .tabla-passwords {
+        min-width: 720px;
+    }
 }
 
-/* Estilo botón borrar contraseña */
-.delete-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #ef4444;
-    padding: 6px;
-    border-radius: 6px;
-    transition: all 0.2s ease;
-}
+@media (max-width: 768px) {
+    .table-card {
+        border-radius: 12px;
+        box-shadow: 0 20px 36px -28px rgba(15, 23, 42, 0.45);
+    }
 
-.delete-btn:hover {
-    color: #dc2626;
-    background: rgba(239, 68, 68, 0.1);
-    transform: scale(1.1);
-}
-
-/* Estilos menú */
-.navigation {
-    margin-bottom: 20px;
-    display: flex;
-    gap: 10px;
-    justify-content: flex-start;
-}
-
-.navigation button {
-    white-space: nowrap; /* Impide que el texto se divida en varias líneas */
-    text-align: center; /* Centra el texto en el botón */
-    padding: 10px 20px; /* Espaciado interno */
-    font-size: 14px; /* Ajusta el tamaño del texto para que no sea demasiado grande */
-    font-weight: 700;
-    background-color: #23AAC5; /* Color de fondo */
-    color: white; /* Color del texto */
-    border: none; /* Sin bordes */
-    border-radius: 4px; /* Bordes redondeados */
-    cursor: pointer; /* Indicador de clic */
-}
-
-
-.navigation button:hover {
-    background-color: #158ca3;
-}
-
-/* Style for the button container */
-.button-container {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    justify-content: center;
-}
-
-/* Style for the Modify button */
-.modify-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #23AAC5;
-    padding: 6px;
-    border-radius: 6px;
-    transition: all 0.2s ease;
+    .tabla-passwords thead th,
+    .tabla-passwords td {
+        padding: 14px 16px;
+    }
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 16px;
-}
-
-.modify-btn:hover {
-    color: #158ca3;
-    background: rgba(35, 170, 197, 0.1);
-    transform: scale(1.1);
-}
-
-.modify-btn, .delete-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
+    margin: 2px 2px;
+    font-size: 12px;
 }
 
 /* ===== Password column: text + copy button ===== */
@@ -319,54 +265,35 @@ th {
 .password-text {
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     font-size: 13px;
-    overflow-wrap: anywhere;
-    color: #475569;
-    font-weight: 500;
+    overflow-wrap: anywhere; /* allow wrapping within long tokens */
 }
 
 .copy-btn {
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     border: none !important;
     padding: 0 !important;
     background: transparent !important;
-    color: #64748b;
+    color: #23AAC5;
     cursor: pointer;
     border-radius: 6px;
     appearance: none;
     -webkit-appearance: none;
     box-shadow: none !important;
     -webkit-tap-highlight-color: transparent;
-    transition: all 0.2s ease;
 }
 
-.copy-btn:hover { 
-    color: #23AAC5; 
-    background: rgba(35, 170, 197, 0.1) !important;
-    transform: scale(1.1);
-}
-.copy-btn:active { 
-    background: rgba(35, 170, 197, 0.15) !important;
-    transform: scale(0.95);
-}
-.copy-btn:focus { 
-    outline: none; 
-    box-shadow: 0 0 0 3px rgba(35,170,197,0.2) !important;
-}
+.copy-btn:hover { color: #158ca3; background: transparent !important; }
+.copy-btn:active { background: transparent !important; }
+.copy-btn:focus { outline: none; box-shadow: 0 0 0 2px rgba(35,170,197,0.35); }
 .copy-btn svg { pointer-events: none; }
 
 /* Feedback states */
-.copy-btn.copied { 
-    color: #16a34a !important;
-    background: rgba(22, 163, 74, 0.1) !important;
-}
-.copy-btn.copy-error { 
-    color: #dc2626 !important;
-    background: rgba(220, 38, 38, 0.1) !important;
-}
+.copy-btn.copied { color: #16a34a; }
+.copy-btn.copy-error { color: #dc2626; }
 
 /* Search form styling */
 .search-form {
