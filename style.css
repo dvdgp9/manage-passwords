@@ -1,4 +1,5 @@
 /* General Styles */
+:root { --site-header-height: 72px; }
 body {
     font-family: 'Montserrat', sans-serif;
     background-color: #f4f4f4;
@@ -150,6 +151,11 @@ button:hover {
     border-right: 1px solid rgba(148, 163, 184, 0.25);
     white-space: nowrap;
     text-align: left;
+    position: sticky;
+    top: var(--site-header-height);
+    z-index: 5;
+    background: linear-gradient(135deg, rgba(35, 170, 197, 0.08) 0%, rgba(35, 170, 197, 0.18) 100%);
+    box-shadow: 0 1px 0 rgba(148,163,184,0.35);
 }
 
 .tabla-passwords thead th:last-child {
@@ -226,7 +232,7 @@ button:hover {
     }
 
     .tabla-passwords {
-        min-width: 720px;
+        min-width: 880px;
     }
 }
 
@@ -238,8 +244,18 @@ button:hover {
 
     .tabla-passwords thead th,
     .tabla-passwords td {
-        padding: 14px 16px;
+        padding: 12px 14px;
     }
+
+    :root { --site-header-height: 64px; }
+
+    .tabla-passwords {
+        min-width: 980px; /* obligar scroll horizontal en móvil, no comprimir columnas */
+    }
+
+    .button-container { gap: 12px; }
+    .modify-btn, .delete-btn, .copy-btn { width: 26px; height: 26px; }
+    .password-text { font-size: 12px; }
 }
 
 /* ===== Password column: text + copy button ===== */
