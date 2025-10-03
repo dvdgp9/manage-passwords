@@ -1,5 +1,4 @@
 /* General Styles */
-:root { --site-header-height: 72px; }
 body {
     font-family: 'Montserrat', sans-serif;
     background-color: #f4f4f4;
@@ -144,18 +143,10 @@ button:hover {
     transition: background 0.2s ease;
 }
 
-.tabla-passwords thead th {
-    color: #0f172a;
-    padding: 16px 20px;
-    border-bottom: 1px solid rgba(148, 163, 184, 0.45);
-    border-right: 1px solid rgba(148, 163, 184, 0.25);
-    white-space: nowrap;
-    text-align: left;
+.tabla-passwords thead {
     position: sticky;
-    top: var(--site-header-height);
-    z-index: 5;
-    background: linear-gradient(135deg, rgba(35, 170, 197, 0.08) 0%, rgba(35, 170, 197, 0.18) 100%);
-    box-shadow: 0 1px 0 rgba(148,163,184,0.35);
+    top: 0;
+    z-index: 10;
 }
 
 .tabla-passwords thead th:last-child {
@@ -232,30 +223,57 @@ button:hover {
     }
 
     .tabla-passwords {
-        min-width: 880px;
+        min-width: 720px;
     }
 }
 
 @media (max-width: 768px) {
+    .table-container {
+        padding: 0;
+        margin: 16px 0 32px;
+    }
+
     .table-card {
         border-radius: 12px;
         box-shadow: 0 20px 36px -28px rgba(15, 23, 42, 0.45);
     }
 
-    .tabla-passwords thead th,
-    .tabla-passwords td {
-        padding: 12px 14px;
-    }
-
-    :root { --site-header-height: 64px; }
-
     .tabla-passwords {
-        min-width: 980px; /* obligar scroll horizontal en móvil, no comprimir columnas */
+        min-width: 680px;
     }
 
-    .button-container { gap: 12px; }
-    .modify-btn, .delete-btn, .copy-btn { width: 26px; height: 26px; }
-    .password-text { font-size: 12px; }
+    .tabla-passwords thead th {
+        padding: 10px 8px;
+        font-size: 10px;
+        letter-spacing: 0.04em;
+    }
+
+    .tabla-passwords td {
+        padding: 10px 8px;
+        font-size: 12px;
+    }
+
+    .password-text {
+        font-size: 11px;
+    }
+
+    .copy-btn,
+    .modify-btn,
+    .delete-btn {
+        width: 24px;
+        height: 24px;
+    }
+
+    .copy-btn svg,
+    .modify-btn svg,
+    .delete-btn svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    .button-container {
+        gap: 12px;
+    }
 }
 
 /* ===== Password column: text + copy button ===== */
