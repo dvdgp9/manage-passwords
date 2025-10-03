@@ -112,35 +112,114 @@ th {
 .table-container {
     overflow-x: auto;
     margin: 20px 0;
-    max-width: 90%;
+    max-width: 95%;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+    border: 1px solid #e2e8f0;
 }
 
 .tabla-passwords {
     width: 100%;
-    border-collapse: collapse;
-    table-layout: fixed; /* Ensure the table respects column widths */
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed;
 }
 
 .tabla-passwords th, .tabla-passwords td {
-    border: 1px solid #ccc;
-    padding: 10px;
+    padding: 16px 12px;
     text-align: left;
-    word-wrap: break-word; /* Break long words to prevent overflow */
+    word-wrap: break-word;
+    border-bottom: 1px solid #f1f5f9;
 }
 
 .tabla-passwords th {
-    background-color: #f8f9fa;
+    background: linear-gradient(to bottom, #f8fafc 0%, #f1f5f9 100%);
+    color: #475569;
+    font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.tabla-passwords th:first-child {
+    border-top-left-radius: 12px;
+}
+
+.tabla-passwords th:last-child {
+    border-top-right-radius: 12px;
+}
+
+.tabla-passwords tbody tr {
+    transition: all 0.2s ease;
+    background-color: #ffffff;
+}
+
+.tabla-passwords tbody tr:hover {
+    background-color: #f8fafc;
+    box-shadow: 0 2px 8px rgba(35, 170, 197, 0.08);
+    transform: scale(1.001);
+}
+
+.tabla-passwords tbody tr:last-child td:first-child {
+    border-bottom-left-radius: 12px;
+}
+
+.tabla-passwords tbody tr:last-child td:last-child {
+    border-bottom-right-radius: 12px;
+}
+
+.tabla-passwords tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.tabla-passwords td {
+    color: #334155;
+    font-size: 14px;
+}
+
+/* Alternate row coloring (zebra striping) - subtle */
+.tabla-passwords tbody tr:nth-child(even) {
+    background-color: #fafbfc;
+}
+
+.tabla-passwords tbody tr:nth-child(even):hover {
+    background-color: #f8fafc;
 }
 
 /* Ajustar anchura de algunas columnas */
+.tabla-passwords th:nth-child(1), .tabla-passwords td:nth-child(1) {
+    width: 12%; /* Línea de negocio */
+}
 .tabla-passwords th:nth-child(2), .tabla-passwords td:nth-child(2) {
-    width: 15% !important; /* Adjust the width of the second column */
+    width: 14%; /* Nombre */
 }
 .tabla-passwords th:nth-child(3), .tabla-passwords td:nth-child(3) {
-    width: 15% !important; /* Adjust the width of the third column */
+    width: 16%; /* Descripción */
+}
+.tabla-passwords th:nth-child(4), .tabla-passwords td:nth-child(4) {
+    width: 12%; /* Usuario */
+}
+.tabla-passwords th:nth-child(5), .tabla-passwords td:nth-child(5) {
+    width: 16%; /* Contraseña */
+}
+.tabla-passwords th:nth-child(6), .tabla-passwords td:nth-child(6) {
+    width: 14%; /* Enlace */
+}
+.tabla-passwords th:nth-child(7), .tabla-passwords td:nth-child(7) {
+    width: 12%; /* Info adicional */
 }
 .tabla-passwords th:nth-child(8), .tabla-passwords td:nth-child(8) {
-    width: 10% !important; /* Adjust the width of the eighth column */
+    width: 10%; /* Acciones */
+    text-align: center;
+}
+
+.tabla-passwords td:nth-child(8) {
+    text-align: center;
 }
 
 /* Estilo botón borrar contraseña */
@@ -148,11 +227,16 @@ th {
     background: none;
     border: none;
     cursor: pointer;
-    color: #23AAC5;
+    color: #ef4444;
+    padding: 6px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
 }
 
 .delete-btn:hover {
-    color: #158ca3;
+    color: #dc2626;
+    background: rgba(239, 68, 68, 0.1);
+    transform: scale(1.1);
 }
 
 /* Estilos menú */
@@ -184,8 +268,9 @@ th {
 /* Style for the button container */
 .button-container {
     display: flex;
-    gap: 10px; /* Adds space between the buttons */
-    align-items: center; /* Vertically centers the buttons */
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Style for the Modify button */
@@ -194,19 +279,26 @@ th {
     border: none;
     cursor: pointer;
     color: #23AAC5;
-    margin-right: 10px;
+    padding: 6px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
 }
 
 .modify-btn:hover {
     color: #158ca3;
+    background: rgba(35, 170, 197, 0.1);
+    transform: scale(1.1);
 }
 
 .modify-btn, .delete-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 2px 2px;
-    font-size: 12px;
+    font-size: 16px;
 }
 
 /* ===== Password column: text + copy button ===== */
@@ -227,35 +319,54 @@ th {
 .password-text {
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     font-size: 13px;
-    overflow-wrap: anywhere; /* allow wrapping within long tokens */
+    overflow-wrap: anywhere;
+    color: #475569;
+    font-weight: 500;
 }
 
 .copy-btn {
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     border: none !important;
     padding: 0 !important;
     background: transparent !important;
-    color: #23AAC5;
+    color: #64748b;
     cursor: pointer;
     border-radius: 6px;
     appearance: none;
     -webkit-appearance: none;
     box-shadow: none !important;
     -webkit-tap-highlight-color: transparent;
+    transition: all 0.2s ease;
 }
 
-.copy-btn:hover { color: #158ca3; background: transparent !important; }
-.copy-btn:active { background: transparent !important; }
-.copy-btn:focus { outline: none; box-shadow: 0 0 0 2px rgba(35,170,197,0.35); }
+.copy-btn:hover { 
+    color: #23AAC5; 
+    background: rgba(35, 170, 197, 0.1) !important;
+    transform: scale(1.1);
+}
+.copy-btn:active { 
+    background: rgba(35, 170, 197, 0.15) !important;
+    transform: scale(0.95);
+}
+.copy-btn:focus { 
+    outline: none; 
+    box-shadow: 0 0 0 3px rgba(35,170,197,0.2) !important;
+}
 .copy-btn svg { pointer-events: none; }
 
 /* Feedback states */
-.copy-btn.copied { color: #16a34a; }
-.copy-btn.copy-error { color: #dc2626; }
+.copy-btn.copied { 
+    color: #16a34a !important;
+    background: rgba(22, 163, 74, 0.1) !important;
+}
+.copy-btn.copy-error { 
+    color: #dc2626 !important;
+    background: rgba(220, 38, 38, 0.1) !important;
+}
 
 /* Search form styling */
 .search-form {
