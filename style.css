@@ -6,6 +6,23 @@ body {
     padding: 0;
 }
 
+/* ======= Introducir: center page layout ======= */
+.introducir-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+}
+.introducir-container {
+    width: 100%;
+    max-width: 900px;
+    padding: 0 16px;
+}
+.introducir-container h1 {
+    text-align: center;
+}
+
 /* ======= Admin Users: Form Card & Layout ======= */
 .form-card {
     width: 100%;
@@ -254,7 +271,6 @@ h1 {
 .search-form input#search {
     flex: 1 1 520px;
     min-width: 240px;
-    max-width: 620px;
     height: 40px;
     padding: 8px 12px;
     border: 1px solid #e2e8f0;

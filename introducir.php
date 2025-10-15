@@ -29,7 +29,8 @@ $headerHtml = ob_get_clean();
 </head>
 <body>
     <?= $headerHtml ?>
-    <main class="page">
+    <main class="page introducir-page">
+    <div class="introducir-container">
     <h1>Almacenar nueva contraseña</h1>
     <form id="form-introducir" action="guardar.php" method="post">
         <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf); ?>">
@@ -80,6 +81,7 @@ $headerHtml = ob_get_clean();
         </section>
         <button type="submit">Guardar</button>
     </form>
+    </div>
     </main>
 
     </body>
