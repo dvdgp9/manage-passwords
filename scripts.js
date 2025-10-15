@@ -26,6 +26,160 @@ document.addEventListener('DOMContentLoaded', function() {
                     } else {
                         alert('Error al eliminar la contraseña.');
                     }
+
+    // ===== Admin Users: create/edit form UX =====
+    const adminFormSection = document.getElementById('admin-user-form');
+    const adminForm = document.getElementById('form-admin-user');
+    const btnNewUser = document.getElementById('btn-new-user');
+    if (adminFormSection && adminForm && btnNewUser) {
+        const formTitle = document.getElementById('form-title');
+        const formAction = document.getElementById('form-action');
+        const formId = document.getElementById('form-id');
+        const emailInput = document.getElementById('email');
+        const roleSelect = document.getElementById('role');
+        const pwdInput = document.getElementById('password');
+        const pwdToggle = document.getElementById('btn-toggle-password');
+        const confirmInput = document.getElementById('confirm_password');
+        const confirmToggle = document.getElementById('btn-toggle-confirm');
+        const btnCancel = document.getElementById('btn-cancel-form');
+        const emailErr = document.getElementById('email-error');
+        const pwdErr = document.getElementById('password-error');
+        const confirmErr = document.getElementById('confirm-error');
+
+        const openCreate = () => {
+            formTitle.textContent = 'Crear usuario';
+            formAction.value = 'create';
+            formId.value = '';
+            emailInput.value = '';
+            roleSelect.value = 'editor';
+            pwdInput.value = '';
+            confirmInput.value = '';
+            pwdInput.required = true;
+            confirmInput.required = true;
+            hideErrors();
+            adminFormSection.classList.remove('hidden');
+        };
+
+        const openEdit = (id, email, role) => {
+            formTitle.textContent = 'Editar usuario';
+            formAction.value = 'update';
+            formId.value = String(id || '');
+            emailInput.value = email || '';
+            roleSelect.value = role || 'editor';
+            pwdInput.value = '';
+            confirmInput.value = '';
+            pwdInput.required = false;
+            confirmInput.required = false;
+            hideErrors();
+            adminFormSection.classList.remove('hidden');
+        };
+
+        const hideForm = () => {
+            adminFormSection.classList.add('hidden');
+        };
+
+        const toggleField = (input, btn) => {
+            if (!input || !btn) return;
+            const isHidden = input.type === 'password';
+            input.type = isHidden ? 'text' : 'password';
+            btn.textContent = isHidden ? 'Ocultar' : 'Mostrar';
+        };
+
+        const showError = (el, msg) => {
+            if (!el) return;
+            el.textContent = msg || '';
+            el.classList.toggle('hidden', !msg);
+        };
+        const hideErrors = () => {
+            showError(emailErr, '');
+            showError(pwdErr, '');
+            showError(confirmErr, '');
+        };
+
+        // Open create form
+        btnNewUser.addEventListener('click', (e) => {
+            e.preventDefault();
+            openCreate();
+        });
+
+        // Intercept edit buttons to open form without reload
+        document.querySelectorAll('a.modify-btn[data-id]').forEach(a => {
+            a.addEventListener('click', (e) => {
+                e.preventDefault();
+                const id = a.getAttribute('data-id');
+                const email = a.getAttribute('data-email');
+                const role = a.getAttribute('data-role');
+                openEdit(id, email, role);
+            });
+        });
+
+        // Show/hide password fields
+        if (pwdToggle) {
+            pwdToggle.addEventListener('click', () => toggleField(pwdInput, pwdToggle));
+        }
+        if (confirmToggle) {
+            confirmToggle.addEventListener('click', () => toggleField(confirmInput, confirmToggle));
+        }
+
+        // Cancel hides the form and resets to create mode next time
+        if (btnCancel) {
+            btnCancel.addEventListener('click', (e) => {
+                e.preventDefault();
+                hideForm();
+                // If URL has ?edit=..., drop it after cancel to avoid confusion on reload
+                if (window.location.search.includes('edit=')) {
+                    const url = new URL(window.location.href);
+                    url.searchParams.delete('edit');
+                    window.history.replaceState({}, '', url.toString());
+                }
+            });
+        }
+
+        // Client-side validation for submit
+        adminForm.addEventListener('submit', (e) => {
+            hideErrors();
+            let ok = true;
+            const emailVal = (emailInput.value || '').trim();
+            const isCreate = formAction.value === 'create';
+            const pwdVal = pwdInput.value || '';
+            const confirmVal = confirmInput.value || '';
+
+            // Simple email format
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(emailVal)) {
+                showError(emailErr, 'Introduce un email válido');
+                ok = false;
+            }
+
+            if (isCreate) {
+                if (pwdVal.length < 8) {
+                    showError(pwdErr, 'La contraseña debe tener al menos 8 caracteres');
+                    ok = false;
+                }
+                if (pwdVal !== confirmVal) {
+                    showError(confirmErr, 'Las contraseñas no coinciden');
+                    ok = false;
+                }
+            } else {
+                // Edit: password optional, but if provided must validate and match confirm
+                if (pwdVal) {
+                    if (pwdVal.length < 8) {
+                        showError(pwdErr, 'La contraseña debe tener al menos 8 caracteres');
+                        ok = false;
+                    }
+                    if (pwdVal !== confirmVal) {
+                        showError(confirmErr, 'Las contraseñas no coinciden');
+                        ok = false;
+                    }
+                }
+            }
+
+            if (!ok) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        });
+    }
                 })
                 .catch(error => {
                     console.error('Error:', error);

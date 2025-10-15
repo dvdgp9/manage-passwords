@@ -187,7 +187,10 @@ $headerHtml = ob_get_clean();
 <body>
   <?= $headerHtml ?>
   <main class="page">
-    <h1>Usuarios</h1>
+    <div class="page-header">
+      <h1>Usuarios</h1>
+      <button id="btn-new-user" class="btn-primary">Nuevo usuario</button>
+    </div>
 
     <?php if ($errors): ?>
       <div class="error" style="color:#b91c1c; margin: 10px 0;">
@@ -205,34 +208,59 @@ $headerHtml = ob_get_clean();
       </div>
     <?php endif; ?>
 
-    <section class="panel">
-      <h2><?= $editUser ? 'Editar usuario' : 'Crear usuario' ?></h2>
-      <form method="post" action="admin-users.php<?= $editUser ? '?edit='.(int)$editUser['id'] : '' ?>">
+    <section id="admin-user-form" class="form-card<?= $editUser ? '' : ' hidden' ?>">
+      <h2 id="form-title"><?= $editUser ? 'Editar usuario' : 'Crear usuario' ?></h2>
+      <form id="form-admin-user" method="post" action="admin-users.php<?= $editUser ? '?edit='.(int)$editUser['id'] : '' ?>">
         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf, ENT_QUOTES, 'UTF-8') ?>">
-        <input type="hidden" name="action" value="<?= $editUser ? 'update' : 'create' ?>">
+        <input type="hidden" id="form-action" name="action" value="<?= $editUser ? 'update' : 'create' ?>">
         <?php if ($editUser): ?>
-          <input type="hidden" name="id" value="<?= (int)$editUser['id'] ?>">
+          <input type="hidden" id="form-id" name="id" value="<?= (int)$editUser['id'] ?>">
+        <?php else: ?>
+          <input type="hidden" id="form-id" name="id" value="">
         <?php endif; ?>
 
-        <label for="email">Email</label>
-        <input type="email" id="email" name="email" required value="<?= htmlspecialchars($editUser['email'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+        <div class="form-grid">
+          <div class="field">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required value="<?= htmlspecialchars($editUser['email'] ?? '', ENT_QUOTES, 'UTF-8') ?>" aria-describedby="email-help">
+            <small id="email-help" class="helper-text">Debe ser único y con formato válido.</small>
+            <div class="field-error hidden" id="email-error"></div>
+          </div>
 
-        <label for="role">Rol</label>
-        <select id="role" name="role" required>
-          <?php $roles = ['admin' => 'Administrador', 'editor' => 'Editor', 'lector' => 'Lector'];
-          $cur = $editUser['role'] ?? 'editor';
-          foreach ($roles as $val => $label): ?>
-            <option value="<?= $val ?>" <?= $cur === $val ? 'selected' : '' ?>><?= $label ?></option>
-          <?php endforeach; ?>
-        </select>
+          <div class="field">
+            <label for="role">Rol</label>
+            <select id="role" name="role" required>
+              <?php $roles = ['admin' => 'Administrador', 'editor' => 'Editor', 'lector' => 'Lector'];
+              $cur = $editUser['role'] ?? 'editor';
+              foreach ($roles as $val => $label): ?>
+                <option value="<?= $val ?>" <?= $cur === $val ? 'selected' : '' ?>><?= $label ?></option>
+              <?php endforeach; ?>
+            </select>
+          </div>
 
-        <label for="password"><?= $editUser ? 'Nueva contraseña (opcional)' : 'Contraseña (obligatoria)' ?></label>
-        <input type="password" id="password" name="password" <?= $editUser ? '' : 'required' ?> placeholder="<?= $editUser ? 'Dejar vacío para no cambiar' : '' ?>">
+          <div class="field" style="grid-column: 1 / -1;">
+            <label for="password"><?= $editUser ? 'Nueva contraseña (opcional)' : 'Contraseña (obligatoria)' ?></label>
+            <div class="password-group">
+              <input type="password" id="password" name="password" <?= $editUser ? '' : 'required' ?> placeholder="<?= $editUser ? 'Dejar vacío para no cambiar' : '' ?>">
+              <button type="button" id="btn-toggle-password" class="btn-secondary" style="width:auto;">Mostrar</button>
+            </div>
+            <div class="field-error hidden" id="password-error"></div>
+          </div>
 
-        <button type="submit"><?= $editUser ? 'Guardar cambios' : 'Crear' ?></button>
-        <?php if ($editUser): ?>
-          <a class="btn-secondary" href="admin-users.php">Cancelar edición</a>
-        <?php endif; ?>
+          <div class="field" style="grid-column: 1 / -1;">
+            <label for="confirm_password">Confirmar contraseña<?= $editUser ? ' (si cambias contraseña)' : '' ?></label>
+            <div class="password-group">
+              <input type="password" id="confirm_password" name="confirm_password" <?= $editUser ? '' : 'required' ?> placeholder="Repite la contraseña">
+              <button type="button" id="btn-toggle-confirm" class="btn-secondary" style="width:auto;">Mostrar</button>
+            </div>
+            <div class="field-error hidden" id="confirm-error"></div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary" id="btn-submit-form"><?= $editUser ? 'Guardar cambios' : 'Crear' ?></button>
+          <button type="button" class="btn-secondary" id="btn-cancel-form">Cancelar</button>
+        </div>
       </form>
     </section>
 
@@ -260,7 +288,7 @@ $headerHtml = ob_get_clean();
                   <td><?= htmlspecialchars($u['last_login'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
                   <td>
                     <div class="button-container">
-                      <a class="modify-btn" href="admin-users.php?edit=<?= (int)$u['id'] ?>" title="Editar" aria-label="Editar">
+                      <a class="modify-btn" href="admin-users.php?edit=<?= (int)$u['id'] ?>" title="Editar" aria-label="Editar" data-id="<?= (int)$u['id'] ?>" data-email="<?= htmlspecialchars($u['email'], ENT_QUOTES, 'UTF-8') ?>" data-role="<?= htmlspecialchars($u['role'], ENT_QUOTES, 'UTF-8') ?>">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                           <path d="M12 20h9"/>
                           <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>
