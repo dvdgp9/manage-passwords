@@ -11,6 +11,7 @@ $user = current_user();
 $currentPage = basename($_SERVER['PHP_SELF']);
 $isVerPage = in_array($currentPage, ['ver-passwords.php', 'edit-password.php']);
 $isIntroducirPage = $currentPage === 'introducir.php';
+ $isAdminUsersPage = $currentPage === 'admin-users.php';
 ?>
 <header class="site-header">
   <div class="site-header__inner">
@@ -35,6 +36,14 @@ $isIntroducirPage = $currentPage === 'introducir.php';
         </svg>
         Introducir
       </a>
+      <?php if ($user && ($user['role'] ?? '') === 'admin'): ?>
+        <a class="nav-link<?= $isAdminUsersPage ? ' active' : '' ?>" href="admin-users.php">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 7h18M3 12h18M3 17h18" />
+          </svg>
+          Admin
+        </a>
+      <?php endif; ?>
     </nav>
     <div class="site-header__user">
       <?php if ($user): ?>
