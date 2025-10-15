@@ -47,10 +47,9 @@ body {
     gap: 16px 16px;
 }
 
-/* Ensure admin user form stretches within its parent without extra caps */
-#form-admin-user {
-    width: 100%;
-    max-width: none;
+#form-admin-user {
+    max-width: 100%;
+    width: auto;
 }
 
 @media (max-width: 768px) {
@@ -89,8 +88,6 @@ body {
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    margin: 0 auto;
-    padding: 0 16px;
 }
 
 .hidden { display: none !important; }
