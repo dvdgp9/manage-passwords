@@ -71,7 +71,7 @@ echo "<!DOCTYPE html>
 <body>
     " . $headerHtml . "
     <main class='page'>
-    <h1>Contraseñas Almacenadas</h1>
+    <h1 class='page-title center'>Contraseñas Almacenadas</h1>
 
     <form action='ver-passwords.php' method='get' class='search-form'>
         <label for='search'>Buscar:</label>

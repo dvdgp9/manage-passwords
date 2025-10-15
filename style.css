@@ -199,6 +199,12 @@ h1 {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    background: transparent !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    max-width: 100% !important;
+    width: 100% !important;
 }
 
 .auth-form label { color: #0f172a; font-weight: 600; font-size: 14px; }
@@ -229,6 +235,33 @@ h1 {
 
 .auth-actions {
     margin-top: 6px;
+}
+
+.auth-actions .btn-primary { width: 100%; }
+
+/* ======= Passwords page: center title and search ======= */
+.page .page-title.center { text-align: center; }
+.search-form {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 8px auto 18px auto;
+    width: 100%;
+    max-width: 840px;
+}
+.search-form label { font-weight: 600; color: #0f172a; }
+.search-form input#search {
+    flex: 1 1 520px;
+    min-width: 240px;
+    max-width: 620px;
+    height: 40px;
+    padding: 8px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+}
+.search-form .clear-search-btn {
+    height: 40px;
 }
 
 /* Remove collapsed top margins inside page to avoid gap below sticky header */
