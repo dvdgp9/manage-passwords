@@ -45,16 +45,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const formTitle = document.getElementById('form-title');
         const formAction = document.getElementById('form-action');
         const formId = document.getElementById('form-id');
-        const emailInput = document.getElementById('email');
-        const roleSelect = document.getElementById('role');
-        const pwdInput = document.getElementById('password');
-        const pwdToggle = document.getElementById('btn-toggle-password');
-        const confirmInput = document.getElementById('confirm_password');
-        const confirmToggle = document.getElementById('btn-toggle-confirm');
-        const btnCancel = document.getElementById('btn-cancel-form');
-        const emailErr = document.getElementById('email-error');
-        const pwdErr = document.getElementById('password-error');
-        const confirmErr = document.getElementById('confirm-error');
+        const emailInput = adminForm.querySelector('#email');
+        const roleSelect = adminForm.querySelector('#role');
+        const pwdInput = adminForm.querySelector('#password');
+        const pwdToggle = adminForm.querySelector('#btn-toggle-password');
+        const confirmInput = adminForm.querySelector('#confirm_password');
+        const confirmToggle = adminForm.querySelector('#btn-toggle-confirm');
+        const btnCancel = adminForm.querySelector('#btn-cancel-form');
+        const emailErr = adminForm.querySelector('#email-error');
+        const pwdErr = adminForm.querySelector('#password-error');
+        const confirmErr = adminForm.querySelector('#confirm-error');
 
         const showError = (el, msg) => {
             if (!el) return;
