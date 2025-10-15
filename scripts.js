@@ -1,15 +1,18 @@
 document.addEventListener('DOMContentLoaded', function() {
     const csrfMeta = document.querySelector('meta[name="csrf-token"]');
     const csrfToken = csrfMeta ? csrfMeta.getAttribute('content') : '';
-    // Handle delete buttons
+    // Handle password table delete buttons (only when data-id exists)
     const deleteButtons = document.querySelectorAll('.delete-btn');
     deleteButtons.forEach(button => {
-        button.addEventListener('click', function() {
+        button.addEventListener('click', function(e) {
             const passwordId = this.getAttribute('data-id');
-
+            if (!passwordId) {
+                // Not a password row (e.g., admin users delete button inside a form)
+                return; // let the form submit normally
+            }
+            e.preventDefault();
             // Confirm deletion
             if (confirm('¿Estás seguro de que deseas eliminar esta contraseña?')) {
-                // Send a request to delete the password
                 fetch('delete-password.php', {
                     method: 'POST',
                     headers: {
@@ -21,17 +24,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(response => response.text())
                 .then(data => {
                     if (data === 'success') {
-                        // Reload the page to reflect the changes
                         location.reload();
                     } else {
                         alert('Error al eliminar la contraseña.');
                     }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            }
+        });
+    });
 
-    // ===== Admin Users: create/edit form UX =====
-    const adminFormSection = document.getElementById('admin-user-form');
-    const adminForm = document.getElementById('form-admin-user');
-    const btnNewUser = document.getElementById('btn-new-user');
-    if (adminFormSection && adminForm && btnNewUser) {
+    // ===== Admin Users: create/edit form UX (initialized on load) =====
+    const initAdminUsers = () => {
+        const adminFormSection = document.getElementById('admin-user-form');
+        const adminForm = document.getElementById('form-admin-user');
+        const btnNewUser = document.getElementById('btn-new-user');
+        if (!(adminFormSection && adminForm && btnNewUser)) return;
         const formTitle = document.getElementById('form-title');
         const formAction = document.getElementById('form-action');
         const formId = document.getElementById('form-id');
@@ -46,6 +56,22 @@ document.addEventListener('DOMContentLoaded', function() {
         const pwdErr = document.getElementById('password-error');
         const confirmErr = document.getElementById('confirm-error');
 
+        const showError = (el, msg) => {
+            if (!el) return;
+            el.textContent = msg || '';
+            el.classList.toggle('hidden', !msg);
+        };
+        const hideErrors = () => {
+            showError(emailErr, '');
+            showError(pwdErr, '');
+            showError(confirmErr, '');
+        };
+        const toggleField = (input, btn) => {
+            if (!input || !btn) return;
+            const isHidden = input.type === 'password';
+            input.type = isHidden ? 'text' : 'password';
+            btn.textContent = isHidden ? 'Ocultar' : 'Mostrar';
+        };
         const openCreate = () => {
             formTitle.textContent = 'Crear usuario';
             formAction.value = 'create';
@@ -59,7 +85,6 @@ document.addEventListener('DOMContentLoaded', function() {
             hideErrors();
             adminFormSection.classList.remove('hidden');
         };
-
         const openEdit = (id, email, role) => {
             formTitle.textContent = 'Editar usuario';
             formAction.value = 'update';
@@ -73,69 +98,26 @@ document.addEventListener('DOMContentLoaded', function() {
             hideErrors();
             adminFormSection.classList.remove('hidden');
         };
+        const hideForm = () => { adminFormSection.classList.add('hidden'); };
 
-        const hideForm = () => {
-            adminFormSection.classList.add('hidden');
-        };
-
-        const toggleField = (input, btn) => {
-            if (!input || !btn) return;
-            const isHidden = input.type === 'password';
-            input.type = isHidden ? 'text' : 'password';
-            btn.textContent = isHidden ? 'Ocultar' : 'Mostrar';
-        };
-
-        const showError = (el, msg) => {
-            if (!el) return;
-            el.textContent = msg || '';
-            el.classList.toggle('hidden', !msg);
-        };
-        const hideErrors = () => {
-            showError(emailErr, '');
-            showError(pwdErr, '');
-            showError(confirmErr, '');
-        };
-
-        // Open create form
-        btnNewUser.addEventListener('click', (e) => {
-            e.preventDefault();
-            openCreate();
-        });
-
-        // Intercept edit buttons to open form without reload
+        btnNewUser.addEventListener('click', (e) => { e.preventDefault(); openCreate(); });
         document.querySelectorAll('a.modify-btn[data-id]').forEach(a => {
             a.addEventListener('click', (e) => {
                 e.preventDefault();
-                const id = a.getAttribute('data-id');
-                const email = a.getAttribute('data-email');
-                const role = a.getAttribute('data-role');
-                openEdit(id, email, role);
+                openEdit(a.getAttribute('data-id'), a.getAttribute('data-email'), a.getAttribute('data-role'));
             });
         });
-
-        // Show/hide password fields
-        if (pwdToggle) {
-            pwdToggle.addEventListener('click', () => toggleField(pwdInput, pwdToggle));
-        }
-        if (confirmToggle) {
-            confirmToggle.addEventListener('click', () => toggleField(confirmInput, confirmToggle));
-        }
-
-        // Cancel hides the form and resets to create mode next time
-        if (btnCancel) {
-            btnCancel.addEventListener('click', (e) => {
-                e.preventDefault();
-                hideForm();
-                // If URL has ?edit=..., drop it after cancel to avoid confusion on reload
-                if (window.location.search.includes('edit=')) {
-                    const url = new URL(window.location.href);
-                    url.searchParams.delete('edit');
-                    window.history.replaceState({}, '', url.toString());
-                }
-            });
-        }
-
-        // Client-side validation for submit
+        if (pwdToggle) pwdToggle.addEventListener('click', () => toggleField(pwdInput, pwdToggle));
+        if (confirmToggle) confirmToggle.addEventListener('click', () => toggleField(confirmInput, confirmToggle));
+        if (btnCancel) btnCancel.addEventListener('click', (e) => {
+            e.preventDefault();
+            hideForm();
+            if (window.location.search.includes('edit=')) {
+                const url = new URL(window.location.href);
+                url.searchParams.delete('edit');
+                window.history.replaceState({}, '', url.toString());
+            }
+        });
         adminForm.addEventListener('submit', (e) => {
             hideErrors();
             let ok = true;
@@ -143,43 +125,21 @@ document.addEventListener('DOMContentLoaded', function() {
             const isCreate = formAction.value === 'create';
             const pwdVal = pwdInput.value || '';
             const confirmVal = confirmInput.value || '';
-
-            // Simple email format
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(emailVal)) {
-                showError(emailErr, 'Introduce un email válido');
-                ok = false;
-            }
-
+            if (!emailRegex.test(emailVal)) { showError(emailErr, 'Introduce un email válido'); ok = false; }
             if (isCreate) {
-                if (pwdVal.length < 8) {
-                    showError(pwdErr, 'La contraseña debe tener al menos 8 caracteres');
-                    ok = false;
-                }
-                if (pwdVal !== confirmVal) {
-                    showError(confirmErr, 'Las contraseñas no coinciden');
-                    ok = false;
-                }
-            } else {
-                // Edit: password optional, but if provided must validate and match confirm
-                if (pwdVal) {
-                    if (pwdVal.length < 8) {
-                        showError(pwdErr, 'La contraseña debe tener al menos 8 caracteres');
-                        ok = false;
-                    }
-                    if (pwdVal !== confirmVal) {
-                        showError(confirmErr, 'Las contraseñas no coinciden');
-                        ok = false;
-                    }
-                }
+                if (pwdVal.length < 8) { showError(pwdErr, 'La contraseña debe tener al menos 8 caracteres'); ok = false; }
+                if (pwdVal !== confirmVal) { showError(confirmErr, 'Las contraseñas no coinciden'); ok = false; }
+            } else if (pwdVal) {
+                if (pwdVal.length < 8) { showError(pwdErr, 'La contraseña debe tener al menos 8 caracteres'); ok = false; }
+                if (pwdVal !== confirmVal) { showError(confirmErr, 'Las contraseñas no coinciden'); ok = false; }
             }
-
-            if (!ok) {
-                e.preventDefault();
-                e.stopPropagation();
-            }
+            if (!ok) { e.preventDefault(); e.stopPropagation(); }
         });
-    }
+    };
+
+    // Initialize Admin Users form behaviors on load
+    initAdminUsers();
                 })
                 .catch(error => {
                     console.error('Error:', error);

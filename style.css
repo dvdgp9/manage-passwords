@@ -55,6 +55,7 @@ body {
     font-weight: 600;
     font-size: 14px;
     box-shadow: 0 2px 8px rgba(35, 170, 197, 0.25);
+    width: auto; /* override global button width */
 }
 .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(35, 170, 197, 0.35); }
 
@@ -839,6 +840,7 @@ button:hover {
     font-weight: 500;
     font-size: 13px;
     box-shadow: 0 2px 8px rgba(100, 116, 139, 0.2);
+    width: auto; /* ensure not full width */
 }
 
 .btn-secondary:hover {

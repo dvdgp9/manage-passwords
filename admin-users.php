@@ -73,7 +73,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $st = $pdo->prepare('INSERT INTO users (email, password_hash, role, created_at) VALUES (:email, :ph, :role, NOW())');
                 $st->execute([':email' => $email, ':ph' => $hash, ':role' => $role]);
                 $pdo->commit();
-                $notices[] = 'Usuario creado correctamente';
+                header('Location: admin-users.php?notice=created');
+                exit;
             } catch (Throwable $e) {
                 if ($pdo->inTransaction()) $pdo->rollBack();
                 $errors[] = 'No se pudo crear el usuario';
@@ -118,7 +119,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $upd->execute($params);
 
                 $pdo->commit();
-                $notices[] = 'Usuario actualizado';
+                header('Location: admin-users.php?notice=updated');
+                exit;
             } catch (Throwable $e) {
                 if ($pdo->inTransaction()) $pdo->rollBack();
                 $errors[] = 'No se pudo actualizar el usuario';
@@ -143,7 +145,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
                 $st = $pdo->prepare('DELETE FROM users WHERE id = :id');
                 $st->execute([':id' => $id]);
-                $notices[] = 'Usuario eliminado';
+                header('Location: admin-users.php?notice=deleted');
+                exit;
             } catch (Throwable $e) {
                 $errors[] = 'No se pudo eliminar el usuario';
             }
