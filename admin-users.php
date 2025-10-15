@@ -56,8 +56,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!valid_role($role)) {
             $errors[] = 'Rol inválido';
         }
-        if ($password !== '' && strlen($password) < 8) {
-            $errors[] = 'Si se define contraseña, debe tener al menos 8 caracteres';
+        if ($password === '' || strlen($password) < 8) {
+            $errors[] = 'La contraseña es obligatoria y debe tener al menos 8 caracteres';
         }
 
         if (!$errors) {
@@ -69,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if ($st->fetch()) {
                     throw new RuntimeException('Ya existe un usuario con ese email');
                 }
-                $hash = $password !== '' ? password_hash($password, PASSWORD_DEFAULT) : password_hash(bin2hex(random_bytes(8)), PASSWORD_DEFAULT);
+                $hash = password_hash($password, PASSWORD_DEFAULT);
                 $st = $pdo->prepare('INSERT INTO users (email, password_hash, role, created_at) VALUES (:email, :ph, :role, NOW())');
                 $st->execute([':email' => $email, ':ph' => $hash, ':role' => $role]);
                 $pdo->commit();
@@ -225,8 +225,8 @@ $headerHtml = ob_get_clean();
           <?php endforeach; ?>
         </select>
 
-        <label for="password"><?= $editUser ? 'Nueva contraseña (opcional)' : 'Contraseña (opcional, se genera si se deja vacío)' ?></label>
-        <input type="password" id="password" name="password" placeholder="<?= $editUser ? 'Dejar vacío para no cambiar' : 'Dejar vacío para generar' ?>">
+        <label for="password"><?= $editUser ? 'Nueva contraseña (opcional)' : 'Contraseña (obligatoria)' ?></label>
+        <input type="password" id="password" name="password" <?= $editUser ? '' : 'required' ?> placeholder="<?= $editUser ? 'Dejar vacío para no cambiar' : '' ?>">
 
         <button type="submit"><?= $editUser ? 'Guardar cambios' : 'Crear' ?></button>
         <?php if ($editUser): ?>
@@ -235,44 +235,60 @@ $headerHtml = ob_get_clean();
       </form>
     </section>
 
-    <section class="panel" style="margin-top:24px;">
-      <h2>Listado</h2>
-      <div class="table-responsive">
-        <table class="table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Email</th>
-              <th>Rol</th>
-              <th>Creado</th>
-              <th>Último acceso</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            <?php foreach ($users as $u): ?>
+    <section class="table-container">
+      <div class="table-card">
+        <div class="table-card__inner">
+          <table class="tabla-passwords">
+            <thead>
               <tr>
-                <td><?= (int)$u['id'] ?></td>
-                <td><?= htmlspecialchars($u['email'], ENT_QUOTES, 'UTF-8') ?></td>
-                <td><?= htmlspecialchars($u['role'], ENT_QUOTES, 'UTF-8') ?></td>
-                <td><?= htmlspecialchars($u['created_at'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
-                <td><?= htmlspecialchars($u['last_login'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
-                <td>
-                  <a class="btn-secondary" href="admin-users.php?edit=<?= (int)$u['id'] ?>">Editar</a>
-                  <form method="post" action="admin-users.php" style="display:inline" onsubmit="return confirm('¿Seguro que deseas eliminar este usuario?');">
-                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf, ENT_QUOTES, 'UTF-8') ?>">
-                    <input type="hidden" name="action" value="delete">
-                    <input type="hidden" name="id" value="<?= (int)$u['id'] ?>">
-                    <button type="submit" class="btn-danger">Eliminar</button>
-                  </form>
-                </td>
+                <th>ID</th>
+                <th>Email</th>
+                <th>Rol</th>
+                <th>Creado</th>
+                <th>Último acceso</th>
+                <th>Acciones</th>
               </tr>
-            <?php endforeach; ?>
-            <?php if (!$users): ?>
-              <tr><td colspan="6">No hay usuarios</td></tr>
-            <?php endif; ?>
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              <?php foreach ($users as $u): ?>
+                <tr>
+                  <td><?= (int)$u['id'] ?></td>
+                  <td><?= htmlspecialchars($u['email'], ENT_QUOTES, 'UTF-8') ?></td>
+                  <td><?= htmlspecialchars($u['role'], ENT_QUOTES, 'UTF-8') ?></td>
+                  <td><?= htmlspecialchars($u['created_at'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
+                  <td><?= htmlspecialchars($u['last_login'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
+                  <td>
+                    <div class="button-container">
+                      <a class="modify-btn" href="admin-users.php?edit=<?= (int)$u['id'] ?>" title="Editar" aria-label="Editar">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <path d="M12 20h9"/>
+                          <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>
+                        </svg>
+                      </a>
+                      <form method="post" action="admin-users.php" style="display:inline" onsubmit="return confirm('¿Seguro que deseas eliminar este usuario?');">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf, ENT_QUOTES, 'UTF-8') ?>">
+                        <input type="hidden" name="action" value="delete">
+                        <input type="hidden" name="id" value="<?= (int)$u['id'] ?>">
+                        <button type="submit" class="delete-btn" title="Eliminar" aria-label="Eliminar">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M3 6h18"/>
+                            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                            <path d="M10 11v6"/>
+                            <path d="M14 11v6"/>
+                            <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/>
+                          </svg>
+                        </button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+              <?php endforeach; ?>
+              <?php if (!$users): ?>
+                <tr><td colspan="6">No hay usuarios</td></tr>
+              <?php endif; ?>
+            </tbody>
+          </table>
+        </div>
       </div>
     </section>
   </main>
