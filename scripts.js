@@ -173,6 +173,20 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize Admin Users form behaviors on load
     initAdminUsers();
 
+    // Delegated handler for password visibility toggles (robust, ID-agnostic)
+    document.addEventListener('click', (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest('#btn-toggle-password, #btn-toggle-confirm') : null;
+        if (!btn) return;
+        e.preventDefault();
+        const group = btn.closest('.password-group');
+        if (!group) return;
+        const input = group.querySelector('input[type="password"], input[type="text"]');
+        if (!input) return;
+        const isHidden = input.type === 'password';
+        input.type = isHidden ? 'text' : 'password';
+        btn.textContent = isHidden ? 'Ocultar' : 'Mostrar';
+    }, { passive: false });
+
     // Handle clear search button
     const clearSearchButton = document.getElementById('clear-search');
     if (clearSearchButton) {
