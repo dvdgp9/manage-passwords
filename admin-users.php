@@ -180,6 +180,7 @@ $headerHtml = ob_get_clean();
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Administración · Usuarios</title>
+  <meta name="csrf-token" content="<?= htmlspecialchars($csrf, ENT_QUOTES, 'UTF-8') ?>">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -265,7 +266,7 @@ $headerHtml = ob_get_clean();
                           <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>
                         </svg>
                       </a>
-                      <form method="post" action="admin-users.php" style="display:inline" onsubmit="return confirm('¿Seguro que deseas eliminar este usuario?');">
+                      <form method="post" action="admin-users.php" style="display:inline" data-confirm="¿Seguro que deseas eliminar este usuario?">
                         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf, ENT_QUOTES, 'UTF-8') ?>">
                         <input type="hidden" name="action" value="delete">
                         <input type="hidden" name="id" value="<?= (int)$u['id'] ?>">
@@ -292,5 +293,6 @@ $headerHtml = ob_get_clean();
       </div>
     </section>
   </main>
+  <script src="scripts.js"></script>
 </body>
 </html>

@@ -42,6 +42,18 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Generic confirm for forms using data-confirm (CSP-friendly, no inline handlers)
+    const confirmForms = document.querySelectorAll('form[data-confirm]');
+    confirmForms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            const msg = form.getAttribute('data-confirm') || '¿Confirmar la acción?';
+            if (!confirm(msg)) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        });
+    });
+
     // Copy password buttons in table
     const copyButtons = document.querySelectorAll('.copy-btn');
     if (copyButtons && copyButtons.length) {
