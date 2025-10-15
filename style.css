@@ -158,10 +158,77 @@ h1 {
     width: 100%;
     max-width: 1900px;
     margin: 0 auto;
-    padding: 24px 16px;
+}
+
+/* ======= Auth (Login) Page ======= */
+.auth-page {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    padding: 24px 16px 48px 16px;
+    min-height: calc(100vh - 80px);
+}
+
+.auth-logo {
+    width: 100%;
+    max-width: 420px;
+    height: auto;
+    margin: 8px auto 0 auto;
+    display: block;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 420px;
+    background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 18px 38px -28px rgba(15, 23, 42, 0.35), 0 10px 26px -18px rgba(148, 163, 184, 0.45);
+    padding: 16px 16px 18px 16px;
+}
+
+.auth-card h1 {
+    text-align: center;
+    color: #0f172a;
+    margin: 8px 0 12px 0;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.auth-form label { color: #0f172a; font-weight: 600; font-size: 14px; }
+.auth-form input[type="email"],
+.auth-form input[type="password"] {
+    width: 100%;
+    height: 40px;
+    padding: 8px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.auth-form input[type="email"]:focus,
+.auth-form input[type="password"]:focus {
+    outline: none;
+    border-color: #23AAC5;
+    box-shadow: 0 0 0 3px rgba(35, 170, 197, 0.25);
+}
+
+.auth-remember {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #334155;
+}
+
+.auth-actions {
+    margin-top: 6px;
 }
 
 /* Remove collapsed top margins inside page to avoid gap below sticky header */
