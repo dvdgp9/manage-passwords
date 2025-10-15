@@ -101,14 +101,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const hideForm = () => { adminFormSection.classList.add('hidden'); };
 
         btnNewUser.addEventListener('click', (e) => { e.preventDefault(); openCreate(); });
+
+        // Direct bindings
         document.querySelectorAll('a.modify-btn[data-id]').forEach(a => {
             a.addEventListener('click', (e) => {
                 e.preventDefault();
                 openEdit(a.getAttribute('data-id'), a.getAttribute('data-email'), a.getAttribute('data-role'));
             });
         });
-        if (pwdToggle) pwdToggle.addEventListener('click', () => toggleField(pwdInput, pwdToggle));
-        if (confirmToggle) confirmToggle.addEventListener('click', () => toggleField(confirmInput, confirmToggle));
+        if (pwdToggle) pwdToggle.addEventListener('click', (e) => { e.preventDefault(); toggleField(pwdInput, pwdToggle); });
+        if (confirmToggle) confirmToggle.addEventListener('click', (e) => { e.preventDefault(); toggleField(confirmInput, confirmToggle); });
         if (btnCancel) btnCancel.addEventListener('click', (e) => {
             e.preventDefault();
             hideForm();
@@ -118,6 +120,36 @@ document.addEventListener('DOMContentLoaded', function() {
                 window.history.replaceState({}, '', url.toString());
             }
         });
+
+        // Event delegation fallback
+        document.addEventListener('click', (e) => {
+            const t = e.target;
+            if (!t) return;
+            // If click is on icons inside buttons, climb to button
+            const btn = t.closest ? t.closest('#btn-new-user, #btn-cancel-form, #btn-toggle-password, #btn-toggle-confirm, a.modify-btn[data-id]') : null;
+            if (!btn) return;
+            if (btn.matches('#btn-new-user')) {
+                e.preventDefault();
+                openCreate();
+            } else if (btn.matches('#btn-cancel-form')) {
+                e.preventDefault();
+                hideForm();
+                if (window.location.search.includes('edit=')) {
+                    const url = new URL(window.location.href);
+                    url.searchParams.delete('edit');
+                    window.history.replaceState({}, '', url.toString());
+                }
+            } else if (btn.matches('#btn-toggle-password')) {
+                e.preventDefault();
+                toggleField(pwdInput, btn);
+            } else if (btn.matches('#btn-toggle-confirm')) {
+                e.preventDefault();
+                toggleField(confirmInput, btn);
+            } else if (btn.matches('a.modify-btn[data-id]')) {
+                e.preventDefault();
+                openEdit(btn.getAttribute('data-id'), btn.getAttribute('data-email'), btn.getAttribute('data-role'));
+            }
+        }, { passive: false });
         adminForm.addEventListener('submit', (e) => {
             hideErrors();
             let ok = true;
@@ -140,13 +172,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize Admin Users form behaviors on load
     initAdminUsers();
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-            }
-        });
-    });
 
     // Handle clear search button
     const clearSearchButton = document.getElementById('clear-search');
