@@ -187,6 +187,7 @@ h1 {
     border-radius: 12px;
     box-shadow: 0 18px 38px -28px rgba(15, 23, 42, 0.35), 0 10px 26px -18px rgba(148, 163, 184, 0.45);
     padding: 16px 16px 18px 16px;
+    overflow: hidden; /* prevent inner elements from visually overflowing rounded corners */
 }
 
 .auth-card h1 {
@@ -199,6 +200,11 @@ h1 {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    background: transparent; /* override any global form background */
+    padding: 0; /* override any global form padding */
+    border: 0; /* override any global form border */
+    box-shadow: none; /* ensure no shadow from global rules */
+    margin: 0;
 }
 
 .auth-form label { color: #0f172a; font-weight: 600; font-size: 14px; }
@@ -229,6 +235,10 @@ h1 {
 
 .auth-actions {
     margin-top: 6px;
+}
+
+.auth-actions .btn-primary {
+    width: 100%;
 }
 
 /* Remove collapsed top margins inside page to avoid gap below sticky header */

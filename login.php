@@ -85,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </label>
 
         <div class="auth-actions">
-          <button type="submit" class="btn-primary" style="width:100%">Entrar</button>
+          <button type="submit" class="btn-primary">Entrar</button>
         </div>
       </form>
     </section>
