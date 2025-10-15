@@ -570,6 +570,55 @@ button:hover {
     }
 }
 
+.tabla-usuarios {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    min-width: 720px;
+    background: rgba(255, 255, 255, 0.92);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+    transition: background 0.2s ease;
+}
+.tabla-usuarios thead th {
+    color: #0f172a;
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.45);
+    border-right: 1px solid rgba(148, 163, 184, 0.25);
+    white-space: nowrap;
+    text-align: left;
+}
+.tabla-usuarios thead th:last-child { border-right: none; }
+.tabla-usuarios th, .tabla-usuarios td { text-align: left; }
+
+/* Column widths: 1=ID, 2=Email, 3=Rol, 4=Creado, 5=Último, 6=Acciones */
+.tabla-usuarios th:nth-child(1), .tabla-usuarios td:nth-child(1) { width: 8%; }
+.tabla-usuarios th:nth-child(2), .tabla-usuarios td:nth-child(2) { width: 34%; }
+.tabla-usuarios th:nth-child(3), .tabla-usuarios td:nth-child(3) { width: 12%; }
+.tabla-usuarios th:nth-child(4), .tabla-usuarios td:nth-child(4) { width: 18%; }
+.tabla-usuarios th:nth-child(5), .tabla-usuarios td:nth-child(5) { width: 18%; }
+.tabla-usuarios th:nth-child(6), .tabla-usuarios td:nth-child(6) { width: 10%; white-space: nowrap; }
+
+.tabla-usuarios tbody tr {
+    background: rgba(255, 255, 255, 0.92);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+    transition: background 0.2s ease;
+}
+.tabla-usuarios tbody tr:nth-child(even) { background: rgba(248, 250, 252, 0.95); }
+.tabla-usuarios tbody tr:hover { background: #f1fbfd; }
+.tabla-usuarios tbody tr:last-child td { border-bottom: none; }
+.tabla-usuarios td {
+    padding: 16px 20px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #1f2937;
+    vertical-align: middle;
+    border-right: 1px solid rgba(226, 232, 240, 0.65);
+    word-break: break-word;
+}
+.tabla-usuarios td:last-child { border-right: none; }
+.tabla-usuarios a { color: #0f8cad; font-weight: 600; text-decoration: none; transition: color 0.2s ease, text-decoration-color 0.2s ease; }
+.tabla-usuarios a:hover { color: #0b7285; text-decoration: underline; text-decoration-color: rgba(11, 114, 133, 0.6); }
+
 /* ======= Auth (Login) Page ======= */
 .button-container {
     display: flex;

@@ -238,7 +238,7 @@ $headerHtml = ob_get_clean();
     <section class="table-container">
       <div class="table-card">
         <div class="table-card__inner">
-          <table class="tabla-passwords">
+          <table class="tabla-usuarios">
             <thead>
               <tr>
                 <th>ID</th>
