@@ -71,8 +71,6 @@ body {
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    margin: 16px auto 12px auto; /* center within page like table and header */
-    padding: 0 12px;
 }
 
 .hidden { display: none !important; }
@@ -143,16 +141,6 @@ body {
     box-shadow: 0 0 0 3px rgba(35, 170, 197, 0.25);
 }
 
-/* Tame browser autofill so it doesn't overflow/bleed outside container */
-.auth-form input:-webkit-autofill,
-.auth-form input:-webkit-autofill:hover,
-.auth-form input:-webkit-autofill:focus {
-    -webkit-text-fill-color: #0f172a;
-    -webkit-box-shadow: 0 0 0 1000px #eef2ff inset;
-    box-shadow: 0 0 0 1000px #eef2ff inset;
-    border: 1px solid #e2e8f0;
-}
-
 #form-admin-user select#role:disabled {
     background-color: #f8fafc;
     color: #94a3b8;
@@ -162,9 +150,7 @@ body {
 
 h1 {
     color: #333;
-    margin: 16px auto 12px auto; /* center main titles */
-    max-width: 1200px;
-    padding: 0 12px;
+    margin-bottom: 20px;
 }
 
 /* Page container to center content while keeping sticky header flush to top */
@@ -200,9 +186,7 @@ h1 {
     border: 1px solid #e2e8f0;
     border-radius: 12px;
     box-shadow: 0 18px 38px -28px rgba(15, 23, 42, 0.35), 0 10px 26px -18px rgba(148, 163, 184, 0.45);
-    padding: 20px 20px 22px 20px; /* more breathing room so inputs don't touch edges */
-    overflow: hidden; /* prevent inner elements from visually overflowing rounded corners */
-    isolation: isolate; /* ensure clipping works across browsers */
+    padding: 16px 16px 18px 16px;
 }
 
 .auth-card h1 {
@@ -215,24 +199,16 @@ h1 {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    background: transparent; /* override any global form background */
-    padding: 0; /* override any global form padding */
-    border: 0; /* override any global form border */
-    box-shadow: none; /* ensure no shadow from global rules */
-    margin: 0;
 }
 
 .auth-form label { color: #0f172a; font-weight: 600; font-size: 14px; }
 .auth-form input[type="email"],
 .auth-form input[type="password"] {
-    display: block;
     width: 100%;
     height: 40px;
     padding: 8px 12px;
     border: 1px solid #e2e8f0;
     border-radius: 8px;
-    box-sizing: border-box; /* prevent overflow by including padding in width */
-    background-color: #ffffff;
     font-size: 14px;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
@@ -253,11 +229,6 @@ h1 {
 
 .auth-actions {
     margin-top: 6px;
-}
-
-.auth-actions .btn-primary {
-    width: 100%;
-    box-sizing: border-box; /* align with input sizing */
 }
 
 /* Remove collapsed top margins inside page to avoid gap below sticky header */
@@ -531,11 +502,10 @@ button:hover {
 /* Search form styling */
 .search-form {
     max-width: 1100px;
-    margin: 0 auto 20px auto; /* center search bar */
+    margin-bottom: 20px;
     display: flex;
     gap: 12px;
     align-items: center;
-    padding: 0 12px;
 }
 
 .search-form label {
