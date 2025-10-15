@@ -196,7 +196,7 @@ $headerHtml = ob_get_clean();
     </div>
 
     <?php if ($errors): ?>
-      <div class="error" style="color:#b91c1c; margin: 10px 0;">
+      <div class="alert-error">
         <?php foreach ($errors as $e): ?>
           <div><?= htmlspecialchars($e, ENT_QUOTES, 'UTF-8') ?></div>
         <?php endforeach; ?>
@@ -204,7 +204,7 @@ $headerHtml = ob_get_clean();
     <?php endif; ?>
 
     <?php if ($notices): ?>
-      <div class="notice" style="color:#065f46; margin: 10px 0;">
+      <div class="alert-notice">
         <?php foreach ($notices as $n): ?>
           <div><?= htmlspecialchars($n, ENT_QUOTES, 'UTF-8') ?></div>
         <?php endforeach; ?>
@@ -241,20 +241,20 @@ $headerHtml = ob_get_clean();
             </select>
           </div>
 
-          <div class="field" style="grid-column: 1 / -1;">
+          <div class="field field-full">
             <label for="password"><?= $editUser ? 'Nueva contraseña (opcional)' : 'Contraseña (obligatoria)' ?></label>
             <div class="password-group">
               <input type="password" id="password" name="password" <?= $editUser ? '' : 'required' ?> placeholder="<?= $editUser ? 'Dejar vacío para no cambiar' : '' ?>">
-              <button type="button" id="btn-toggle-password" class="btn-secondary" style="width:auto;">Mostrar</button>
+              <button type="button" id="btn-toggle-password" class="btn-secondary">Mostrar</button>
             </div>
             <div class="field-error hidden" id="password-error"></div>
           </div>
 
-          <div class="field" style="grid-column: 1 / -1;">
+          <div class="field field-full">
             <label for="confirm_password">Confirmar contraseña<?= $editUser ? ' (si cambias contraseña)' : '' ?></label>
             <div class="password-group">
               <input type="password" id="confirm_password" name="confirm_password" <?= $editUser ? '' : 'required' ?> placeholder="Repite la contraseña">
-              <button type="button" id="btn-toggle-confirm" class="btn-secondary" style="width:auto;">Mostrar</button>
+              <button type="button" id="btn-toggle-confirm" class="btn-secondary">Mostrar</button>
             </div>
             <div class="field-error hidden" id="confirm-error"></div>
           </div>
@@ -297,7 +297,7 @@ $headerHtml = ob_get_clean();
                           <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>
                         </svg>
                       </a>
-                      <form method="post" action="admin-users.php" style="display:inline" data-confirm="¿Seguro que deseas eliminar este usuario?">
+                      <form method="post" action="admin-users.php" class="inline" data-confirm="¿Seguro que deseas eliminar este usuario?">
                         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf, ENT_QUOTES, 'UTF-8') ?>">
                         <input type="hidden" name="action" value="delete">
                         <input type="hidden" name="id" value="<?= (int)$u['id'] ?>">

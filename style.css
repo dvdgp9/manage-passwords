@@ -78,6 +78,32 @@ body {
     gap: 8px;
 }
 
+/* Utilities to avoid inline styles (CSP-friendly) */
+.field-full { grid-column: 1 / -1; }
+.inline { display: inline !important; }
+
+/* Alerts (CSP-friendly, no inline style attrs) */
+.alert-error {
+    color: #b91c1c;
+    background: #fee2e2;
+    border: 1px solid #fecaca;
+    padding: 10px 12px;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 820px;
+    margin: 10px auto;
+}
+.alert-notice {
+    color: #065f46;
+    background: #d1fae5;
+    border: 1px solid #a7f3d0;
+    padding: 10px 12px;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 820px;
+    margin: 10px auto;
+}
+
 h1 {
     color: #333;
     margin-bottom: 20px;
