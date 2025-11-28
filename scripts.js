@@ -290,7 +290,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } catch (e) {}
 
-        const debounce = (fn, delay = 250) => {
+        // Búsqueda automática con debounce más largo para no molestar al escribir.
+        const debounce = (fn, delay = 800) => {
             let t;
             return (...args) => {
                 clearTimeout(t);
@@ -299,24 +300,23 @@ document.addEventListener('DOMContentLoaded', function() {
         };
 
         const submitForm = () => {
-            // Use native submit to preserve GET semantics
-            searchForm.requestSubmit ? searchForm.requestSubmit() : searchForm.submit();
-        };
-
-        const debouncedSubmit = debounce(submitForm, 250);
-
-        // Submit when typing stops
-        searchInput.addEventListener('input', () => {
-            // If field cleared entirely, navigate to base to remove query param
+            // Usamos submit nativo para mantener la semántica GET
             if (!searchInput.value.trim()) {
-                // Avoid submitting empty query repeatedly; just go to base URL
+                // Si está vacío, volvemos a la vista base sin parámetros
                 window.location.href = 'ver-passwords.php';
                 return;
             }
+            searchForm.requestSubmit ? searchForm.requestSubmit() : searchForm.submit();
+        };
+
+        const debouncedSubmit = debounce(submitForm, 800);
+
+        // Lanzar búsqueda cuando el usuario deje de escribir un momento
+        searchInput.addEventListener('input', () => {
             debouncedSubmit();
         });
 
-        // Pressing Enter submits immediately (default). Escape clears
+        // Escape limpia y vuelve a la vista base rápidamente
         searchInput.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 e.preventDefault();
