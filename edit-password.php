@@ -58,6 +58,13 @@ if (!$canEdit) {
     die("No tienes permisos para editar este registro.");
 }
 
+// Prepare reusable header HTML
+ob_start();
+include __DIR__ . '/header.php';
+$headerHtml = ob_get_clean();
+
+$csrf = ensure_csrf_token();
+
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verify_csrf_from_request();
@@ -114,48 +121,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Contraseña</title>
+    <meta name="csrf-token" content="<?= htmlspecialchars($csrf, ENT_QUOTES, 'UTF-8') ?>">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <script src="scripts.js" defer></script>
 </head>
 <body>
-    <div class="navigation">
-        <a class="btn" href="index.php">Inicio</a>
-        <a class="btn" href="ver-passwords.php">Ver Contraseñas</a>
-    </div>
-
-    <img src="https://ebone.es/wp-content/uploads/2024/11/Logo-Grupo-Lineas-cuadrado-1500px.png" alt="Logo Grupo Ebone" class="logo">
+    <?= $headerHtml ?>
+    <main class="page introducir-page">
+    <div class="introducir-container">
     <h1>Editar Contraseña</h1>
-    <form action="edit-password.php?id=<?php echo $passwordId; ?>" method="post">
-        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(ensure_csrf_token()); ?>">
+    <form id="form-edit-password" action="edit-password.php?id=<?php echo $passwordId; ?>" method="post">
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf, ENT_QUOTES, 'UTF-8') ?>">
+        
         <label for="linea_de_negocio">Línea de Negocio:</label>
-        <input type="text" id="linea_de_negocio" name="linea_de_negocio" value="<?php echo htmlspecialchars($password['linea_de_negocio']); ?>" required><br>
+        <input type="text" id="linea_de_negocio" name="linea_de_negocio" value="<?= htmlspecialchars($password['linea_de_negocio'], ENT_QUOTES, 'UTF-8') ?>" placeholder="General, ES, CF, EFit,..." required><br>
 
         <label for="nombre">Nombre:</label>
-        <input type="text" id="nombre" name="nombre" value="<?php echo htmlspecialchars($password['nombre']); ?>" required><br>
+        <input type="text" id="nombre" name="nombre" value="<?= htmlspecialchars($password['nombre'], ENT_QUOTES, 'UTF-8') ?>" placeholder="Ej: Facebook, Gmail, Canva,..." required><br>
 
         <label for="descripcion">Descripción:</label>
-        <textarea id="descripcion" name="descripcion"><?php echo htmlspecialchars($password['descripcion'] ?? ''); ?></textarea><br>
+        <textarea id="descripcion" name="descripcion" placeholder="Describe para qué es esta cuenta"><?= htmlspecialchars($password['descripcion'] ?? '', ENT_QUOTES, 'UTF-8') ?></textarea><br>
 
         <label for="usuario">Usuario:</label>
-        <input type="text" id="usuario" name="usuario" value="<?php echo htmlspecialchars($password['usuario']); ?>" required><br>
+        <input type="text" id="usuario" name="usuario" value="<?= htmlspecialchars($password['usuario'], ENT_QUOTES, 'UTF-8') ?>" placeholder="Ej: usuario@example.com" required><br>
 
         <label for="password">Contraseña:</label>
-        <input type="password" id="password" name="password" placeholder="Dejar en blanco para no cambiar"><br>
+        <input type="password" id="password" name="password" placeholder="Dejar en blanco para no cambiar">
+        <div class="password-buttons">
+            <button type="button" id="btn-toggle-password">Mostrar</button>
+            <button type="button" id="btn-paste-password">Pegar Contraseña</button>
+        </div><br>
 
         <label for="enlace">Enlace:</label>
-        <input type="text" id="enlace" name="enlace" value="<?php echo htmlspecialchars($password['enlace']); ?>" required><br>
+        <input type="text" id="enlace" name="enlace" value="<?= htmlspecialchars($password['enlace'], ENT_QUOTES, 'UTF-8') ?>" placeholder="Ej: example.com" required><br>
 
         <label for="info_adicional">Info Adicional:</label>
-        <textarea id="info_adicional" name="info_adicional"><?php echo htmlspecialchars($password['info_adicional'] ?? ''); ?></textarea><br>
+        <textarea id="info_adicional" name="info_adicional" placeholder="Ej: Pregunta de seguridad: Nombre de tu mascota"><?= htmlspecialchars($password['info_adicional'] ?? '', ENT_QUOTES, 'UTF-8') ?></textarea><br>
 
         <button type="submit">Guardar Cambios</button>
     </form>
+    </div>
+    </main>
 </body>
 </html>

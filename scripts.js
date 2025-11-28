@@ -325,11 +325,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // ===== introducir.php enhancements (CSP-compliant, no inline JS) =====
-    const introducirForm = document.getElementById('form-introducir');
-    if (introducirForm) {
-        // Format link on submit (ensure protocol)
-        introducirForm.addEventListener('submit', function() {
+    // ===== Form enhancements (introducir.php, edit-password.php) =====
+    // Format link on submit (ensure protocol) - universal for both forms
+    const passwordForms = document.querySelectorAll('#form-introducir, #form-edit-password');
+    passwordForms.forEach(form => {
+        form.addEventListener('submit', function() {
             const linkInput = document.getElementById('enlace');
             if (linkInput) {
                 const val = (linkInput.value || '').trim();
@@ -338,32 +338,35 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         });
+    });
 
-        // Toggle password visibility
-        const btnToggle = document.getElementById('btn-toggle-password');
-        const pwdInput = document.getElementById('password');
-        if (btnToggle && pwdInput) {
-            btnToggle.addEventListener('click', function() {
-                const isHidden = pwdInput.type === 'password';
-                pwdInput.type = isHidden ? 'text' : 'password';
-                // Update button label for better UX
-                btnToggle.textContent = isHidden ? 'Ocultar' : 'Mostrar';
-            });
-        }
+    // Toggle password visibility - universal
+    const btnToggle = document.getElementById('btn-toggle-password');
+    const pwdInput = document.getElementById('password');
+    if (btnToggle && pwdInput) {
+        btnToggle.addEventListener('click', function() {
+            const isHidden = pwdInput.type === 'password';
+            pwdInput.type = isHidden ? 'text' : 'password';
+            // Update button label for better UX
+            btnToggle.textContent = isHidden ? 'Ocultar' : 'Mostrar';
+        });
+    }
 
-        // Paste password from clipboard
-        const btnPaste = document.getElementById('btn-paste-password');
-        if (btnPaste && pwdInput && navigator.clipboard && navigator.clipboard.readText) {
-            btnPaste.addEventListener('click', function() {
-                navigator.clipboard.readText()
-                    .then(text => { pwdInput.value = text; })
-                    .catch(() => {
-                        alert('No se pudo pegar la contraseña. Asegúrate de que el portapapeles tenga texto.');
-                    });
-            });
-        }
+    // Paste password from clipboard - universal
+    const btnPaste = document.getElementById('btn-paste-password');
+    if (btnPaste && pwdInput && navigator.clipboard && navigator.clipboard.readText) {
+        btnPaste.addEventListener('click', function() {
+            navigator.clipboard.readText()
+                .then(text => { pwdInput.value = text; })
+                .catch(() => {
+                    alert('No se pudo pegar la contraseña. Asegúrate de que el portapapeles tenga texto.');
+                });
+        });
+    }
 
-        // Assignees helpers (Asignar a todos / Quitar todos)
+    // Assignees helpers (Asignar a todos / Quitar todos) - only for introducir.php
+    const introducirForm = document.getElementById('form-introducir');
+    if (introducirForm) {
         const list = document.querySelector('.assignees-list');
         const btnAll = document.getElementById('assign-all');
         const btnNone = document.getElementById('assign-none');
