@@ -292,7 +292,7 @@ h1 {
 }
 
 /* ======= Modern Form Styles (introducir.php, edit-password.php) ======= */
-form {
+.introducir-page form {
     background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
     border: 1px solid #e2e8f0;
     border-radius: 16px;
@@ -304,7 +304,7 @@ form {
     position: relative;
 }
 
-form::before {
+.introducir-page form::before {
     content: "";
     position: absolute;
     inset: 0;
@@ -313,7 +313,7 @@ form::before {
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);
 }
 
-label {
+.introducir-page label {
     display: block;
     font-weight: 600;
     font-size: 14px;
@@ -322,10 +322,10 @@ label {
     letter-spacing: -0.01em;
 }
 
-input[type="text"],
-input[type="password"],
-input[type="email"],
-textarea {
+.introducir-page input[type="text"],
+.introducir-page input[type="password"],
+.introducir-page input[type="email"],
+.introducir-page textarea {
     width: 100%;
     padding: 10px 12px;
     border: 1px solid #e2e8f0;
@@ -339,20 +339,20 @@ textarea {
     box-sizing: border-box;
 }
 
-input[type="text"]:focus,
-input[type="password"]:focus,
-input[type="email"]:focus,
-textarea:focus {
+.introducir-page input[type="text"]:focus,
+.introducir-page input[type="password"]:focus,
+.introducir-page input[type="email"]:focus,
+.introducir-page textarea:focus {
     outline: none;
     border-color: #23AAC5;
     box-shadow: 0 0 0 3px rgba(35, 170, 197, 0.15), 0 1px 3px rgba(0, 0, 0, 0.1);
     background: #ffffff;
 }
 
-input[type="text"]::placeholder,
-input[type="password"]::placeholder,
-input[type="email"]::placeholder,
-textarea::placeholder {
+.introducir-page input[type="text"]::placeholder,
+.introducir-page input[type="password"]::placeholder,
+.introducir-page input[type="email"]::placeholder,
+.introducir-page textarea::placeholder {
     color: #94a3b8;
 }
 
@@ -370,7 +370,7 @@ input[type="checkbox"] {
 }
 
 /* Primary submit button */
-form button[type="submit"] {
+.introducir-page form button[type="submit"] {
     width: 100%;
     padding: 12px 20px;
     background: linear-gradient(135deg, #23AAC5 0%, #158ca3 100%);
@@ -386,24 +386,24 @@ form button[type="submit"] {
     margin-top: 4px;
 }
 
-form button[type="submit"]:hover {
+.introducir-page form button[type="submit"]:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(35, 170, 197, 0.4);
     background: linear-gradient(135deg, #1c90ab 0%, #107a8f 100%);
 }
 
-form button[type="submit"]:active {
+.introducir-page form button[type="submit"]:active {
     transform: translateY(0);
 }
 
 /* Secondary buttons (toggle, paste, etc.) */
-.password-buttons {
+.introducir-page .password-buttons {
     display: flex;
     gap: 8px;
     margin-top: 4px;
 }
 
-.password-buttons button {
+.introducir-page .password-buttons button {
     width: auto;
     padding: 10px 16px;
     background: linear-gradient(135deg, #64748b 0%, #475569 100%);
@@ -425,15 +425,15 @@ form button[type="submit"]:active {
 }
 
 /* Form field spacing */
-form > label,
-form > input,
-form > textarea,
-form > .password-buttons,
-form > section {
+.introducir-page form > label,
+.introducir-page form > input,
+.introducir-page form > textarea,
+.introducir-page form > .password-buttons,
+.introducir-page form > section {
     margin-bottom: 14px;
 }
 
-form > button[type="submit"] {
+.introducir-page form > button[type="submit"] {
     margin-top: 20px;
     margin-bottom: 0;
 }
