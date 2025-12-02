@@ -107,6 +107,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 openEdit(a.getAttribute('data-id'), a.getAttribute('data-email'), a.getAttribute('data-role'));
             });
         });
+
+        // Toggle de visibilidad de contraseña dentro del formulario de admin-users
+        adminForm.addEventListener('click', (e) => {
+            const btn = e.target && e.target.closest ? e.target.closest('.password-group button') : null;
+            if (!btn) return;
+            const group = btn.closest('.password-group');
+            if (!group) return;
+            const input = group.querySelector('input[type="password"], input[type="text"]');
+            if (!input) return;
+            e.preventDefault();
+            const isHidden = input.type === 'password';
+            input.type = isHidden ? 'text' : 'password';
+            btn.textContent = isHidden ? 'Ocultar' : 'Mostrar';
+        });
         if (btnCancel) btnCancel.addEventListener('click', (e) => {
             e.preventDefault();
             hideForm();
