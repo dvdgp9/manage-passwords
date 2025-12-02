@@ -196,7 +196,7 @@ $headerHtml = ob_get_clean();
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Administración · Usuarios</title>
+  <title>Administración</title>
   <meta name="csrf-token" content="<?= htmlspecialchars($csrf, ENT_QUOTES, 'UTF-8') ?>">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
@@ -205,8 +205,7 @@ $headerHtml = ob_get_clean();
   <?= $headerHtml ?>
   <main class="page">
     <div class="page-header">
-      <h1>Usuarios</h1>
-      <button id="btn-new-user" class="btn-primary">Nuevo usuario</button>
+      <h1>Administración</h1>
     </div>
 
     <?php if ($errors): ?>
@@ -224,6 +223,13 @@ $headerHtml = ob_get_clean();
         <?php endforeach; ?>
       </div>
     <?php endif; ?>
+
+    <!-- ========== GESTIÓN DE USUARIOS ========== -->
+    <section class="admin-section">
+      <div class="section-header">
+        <h2>Gestión de Usuarios</h2>
+        <button id="btn-new-user" class="btn-primary">Nuevo usuario</button>
+      </div>
 
     <section id="admin-user-form" class="form-card<?= $editUser ? '' : ' hidden' ?>">
       <h2 id="form-title"><?= $editUser ? 'Editar usuario' : 'Crear usuario' ?></h2>
@@ -280,85 +286,6 @@ $headerHtml = ob_get_clean();
         </div>
       </form>
     </section>
-
-    <!-- Gestión de Departamentos -->
-    <section class="departments-section">
-      <div class="page-header">
-        <h2>Departamentos</h2>
-        <button id="btn-new-department" class="btn-primary">Nuevo departamento</button>
-      </div>
-
-      <!-- Formulario crear/editar departamento -->
-      <div id="department-form-card" class="form-card hidden">
-        <h3 id="dept-form-title">Nuevo departamento</h3>
-        <form id="form-department">
-          <input type="hidden" id="dept-id" value="">
-          
-          <div class="field">
-            <label for="dept-name">Nombre *</label>
-            <input type="text" id="dept-name" required maxlength="100" placeholder="Ej: Marketing, Ventas, IT...">
-          </div>
-
-          <div class="field">
-            <label for="dept-description">Descripción</label>
-            <textarea id="dept-description" placeholder="Describe el propósito del departamento"></textarea>
-          </div>
-
-          <div class="form-actions">
-            <button type="submit" class="btn-primary" id="btn-save-dept">Guardar</button>
-            <button type="button" class="btn-secondary" id="btn-cancel-dept">Cancelar</button>
-          </div>
-        </form>
-      </div>
-
-      <!-- Lista de departamentos -->
-      <div class="table-card">
-        <div class="table-card__inner">
-          <table class="tabla-departamentos">
-            <thead>
-              <tr>
-                <th>Nombre</th>
-                <th>Descripción</th>
-                <th>Usuarios</th>
-                <th>Creado</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody id="departments-tbody">
-              <tr><td colspan="5">Cargando...</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- Modal: Asignar usuarios a departamento -->
-    <div id="modal-assign-users" class="modal hidden">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3 id="modal-dept-title">Asignar usuarios</h3>
-          <button type="button" class="modal-close" id="btn-close-modal">&times;</button>
-        </div>
-        <div class="modal-body">
-          <div class="assignees-panel">
-            <div class="assignees-header">
-              <label>Selecciona usuarios</label>
-              <div class="assignees-actions">
-                <button type="button" id="assign-all-users" class="btn-secondary">Seleccionar todos</button>
-                <button type="button" id="assign-none-users" class="btn-secondary">Quitar todos</button>
-              </div>
-            </div>
-            <div class="assignees-list" id="modal-users-list">
-              <p>Cargando usuarios...</p>
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn-primary" id="btn-save-assignments">Guardar asignaciones</button>
-          <button type="button" class="btn-secondary" id="btn-cancel-modal">Cancelar</button>
-        </div>
-      </div>
-    </div>
 
     <section class="table-container">
       <div class="table-card">
@@ -428,6 +355,88 @@ $headerHtml = ob_get_clean();
         </div>
       </div>
     </section>
+    </section><!-- Fin sección usuarios -->
+
+    <!-- ========== GESTIÓN DE DEPARTAMENTOS ========== -->
+    <section class="admin-section">
+      <div class="section-header">
+        <h2>Gestión de Departamentos</h2>
+        <button id="btn-new-department" class="btn-primary">Nuevo departamento</button>
+      </div>
+
+      <!-- Formulario crear/editar departamento -->
+      <div id="department-form-card" class="form-card hidden">
+        <h3 id="dept-form-title">Nuevo departamento</h3>
+        <form id="form-department">
+          <input type="hidden" id="dept-id" value="">
+          
+          <div class="field">
+            <label for="dept-name">Nombre *</label>
+            <input type="text" id="dept-name" required maxlength="100" placeholder="Ej: Marketing, Ventas, IT...">
+          </div>
+
+          <div class="field">
+            <label for="dept-description">Descripción</label>
+            <textarea id="dept-description" placeholder="Describe el propósito del departamento"></textarea>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-primary" id="btn-save-dept">Guardar</button>
+            <button type="button" class="btn-secondary" id="btn-cancel-dept">Cancelar</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Lista de departamentos -->
+      <div class="table-card">
+        <div class="table-card__inner">
+          <table class="tabla-departamentos">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Usuarios</th>
+                <th>Creado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="departments-tbody">
+              <tr><td colspan="5">Cargando...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    </section><!-- Fin sección departamentos -->
+
+    <!-- Modal: Asignar usuarios a departamento -->
+    <div id="modal-assign-users" class="modal hidden">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 id="modal-dept-title">Asignar usuarios</h3>
+          <button type="button" class="modal-close" id="btn-close-modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="assignees-panel">
+            <div class="assignees-header">
+              <label>Selecciona usuarios</label>
+              <div class="assignees-actions">
+                <button type="button" id="assign-all-users" class="btn-secondary">Seleccionar todos</button>
+                <button type="button" id="assign-none-users" class="btn-secondary">Quitar todos</button>
+              </div>
+            </div>
+            <div class="assignees-list" id="modal-users-list">
+              <p>Cargando usuarios...</p>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-primary" id="btn-save-assignments">Guardar asignaciones</button>
+          <button type="button" class="btn-secondary" id="btn-cancel-modal">Cancelar</button>
+        </div>
+      </div>
+    </div>
   </main>
   <script src="scripts.js"></script>
 </body>
