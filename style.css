@@ -520,11 +520,11 @@ input[type="checkbox"] {
 
 /* Column widths: 1=Línea, 2=Nombre, 3=Descripción, 4=Usuario, 5=Contraseña, 6=Enlace, 7=Info, 8=Acciones */
 .tabla-passwords th:nth-child(1), .tabla-passwords td:nth-child(1) { width: 9%; }
-.tabla-passwords th:nth-child(2), .tabla-passwords td:nth-child(2) { width: 12%; }
-.tabla-passwords th:nth-child(3), .tabla-passwords td:nth-child(3) { width: 13%; }
-.tabla-passwords th:nth-child(4), .tabla-passwords td:nth-child(4) { width: 14%; }
-.tabla-passwords th:nth-child(5), .tabla-passwords td:nth-child(5) { width: 16%; }
-.tabla-passwords th:nth-child(6), .tabla-passwords td:nth-child(6) { width: 22%; }
+.tabla-passwords th:nth-child(2), .tabla-passwords td:nth-child(2) { width: 11%; }
+.tabla-passwords th:nth-child(3), .tabla-passwords td:nth-child(3) { width: 12%; }
+.tabla-passwords th:nth-child(4), .tabla-passwords td:nth-child(4) { width: 13%; }
+.tabla-passwords th:nth-child(5), .tabla-passwords td:nth-child(5) { width: 18%; }
+.tabla-passwords th:nth-child(6), .tabla-passwords td:nth-child(6) { width: 23%; }
 .tabla-passwords th:nth-child(7), .tabla-passwords td:nth-child(7) { width: 8%; }
 .tabla-passwords th:nth-child(8), .tabla-passwords td:nth-child(8) { width: 6%; white-space: nowrap; }
 
@@ -599,12 +599,12 @@ input[type="checkbox"] {
     }
 }
 
-/* ===== Password column: text + copy button ===== */
+/* ===== Password column: text + toggle + copy button ===== */
 .password-cell {
     display: grid;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: 1fr auto auto;
     align-items: center;
-    gap: 8px;
+    gap: 4px;
     width: 100%;
 }
 
@@ -620,6 +620,7 @@ input[type="checkbox"] {
     overflow-wrap: anywhere; /* allow wrapping within long tokens */
 }
 
+.toggle-password-btn,
 .copy-btn {
     width: 28px;
     height: 28px;
@@ -638,14 +639,21 @@ input[type="checkbox"] {
     -webkit-tap-highlight-color: transparent;
 }
 
+.toggle-password-btn:hover,
 .copy-btn:hover { color: #158ca3; background: transparent !important; }
+.toggle-password-btn:active,
 .copy-btn:active { background: transparent !important; }
+.toggle-password-btn:focus,
 .copy-btn:focus { outline: none; box-shadow: 0 0 0 2px rgba(35,170,197,0.35); }
+.toggle-password-btn svg,
 .copy-btn svg { pointer-events: none; }
 
 /* Feedback states */
 .copy-btn.copied { color: #16a34a; }
 .copy-btn.copy-error { color: #dc2626; }
+
+/* Toggle password button states */
+.toggle-password-btn.showing { color: #64748b; }
 
 /* Search form styling */
 .search-form {
