@@ -224,7 +224,6 @@ $headerHtml = ob_get_clean();
       </div>
     <?php endif; ?>
 
-    <div class="admin-content">
     <!-- ========== GESTIÓN DE USUARIOS ========== -->
     <section class="admin-section">
       <div class="section-header">
@@ -232,79 +231,79 @@ $headerHtml = ob_get_clean();
         <button id="btn-new-user" class="btn-primary">Nuevo usuario</button>
       </div>
 
-      <section id="admin-user-form" class="form-card<?= $editUser ? '' : ' hidden' ?>">
-        <h2 id="form-title"><?= $editUser ? 'Editar usuario' : 'Crear usuario' ?></h2>
-        <form id="form-admin-user" method="post" action="admin-users.php<?= $editUser ? '?edit='.(int)$editUser['id'] : '' ?>">
-          <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf, ENT_QUOTES, 'UTF-8') ?>">
-          <input type="hidden" id="form-action" name="action" value="<?= $editUser ? 'update' : 'create' ?>">
-          <?php if ($editUser): ?>
-            <input type="hidden" id="form-id" name="id" value="<?= (int)$editUser['id'] ?>">
-          <?php else: ?>
-            <input type="hidden" id="form-id" name="id" value="">
-          <?php endif; ?>
+      <div id="admin-user-form" class="form-card<?= $editUser ? '' : ' hidden' ?>">
+      <h2 id="form-title"><?= $editUser ? 'Editar usuario' : 'Crear usuario' ?></h2>
+      <form id="form-admin-user" method="post" action="admin-users.php<?= $editUser ? '?edit='.(int)$editUser['id'] : '' ?>">
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf, ENT_QUOTES, 'UTF-8') ?>">
+        <input type="hidden" id="form-action" name="action" value="<?= $editUser ? 'update' : 'create' ?>">
+        <?php if ($editUser): ?>
+          <input type="hidden" id="form-id" name="id" value="<?= (int)$editUser['id'] ?>">
+        <?php else: ?>
+          <input type="hidden" id="form-id" name="id" value="">
+        <?php endif; ?>
 
-          <div class="form-grid">
-            <div class="field">
-              <label for="email">Email</label>
-              <input type="email" id="email" name="email" required value="<?= htmlspecialchars($editUser['email'] ?? '', ENT_QUOTES, 'UTF-8') ?>" aria-describedby="email-help">
-              <small id="email-help" class="helper-text">Debe ser único y con formato válido.</small>
-              <div class="field-error hidden" id="email-error"></div>
-            </div>
-
-            <div class="field">
-              <label for="role">Rol</label>
-              <select id="role" name="role" required>
-                <?php $roles = ['admin' => 'Administrador', 'editor' => 'Editor', 'lector' => 'Lector'];
-                $cur = $editUser['role'] ?? 'editor';
-                foreach ($roles as $val => $label): ?>
-                  <option value="<?= $val ?>" <?= $cur === $val ? 'selected' : '' ?>><?= $label ?></option>
-                <?php endforeach; ?>
-              </select>
-            </div>
-
-            <div class="field field-full">
-              <label for="password"><?= $editUser ? 'Nueva contraseña (opcional)' : 'Contraseña (obligatoria)' ?></label>
-              <div class="password-group">
-                <input type="password" id="password" name="password" <?= $editUser ? '' : 'required' ?> placeholder="<?= $editUser ? 'Dejar vacío para no cambiar' : '' ?>">
-                <button type="button" id="btn-toggle-password" class="btn-secondary">Mostrar</button>
-              </div>
-              <div class="field-error hidden" id="password-error"></div>
-            </div>
-
-            <div class="field field-full">
-              <label for="confirm_password">Confirmar contraseña<?= $editUser ? ' (si cambias contraseña)' : '' ?></label>
-              <div class="password-group">
-                <input type="password" id="confirm_password" name="confirm_password" <?= $editUser ? '' : 'required' ?> placeholder="Repite la contraseña">
-                <button type="button" id="btn-toggle-confirm" class="btn-secondary">Mostrar</button>
-              </div>
-              <div class="field-error hidden" id="confirm-error"></div>
-            </div>
+        <div class="form-grid">
+          <div class="field">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required value="<?= htmlspecialchars($editUser['email'] ?? '', ENT_QUOTES, 'UTF-8') ?>" aria-describedby="email-help">
+            <small id="email-help" class="helper-text">Debe ser único y con formato válido.</small>
+            <div class="field-error hidden" id="email-error"></div>
           </div>
 
-          <div class="form-actions">
-            <button type="submit" class="btn-primary" id="btn-submit-form"><?= $editUser ? 'Guardar cambios' : 'Crear' ?></button>
-            <button type="button" class="btn-secondary" id="btn-cancel-form">Cancelar</button>
+          <div class="field">
+            <label for="role">Rol</label>
+            <select id="role" name="role" required>
+              <?php $roles = ['admin' => 'Administrador', 'editor' => 'Editor', 'lector' => 'Lector'];
+              $cur = $editUser['role'] ?? 'editor';
+              foreach ($roles as $val => $label): ?>
+                <option value="<?= $val ?>" <?= $cur === $val ? 'selected' : '' ?>><?= $label ?></option>
+              <?php endforeach; ?>
+            </select>
           </div>
-        </form>
-      </section>
 
-      <section class="table-container">
-        <div class="table-card">
-          <div class="table-card__inner">
-            <table class="tabla-usuarios">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Email</th>
-                  <th>Rol</th>
-                  <th>Departamentos</th>
-                  <th>Creado</th>
-                  <th>Último acceso</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                <?php foreach ($users as $u): ?>
+          <div class="field field-full">
+            <label for="password"><?= $editUser ? 'Nueva contraseña (opcional)' : 'Contraseña (obligatoria)' ?></label>
+            <div class="password-group">
+              <input type="password" id="password" name="password" <?= $editUser ? '' : 'required' ?> placeholder="<?= $editUser ? 'Dejar vacío para no cambiar' : '' ?>">
+              <button type="button" id="btn-toggle-password" class="btn-secondary">Mostrar</button>
+            </div>
+            <div class="field-error hidden" id="password-error"></div>
+          </div>
+
+          <div class="field field-full">
+            <label for="confirm_password">Confirmar contraseña<?= $editUser ? ' (si cambias contraseña)' : '' ?></label>
+            <div class="password-group">
+              <input type="password" id="confirm_password" name="confirm_password" <?= $editUser ? '' : 'required' ?> placeholder="Repite la contraseña">
+              <button type="button" id="btn-toggle-confirm" class="btn-secondary">Mostrar</button>
+            </div>
+            <div class="field-error hidden" id="confirm-error"></div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary" id="btn-submit-form"><?= $editUser ? 'Guardar cambios' : 'Crear' ?></button>
+          <button type="button" class="btn-secondary" id="btn-cancel-form">Cancelar</button>
+        </div>
+      </form>
+      </div>
+
+      <div class="table-container">
+      <div class="table-card">
+        <div class="table-card__inner">
+          <table class="tabla-usuarios">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Email</th>
+                <th>Rol</th>
+                <th>Departamentos</th>
+                <th>Creado</th>
+                <th>Último acceso</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php foreach ($users as $u): ?>
                 <tr>
                   <td><?= (int)$u['id'] ?></td>
                   <td><?= htmlspecialchars($u['email'], ENT_QUOTES, 'UTF-8') ?></td>
@@ -355,8 +354,8 @@ $headerHtml = ob_get_clean();
           </table>
         </div>
       </div>
-      </section>
-    </section>
+      </div>
+    </section><!-- Fin sección usuarios -->
 
     <!-- ========== GESTIÓN DE DEPARTAMENTOS ========== -->
     <section class="admin-section">
@@ -409,7 +408,7 @@ $headerHtml = ob_get_clean();
       </div>
     </section>
 
-    </div> <!-- /.admin-content -->
+    </section><!-- Fin sección departamentos -->
 
     <!-- Modal: Asignar usuarios a departamento -->
     <div id="modal-assign-users" class="modal hidden">
