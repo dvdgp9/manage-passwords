@@ -48,7 +48,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const emailInput = adminForm.querySelector('#email');
         const roleSelect = adminForm.querySelector('#role');
         const pwdInput = adminForm.querySelector('#password');
+        const pwdToggle = adminForm.querySelector('#btn-toggle-password');
         const confirmInput = adminForm.querySelector('#confirm_password');
+        const confirmToggle = adminForm.querySelector('#btn-toggle-confirm');
         const btnCancel = adminForm.querySelector('#btn-cancel-form');
         const emailErr = adminForm.querySelector('#email-error');
         const pwdErr = adminForm.querySelector('#password-error');
@@ -107,21 +109,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 openEdit(a.getAttribute('data-id'), a.getAttribute('data-email'), a.getAttribute('data-role'));
             });
         });
-
-        // Toggle de visibilidad de contraseña dentro del formulario de admin-users
-        adminForm.addEventListener('click', (e) => {
-            const btn = e.target && e.target.closest ? e.target.closest('.password-group button') : null;
-            if (!btn) return;
-            const group = btn.closest('.password-group');
-            if (!group) return;
-            const input = group.querySelector('input[type="password"], input[type="text"]');
-            if (!input) return;
-            e.preventDefault();
-            e.stopPropagation();
-            const isHidden = input.type === 'password';
-            input.type = isHidden ? 'text' : 'password';
-            btn.textContent = isHidden ? 'Ocultar' : 'Mostrar';
-        });
+        if (pwdToggle) pwdToggle.addEventListener('click', (e) => { e.preventDefault(); toggleField(pwdInput, pwdToggle); });
+        if (confirmToggle) confirmToggle.addEventListener('click', (e) => { e.preventDefault(); toggleField(confirmInput, confirmToggle); });
         if (btnCancel) btnCancel.addEventListener('click', (e) => {
             e.preventDefault();
             hideForm();
@@ -132,12 +121,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Event delegation fallback
+        // Event delegation fallback (sin toggles de contraseña, se manejan globalmente)
         document.addEventListener('click', (e) => {
             const t = e.target;
             if (!t) return;
-            // If click is on icons inside buttons, climb to button
-            const btn = t.closest ? t.closest('#btn-new-user, #btn-cancel-form, #btn-toggle-password, #btn-toggle-confirm, a.modify-btn[data-id]') : null;
+            const btn = t.closest ? t.closest('#btn-new-user, #btn-cancel-form, a.modify-btn[data-id]') : null;
             if (!btn) return;
             if (btn.matches('#btn-new-user')) {
                 e.preventDefault();
@@ -388,24 +376,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Toggle password visibility - universal
-    const btnToggle = document.getElementById('btn-toggle-password');
-    const pwdInput = document.getElementById('password');
-    if (btnToggle && pwdInput) {
-        btnToggle.addEventListener('click', function() {
-            const isHidden = pwdInput.type === 'password';
-            pwdInput.type = isHidden ? 'text' : 'password';
-            // Update button label for better UX
-            btnToggle.textContent = isHidden ? 'Ocultar' : 'Mostrar';
-        });
-    }
-
     // Paste password from clipboard - universal
     const btnPaste = document.getElementById('btn-paste-password');
-    if (btnPaste && pwdInput && navigator.clipboard && navigator.clipboard.readText) {
+    const pasteTarget = document.getElementById('password');
+    if (btnPaste && pasteTarget && navigator.clipboard && navigator.clipboard.readText) {
         btnPaste.addEventListener('click', function() {
             navigator.clipboard.readText()
-                .then(text => { pwdInput.value = text; })
+                .then(text => { pasteTarget.value = text; })
                 .catch(() => {
                     alert('No se pudo pegar la contraseña. Asegúrate de que el portapapeles tenga texto.');
                 });
