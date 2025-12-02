@@ -231,7 +231,7 @@ $headerHtml = ob_get_clean();
         <button id="btn-new-user" class="btn-primary">Nuevo usuario</button>
       </div>
 
-      <div id="admin-user-form" class="form-card<?= $editUser ? '' : ' hidden' ?>">
+    <section id="admin-user-form" class="form-card<?= $editUser ? '' : ' hidden' ?>">
       <h2 id="form-title"><?= $editUser ? 'Editar usuario' : 'Crear usuario' ?></h2>
       <form id="form-admin-user" method="post" action="admin-users.php<?= $editUser ? '?edit='.(int)$editUser['id'] : '' ?>">
         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf, ENT_QUOTES, 'UTF-8') ?>">
@@ -285,9 +285,9 @@ $headerHtml = ob_get_clean();
           <button type="button" class="btn-secondary" id="btn-cancel-form">Cancelar</button>
         </div>
       </form>
-      </div>
+    </section>
 
-      <div class="table-container">
+    <section class="table-container">
       <div class="table-card">
         <div class="table-card__inner">
           <table class="tabla-usuarios">
@@ -354,7 +354,7 @@ $headerHtml = ob_get_clean();
           </table>
         </div>
       </div>
-      </div>
+    </section>
     </section><!-- Fin sección usuarios -->
 
     <!-- ========== GESTIÓN DE DEPARTAMENTOS ========== -->
@@ -388,9 +388,10 @@ $headerHtml = ob_get_clean();
       </div>
 
       <!-- Lista de departamentos -->
-      <div class="table-card">
-        <div class="table-card__inner">
-          <table class="tabla-departamentos">
+      <section class="table-container">
+        <div class="table-card">
+          <div class="table-card__inner">
+            <table class="tabla-departamentos">
             <thead>
               <tr>
                 <th>Nombre</th>
@@ -403,11 +404,10 @@ $headerHtml = ob_get_clean();
             <tbody id="departments-tbody">
               <tr><td colspan="5">Cargando...</td></tr>
             </tbody>
-          </table>
+            </table>
+          </div>
         </div>
-      </div>
-    </section>
-
+      </section>
     </section><!-- Fin sección departamentos -->
 
     <!-- Modal: Asignar usuarios a departamento -->
