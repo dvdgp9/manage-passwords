@@ -13,14 +13,214 @@ body {
     align-items: center;
     justify-content: flex-start;
     width: 100%;
+    padding: 24px 16px 48px 16px;
 }
 .introducir-container {
     width: 100%;
-    max-width: 900px;
-    padding: 0 16px;
+    max-width: 760px;
 }
 .introducir-container h1 {
     text-align: center;
+    color: #0f172a;
+    margin: 0 0 24px 0;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+/* ======= Password Form Card (Modern) ======= */
+.password-form-card {
+    width: 100%;
+    background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    box-shadow: 0 24px 45px -32px rgba(15, 23, 42, 0.35), 0 12px 32px -20px rgba(148, 163, 184, 0.45);
+    padding: 32px;
+    position: relative;
+    overflow: hidden;
+}
+
+.password-form-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);
+}
+
+.password-form-card form {
+    position: relative;
+    background: transparent !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+}
+
+/* Form sections with subtle dividers */
+.form-section {
+    margin-bottom: 28px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+}
+
+.form-section:last-of-type {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.form-section-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.form-section-title svg {
+    color: #23AAC5;
+    flex-shrink: 0;
+}
+
+/* Form field groups */
+.form-field {
+    margin-bottom: 18px;
+}
+
+.form-field:last-child {
+    margin-bottom: 0;
+}
+
+.form-field label {
+    display: block;
+    font-weight: 600;
+    color: #0f172a;
+    font-size: 14px;
+    margin-bottom: 6px;
+}
+
+.form-field input[type="text"],
+.form-field input[type="password"],
+.form-field textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: 'Montserrat', sans-serif;
+    transition: all 0.2s ease;
+    background: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.form-field input[type="text"]:focus,
+.form-field input[type="password"]:focus,
+.form-field textarea:focus {
+    outline: none;
+    border-color: #23AAC5;
+    box-shadow: 0 0 0 3px rgba(35, 170, 197, 0.15), 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.form-field textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.form-field input::placeholder,
+.form-field textarea::placeholder {
+    color: #94a3b8;
+}
+
+/* Password field with buttons */
+.password-field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.password-field-group .password-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.password-field-group .password-buttons button {
+    flex: 1;
+    min-width: 140px;
+    padding: 10px 16px;
+    background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 13px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(100, 116, 139, 0.2);
+}
+
+.password-field-group .password-buttons button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(100, 116, 139, 0.3);
+    background: linear-gradient(135deg, #475569 0%, #334155 100%);
+}
+
+/* Form actions (submit button) */
+.form-actions-bottom {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(226, 232, 240, 0.6);
+}
+
+.form-actions-bottom button[type="submit"] {
+    width: 100%;
+    padding: 14px 20px;
+    background: linear-gradient(135deg, #23AAC5 0%, #158ca3 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 15px;
+    box-shadow: 0 4px 16px rgba(35, 170, 197, 0.3);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.form-actions-bottom button[type="submit"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(35, 170, 197, 0.4);
+    background: linear-gradient(135deg, #1c90ab 0%, #107a8f 100%);
+}
+
+.form-actions-bottom button[type="submit"]:active {
+    transform: translateY(0);
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .password-form-card {
+        padding: 24px 20px;
+        border-radius: 12px;
+    }
+    
+    .introducir-container h1 {
+        font-size: 24px;
+    }
+    
+    .password-field-group .password-buttons button {
+        flex: 1 1 100%;
+    }
 }
 
 /* ======= Admin Users: Form Card & Layout ======= */
@@ -915,12 +1115,20 @@ button:hover {
 
 /* ======= Assignees (Share) Panel ======= */
 .assignees-panel {
-    margin-top: 8px;
-    background: #ffffff;
+    background: rgba(248, 250, 252, 0.6);
     border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    padding: 12px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.assignees-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
 .modify-btn, .delete-btn {
