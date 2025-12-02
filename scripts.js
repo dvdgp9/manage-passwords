@@ -121,12 +121,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Event delegation fallback
+        // Event delegation fallback (password toggles handled by global delegated handler below)
         document.addEventListener('click', (e) => {
             const t = e.target;
             if (!t) return;
-            // If click is on icons inside buttons, climb to button
-            const btn = t.closest ? t.closest('#btn-new-user, #btn-cancel-form, #btn-toggle-password, #btn-toggle-confirm, a.modify-btn[data-id]') : null;
+            const btn = t.closest ? t.closest('#btn-new-user, #btn-cancel-form, a.modify-btn[data-id]') : null;
             if (!btn) return;
             if (btn.matches('#btn-new-user')) {
                 e.preventDefault();
@@ -139,12 +138,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     url.searchParams.delete('edit');
                     window.history.replaceState({}, '', url.toString());
                 }
-            } else if (btn.matches('#btn-toggle-password')) {
-                e.preventDefault();
-                toggleField(pwdInput, btn);
-            } else if (btn.matches('#btn-toggle-confirm')) {
-                e.preventDefault();
-                toggleField(confirmInput, btn);
             } else if (btn.matches('a.modify-btn[data-id]')) {
                 e.preventDefault();
                 openEdit(btn.getAttribute('data-id'), btn.getAttribute('data-email'), btn.getAttribute('data-role'));
