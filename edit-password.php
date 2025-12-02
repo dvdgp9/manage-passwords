@@ -136,98 +136,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?= $headerHtml ?>
     <main class="page introducir-page">
     <div class="introducir-container">
-        <h1>Editar Contraseña</h1>
+    <h1>Editar Contraseña</h1>
+    <form id="form-edit-password" action="edit-password.php?id=<?php echo $passwordId; ?>" method="post">
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf, ENT_QUOTES, 'UTF-8') ?>">
         
-        <div class="password-form-card">
-            <form id="form-edit-password" action="edit-password.php?id=<?php echo $passwordId; ?>" method="post">
-                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf, ENT_QUOTES, 'UTF-8') ?>">
-                
-                <!-- Información básica -->
-                <div class="form-section">
-                    <div class="form-section-title">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                            <polyline points="14 2 14 8 20 8"/>
-                        </svg>
-                        Información Básica
-                    </div>
-                    
-                    <div class="form-field">
-                        <label for="linea_de_negocio">Línea de Negocio</label>
-                        <input type="text" id="linea_de_negocio" name="linea_de_negocio" value="<?= htmlspecialchars($password['linea_de_negocio'], ENT_QUOTES, 'UTF-8') ?>" placeholder="General, ES, CF, EFit,..." required>
-                    </div>
+        <label for="linea_de_negocio">Línea de Negocio:</label>
+        <input type="text" id="linea_de_negocio" name="linea_de_negocio" value="<?= htmlspecialchars($password['linea_de_negocio'], ENT_QUOTES, 'UTF-8') ?>" placeholder="General, ES, CF, EFit,..." required><br>
 
-                    <div class="form-field">
-                        <label for="nombre">Nombre del Servicio</label>
-                        <input type="text" id="nombre" name="nombre" value="<?= htmlspecialchars($password['nombre'], ENT_QUOTES, 'UTF-8') ?>" placeholder="Ej: Facebook, Gmail, Canva,..." required>
-                    </div>
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" value="<?= htmlspecialchars($password['nombre'], ENT_QUOTES, 'UTF-8') ?>" placeholder="Ej: Facebook, Gmail, Canva,..." required><br>
 
-                    <div class="form-field">
-                        <label for="descripcion">Descripción</label>
-                        <textarea id="descripcion" name="descripcion" placeholder="Describe para qué es esta cuenta"><?= htmlspecialchars($password['descripcion'] ?? '', ENT_QUOTES, 'UTF-8') ?></textarea>
-                    </div>
-                </div>
+        <label for="descripcion">Descripción:</label>
+        <textarea id="descripcion" name="descripcion" placeholder="Describe para qué es esta cuenta"><?= htmlspecialchars($password['descripcion'] ?? '', ENT_QUOTES, 'UTF-8') ?></textarea><br>
 
-                <!-- Credenciales -->
-                <div class="form-section">
-                    <div class="form-section-title">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                        </svg>
-                        Credenciales de Acceso
-                    </div>
-                    
-                    <div class="form-field">
-                        <label for="usuario">Usuario / Email</label>
-                        <input type="text" id="usuario" name="usuario" value="<?= htmlspecialchars($password['usuario'], ENT_QUOTES, 'UTF-8') ?>" placeholder="Ej: usuario@example.com" required>
-                    </div>
+        <label for="usuario">Usuario:</label>
+        <input type="text" id="usuario" name="usuario" value="<?= htmlspecialchars($password['usuario'], ENT_QUOTES, 'UTF-8') ?>" placeholder="Ej: usuario@example.com" required><br>
 
-                    <div class="form-field">
-                        <label for="password">Contraseña</label>
-                        <div class="password-field-group">
-                            <input type="password" id="password" name="password" placeholder="Dejar en blanco para no cambiar">
-                            <div class="password-buttons">
-                                <button type="button" id="btn-toggle-password">Mostrar</button>
-                                <button type="button" id="btn-paste-password">Pegar Contraseña</button>
-                            </div>
-                        </div>
-                        <small style="color: #64748b; font-size: 12px; display: block; margin-top: 6px;">Deja este campo vacío si no quieres cambiar la contraseña actual</small>
-                    </div>
-                </div>
+        <label for="password">Contraseña:</label>
+        <input type="password" id="password" name="password" placeholder="Dejar en blanco para no cambiar">
+        <div class="password-buttons">
+            <button type="button" id="btn-toggle-password">Mostrar</button>
+            <button type="button" id="btn-paste-password">Pegar Contraseña</button>
+        </div><br>
 
-                <!-- Información adicional -->
-                <div class="form-section">
-                    <div class="form-section-title">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
-                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
-                        </svg>
-                        Detalles Complementarios
-                    </div>
-                    
-                    <div class="form-field">
-                        <label for="enlace">Enlace / URL</label>
-                        <input type="text" id="enlace" name="enlace" value="<?= htmlspecialchars($password['enlace'], ENT_QUOTES, 'UTF-8') ?>" placeholder="Ej: example.com" required>
-                    </div>
+        <label for="enlace">Enlace:</label>
+        <input type="text" id="enlace" name="enlace" value="<?= htmlspecialchars($password['enlace'], ENT_QUOTES, 'UTF-8') ?>" placeholder="Ej: example.com" required><br>
 
-                    <div class="form-field">
-                        <label for="info_adicional">Información Adicional</label>
-                        <textarea id="info_adicional" name="info_adicional" placeholder="Ej: Pregunta de seguridad: Nombre de tu mascota"><?= htmlspecialchars($password['info_adicional'] ?? '', ENT_QUOTES, 'UTF-8') ?></textarea>
-                    </div>
-                </div>
+        <label for="info_adicional">Info Adicional:</label>
+        <textarea id="info_adicional" name="info_adicional" placeholder="Ej: Pregunta de seguridad: Nombre de tu mascota"><?= htmlspecialchars($password['info_adicional'] ?? '', ENT_QUOTES, 'UTF-8') ?></textarea><br>
 
-                <!-- Submit button -->
-                <div class="form-actions-bottom">
-                    <button type="submit">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="20 6 9 17 4 12"/>
-                        </svg>
-                        Guardar Cambios
-                    </button>
-                </div>
-            </form>
-        </div>
+        <button type="submit">Guardar Cambios</button>
+    </form>
     </div>
     </main>
 </body>
