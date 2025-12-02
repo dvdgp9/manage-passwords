@@ -13,7 +13,7 @@ body {
     align-items: center;
     justify-content: flex-start;
     width: 100%;
-    padding: 24px 16px 48px 16px;
+    padding: 18px 16px 32px 16px;
 }
 .introducir-container {
     width: 100%;
@@ -23,9 +23,9 @@ body {
 .introducir-container h1 {
     text-align: center;
     color: #0f172a;
-    font-size: 28px;
+    font-size: 26px;
     font-weight: 700;
-    margin: 0 0 24px 0;
+    margin: 0 0 18px 0;
     letter-spacing: -0.025em;
 }
 
@@ -115,7 +115,7 @@ body {
     color: #b91c1c;
     background: #fee2e2;
     border: 1px solid #fecaca;
-    padding: 10px 12px;
+    padding: 8px 10px;
     border-radius: 8px;
     width: 100%;
     max-width: 820px;
@@ -297,8 +297,8 @@ form {
     border: 1px solid #e2e8f0;
     border-radius: 16px;
     box-shadow: 0 24px 45px -32px rgba(15, 23, 42, 0.35), 0 12px 32px -20px rgba(148, 163, 184, 0.45);
-    padding: 32px;
-    max-width: 720px;
+    padding: 24px 22px 24px 22px;
+    max-width: 680px;
     width: 100%;
     margin: 0 auto;
     position: relative;
@@ -327,7 +327,7 @@ input[type="password"],
 input[type="email"],
 textarea {
     width: 100%;
-    padding: 12px 14px;
+    padding: 10px 12px;
     border: 1px solid #e2e8f0;
     border-radius: 8px;
     font-family: 'Montserrat', sans-serif;
@@ -357,7 +357,7 @@ textarea::placeholder {
 }
 
 textarea {
-    min-height: 80px;
+    min-height: 70px;
     resize: vertical;
     line-height: 1.5;
 }
@@ -372,18 +372,18 @@ input[type="checkbox"] {
 /* Primary submit button */
 form button[type="submit"] {
     width: 100%;
-    padding: 14px 24px;
+    padding: 12px 20px;
     background: linear-gradient(135deg, #23AAC5 0%, #158ca3 100%);
     color: #ffffff;
     border: none;
     border-radius: 10px;
     cursor: pointer;
     font-weight: 600;
-    font-size: 15px;
+    font-size: 14px;
     font-family: 'Montserrat', sans-serif;
-    box-shadow: 0 4px 12px rgba(35, 170, 197, 0.3);
+    box-shadow: 0 3px 10px rgba(35, 170, 197, 0.28);
     transition: all 0.2s ease;
-    margin-top: 8px;
+    margin-top: 4px;
 }
 
 form button[type="submit"]:hover {
@@ -400,7 +400,7 @@ form button[type="submit"]:active {
 .password-buttons {
     display: flex;
     gap: 8px;
-    margin-top: 8px;
+    margin-top: 4px;
 }
 
 .password-buttons button {
@@ -430,11 +430,11 @@ form > input,
 form > textarea,
 form > .password-buttons,
 form > section {
-    margin-bottom: 20px;
+    margin-bottom: 14px;
 }
 
 form > button[type="submit"] {
-    margin-top: 28px;
+    margin-top: 20px;
     margin-bottom: 0;
 }
 
@@ -1017,8 +1017,8 @@ form > button[type="submit"] {
     background: #ffffff;
     border: 1px solid #e2e8f0;
     border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    padding: 16px;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
 }
 
 .modify-btn, .delete-btn {
@@ -1077,10 +1077,10 @@ form > button[type="submit"] {
 .assignees-list {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 8px;
-    max-height: 280px;
+    gap: 6px;
+    max-height: 240px;
     overflow: auto;
-    padding: 12px;
+    padding: 10px;
     border: 1px solid #e2e8f0;
     border-radius: 10px;
     background: #f8fafc;
@@ -1111,7 +1111,7 @@ form > button[type="submit"] {
 .assignee-email {
     color: #1e293b;
     font-weight: 500;
-    font-size: 13px;
+    font-size: 12px;
 }
 
 .assignee-role {

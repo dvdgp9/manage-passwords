@@ -36,29 +36,29 @@ $headerHtml = ob_get_clean();
         <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf); ?>">
         <label for="linea_de_negocio">Línea de Negocio:</label>
 
-        <input type="text" id="linea_de_negocio" name="linea_de_negocio" placeholder="General, ES, CF, EFit,..." required><br>
+        <input type="text" id="linea_de_negocio" name="linea_de_negocio" placeholder="General, ES, CF, EFit,..." required>
 
         <label for="nombre">Nombre:</label>
-        <input type="text" id="nombre" name="nombre" placeholder="Ej: Facebook, Gmail, Canva,..." required><br>
+        <input type="text" id="nombre" name="nombre" placeholder="Ej: Facebook, Gmail, Canva,..." required>
 
         <label for="descripcion">Descripción:</label>
-        <textarea id="descripcion" name="descripcion" placeholder="Describe para qué es esta cuenta"></textarea><br>
+        <textarea id="descripcion" name="descripcion" placeholder="Describe para qué es esta cuenta"></textarea>
 
         <label for="usuario">Usuario:</label>
-        <input type="text" id="usuario" name="usuario" placeholder="Ej: usuario@example.com" required><br>
+        <input type="text" id="usuario" name="usuario" placeholder="Ej: usuario@example.com" required>
 
         <label for="password">Contraseña:</label>
         <input type="password" id="password" name="password" placeholder="Introduce la contraseña" required>
         <div class="password-buttons">
             <button type="button" id="btn-toggle-password">Mostrar</button>
             <button type="button" id="btn-paste-password">Pegar Contraseña</button>
-        </div><br>
+        </div>
 
         <label for="enlace">Enlace:</label>
-        <input type="text" id="enlace" name="enlace" placeholder="Ej: example.com" required><br>
+        <input type="text" id="enlace" name="enlace" placeholder="Ej: example.com" required>
 
         <label for="info_adicional">Info Adicional:</label>
-        <textarea id="info_adicional" name="info_adicional" placeholder="Ej: Pregunta de seguridad: Nombre de tu mascota"></textarea><br>
+        <textarea id="info_adicional" name="info_adicional" placeholder="Ej: Pregunta de seguridad: Nombre de tu mascota"></textarea>
 
         <section class="assignees-panel">
             <div class="assignees-header">
