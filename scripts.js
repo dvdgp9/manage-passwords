@@ -438,6 +438,59 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // ======= Admin Users Form (admin-users.php) =======
+    const adminUserForm = document.getElementById('admin-user-form');
+    if (adminUserForm) {
+        // Toggle password visibility with icon buttons
+        const togglePasswordBtns = adminUserForm.querySelectorAll('.admin-input-btn');
+        togglePasswordBtns.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const inputGroup = btn.closest('.admin-input-group');
+                if (!inputGroup) return;
+                const input = inputGroup.querySelector('input');
+                if (!input) return;
+                const isHidden = input.type === 'password';
+                input.type = isHidden ? 'text' : 'password';
+                // Update icon (eye open/closed)
+                if (isHidden) {
+                    btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`;
+                } else {
+                    btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
+                }
+            });
+        });
+
+        // User departments: select all / none
+        const userDeptAll = document.getElementById('user-dept-all');
+        const userDeptNone = document.getElementById('user-dept-none');
+        const userDeptsList = document.getElementById('user-departments-list');
+        
+        if (userDeptAll && userDeptsList) {
+            userDeptAll.addEventListener('click', () => {
+                userDeptsList.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
+            });
+        }
+        if (userDeptNone && userDeptsList) {
+            userDeptNone.addEventListener('click', () => {
+                userDeptsList.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+            });
+        }
+
+        // Scroll to departments section
+        const scrollToDept = document.getElementById('scroll-to-dept');
+        if (scrollToDept) {
+            scrollToDept.addEventListener('click', (e) => {
+                e.preventDefault();
+                const deptSection = document.querySelector('.admin-section:last-of-type');
+                if (deptSection) {
+                    deptSection.scrollIntoView({ behavior: 'smooth' });
+                    document.getElementById('btn-new-department')?.click();
+                }
+            });
+        }
+    }
+
     // ======= Departments Management (admin-users.php) =======
     const departmentsSection = document.getElementById('departments-tbody');
     if (departmentsSection) {
@@ -446,6 +499,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const deptForm = document.getElementById('form-department');
         const deptTbody = document.getElementById('departments-tbody');
         const modal = document.getElementById('modal-assign-users');
+        const deptUsersSection = document.getElementById('dept-users-section');
+        const deptUsersList = document.getElementById('dept-users-list');
         
         let currentDepartmentId = null;
         let allUsers = [];
@@ -501,15 +556,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <td>${createdDate}</td>
                             <td>
                                 <div class="button-container">
-                                    <button class="modify-btn" data-action="assign" data-id="${dept.id}" data-name="${escapeHtml(dept.name)}" title="Asignar usuarios" aria-label="Asignar usuarios">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                                            <circle cx="9" cy="7" r="4"></circle>
-                                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                                        </svg>
-                                    </button>
-                                    <button class="modify-btn" data-action="edit" data-id="${dept.id}" data-name="${escapeHtml(dept.name)}" data-description="${escapeHtml(description)}" title="Editar" aria-label="Editar">
+                                    <button class="modify-btn" data-action="edit" data-id="${dept.id}" data-name="${escapeHtml(dept.name)}" data-description="${escapeHtml(description)}" title="Editar departamento y usuarios" aria-label="Editar">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M12 20h9"/>
                                             <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>
@@ -551,9 +598,18 @@ document.addEventListener('DOMContentLoaded', function() {
             if (action === 'edit') {
                 // Editar departamento
                 document.getElementById('dept-form-title').textContent = 'Editar departamento';
+                document.getElementById('dept-form-subtitle').textContent = 'Modifica los datos y usuarios del departamento';
                 document.getElementById('dept-id').value = id;
                 document.getElementById('dept-name').value = name;
                 document.getElementById('dept-description').value = btn.dataset.description === '—' ? '' : btn.dataset.description;
+                document.getElementById('btn-save-dept').textContent = 'Guardar cambios';
+                
+                // Mostrar sección de usuarios y cargar datos
+                if (deptUsersSection) {
+                    deptUsersSection.style.display = 'block';
+                    loadDeptUsers(id);
+                }
+                
                 deptFormCard.classList.remove('hidden');
                 document.getElementById('dept-name').focus();
 
@@ -673,11 +729,54 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
+        // Cargar usuarios para el formulario de departamento
+        async function loadDeptUsers(deptId) {
+            if (!deptUsersList) return;
+            
+            deptUsersList.innerHTML = '<p style="text-align:center;color:#64748b;">Cargando...</p>';
+            
+            try {
+                // Obtener usuarios asignados al departamento
+                const res = await fetch(`api-departments.php?action=get&id=${deptId}`);
+                const data = await res.json();
+                
+                if (!data.success) {
+                    throw new Error(data.error || 'Error al cargar');
+                }
+                
+                const assignedUserIds = (data.users || []).map(u => u.id);
+                
+                // Renderizar checkboxes
+                deptUsersList.innerHTML = allUsers.map(user => {
+                    const checked = assignedUserIds.includes(user.id) ? 'checked' : '';
+                    return `
+                        <label class="admin-checkbox-item">
+                            <input type="checkbox" name="dept_user_ids[]" value="${user.id}" ${checked}>
+                            <span class="admin-checkbox-label">${escapeHtml(user.email)}</span>
+                        </label>
+                    `;
+                }).join('');
+                
+                if (allUsers.length === 0) {
+                    deptUsersList.innerHTML = '<p class="admin-form-empty">No hay usuarios disponibles</p>';
+                }
+                
+            } catch (e) {
+                deptUsersList.innerHTML = '<p class="admin-form-empty">Error al cargar usuarios</p>';
+            }
+        }
+
         // Botón nuevo departamento
         document.getElementById('btn-new-department')?.addEventListener('click', () => {
             document.getElementById('dept-form-title').textContent = 'Nuevo departamento';
+            document.getElementById('dept-form-subtitle').textContent = 'Crea un nuevo departamento para organizar usuarios';
             document.getElementById('dept-id').value = '';
+            document.getElementById('btn-save-dept').textContent = 'Crear departamento';
             deptForm.reset();
+            // Ocultar sección de usuarios al crear
+            if (deptUsersSection) {
+                deptUsersSection.style.display = 'none';
+            }
             deptFormCard.classList.remove('hidden');
             document.getElementById('dept-name').focus();
         });
@@ -686,6 +785,17 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('btn-cancel-dept')?.addEventListener('click', () => {
             deptFormCard.classList.add('hidden');
             deptForm.reset();
+            if (deptUsersSection) {
+                deptUsersSection.style.display = 'none';
+            }
+        });
+        
+        // Botones seleccionar todos/ninguno usuarios en departamento
+        document.getElementById('dept-user-all')?.addEventListener('click', () => {
+            deptUsersList?.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
+        });
+        document.getElementById('dept-user-none')?.addEventListener('click', () => {
+            deptUsersList?.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
         });
 
         // Submit formulario departamento
@@ -720,10 +830,30 @@ document.addEventListener('DOMContentLoaded', function() {
                     throw new Error(data.error || 'Error al guardar');
                 }
 
-                alert(data.message || 'Guardado correctamente');
+                // Si estamos editando, también guardar usuarios del departamento
+                if (id && deptUsersSection && deptUsersSection.style.display !== 'none') {
+                    const userCheckboxes = deptUsersList?.querySelectorAll('input[name="dept_user_ids[]"]:checked');
+                    const userIds = Array.from(userCheckboxes || []).map(cb => cb.value);
+                    
+                    const assignFormData = new FormData();
+                    assignFormData.append('csrf_token', csrf);
+                    assignFormData.append('action', 'assign_users');
+                    assignFormData.append('department_id', id);
+                    userIds.forEach(uid => assignFormData.append('user_ids[]', uid));
+                    
+                    await fetch('api-departments.php', {
+                        method: 'POST',
+                        body: assignFormData
+                    });
+                }
+
                 deptFormCard.classList.add('hidden');
                 deptForm.reset();
-                loadDepartments();
+                if (deptUsersSection) {
+                    deptUsersSection.style.display = 'none';
+                }
+                // Recargar página para actualizar todo
+                window.location.reload();
 
             } catch (e) {
                 alert('Error: ' + e.message);
