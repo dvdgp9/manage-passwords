@@ -424,7 +424,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ======= Departments Management (admin-users.php) =======
-    const departmentsSection = document.querySelector('.departments-section');
+    const departmentsSection = document.getElementById('departments-tbody');
     if (departmentsSection) {
         const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
         const deptFormCard = document.getElementById('department-form-card');
