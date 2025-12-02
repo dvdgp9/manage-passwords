@@ -142,6 +142,7 @@ P2 – Medios/Mejoras
 - [ ] P2: UX segura (revelar/copiar bajo demanda)
 - [ ] P2: Auditoría de cambios
 - [ ] P2: Renombrar tabla a `passwords_manager`
+- [x] Ajustar layout de admin-users.php (estructura HTML y contenedor)
 
 # Current Status / Progress Tracking
 - Planner: análisis inicial completado y plan redactado.
@@ -153,6 +154,7 @@ P2 – Medios/Mejoras
   - Añadido `index.php` como gateway de autenticación: si hay sesión → redirige a `ver-passwords.php`, si no → `login.php`.
   - Actualizados enlaces de navegación de `index.html` → `index.php` en `ver-passwords.php`, `introducir.php` y `edit-password.php`.
   - [Nuevo][UX] Añadido botón de copiar en la columna de contraseña en `ver-passwords.php` (icono SVG inline estilo Untitled UI) con manejador en `scripts.js` usando `navigator.clipboard.writeText` y fallback `execCommand('copy')`. Estilos en `style.css` (`.copy-btn`, feedback `.copied`/`.copy-error`).
+  - Ajustado layout de `admin-users.php`: se añadió wrapper `admin-content`, se corrigieron secciones anidadas y tablas para alinear bloques de usuarios y departamentos.
 
 # Executor's Feedback or Assistance Requests
 
