@@ -14,23 +14,32 @@ $user = current_user();
 $searchTerm = $_GET['search'] ?? '';
 
 $pdo = getDBConnection();
-// Construir consulta con scoping por rol
+// Construir consulta con scoping por rol (incluye acceso por departamentos)
 $params = [];
 $role = $user['role'] ?? '';
+$userId = (int)($user['id'] ?? 0);
+
 if ($role === 'admin') {
-    $sql = "SELECT pm.* FROM passwords_manager pm";
+    $sql = "SELECT DISTINCT pm.* FROM passwords_manager pm";
     $where = [];
 } else {
-    $sql = "SELECT pm.* FROM passwords_manager pm
+    // Join con accesos directos (passwords_access) y por departamento (password_department_access + user_departments)
+    $sql = "SELECT DISTINCT pm.* FROM passwords_manager pm
             LEFT JOIN passwords_access pa
-              ON pa.password_id = pm.id AND pa.user_id = :uid";
-    $params[':uid'] = (int)($user['id'] ?? 0);
+              ON pa.password_id = pm.id AND pa.user_id = :uid
+            LEFT JOIN password_department_access pda
+              ON pda.password_id = pm.id
+            LEFT JOIN user_departments ud
+              ON ud.department_id = pda.department_id AND ud.user_id = :uid2";
+    $params[':uid'] = $userId;
+    $params[':uid2'] = $userId;
+    
     if ($role === 'lector') {
-        // Viewer: solo asignadas explícitamente
-        $where = ["pa.user_id IS NOT NULL"]; 
+        // Viewer: solo asignadas explícitamente (directas o por departamento)
+        $where = ["(pa.user_id IS NOT NULL OR ud.user_id IS NOT NULL)"]; 
     } else {
-        // Editor u otros: asignadas o globales
-        $where = ["(pa.user_id IS NOT NULL OR pm.owner_user_id IS NULL)"];
+        // Editor u otros: asignadas (directas o por departamento) o globales
+        $where = ["(pa.user_id IS NOT NULL OR ud.user_id IS NOT NULL OR pm.owner_user_id IS NULL)"];
     }
 }
 

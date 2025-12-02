@@ -65,9 +65,46 @@ $headerHtml = ob_get_clean();
 
 $csrf = ensure_csrf_token();
 
+// Load all users and current assignees
+$allUsers = [];
+$currentAssignees = [];
+$allDepartments = [];
+$currentDepartments = [];
+try {
+    // All users
+    $stmt = $pdo->query("SELECT id, email, role FROM users ORDER BY email");
+    $allUsers = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    
+    // Current user assignees
+    $stmt = $pdo->prepare("SELECT user_id FROM passwords_access WHERE password_id = :pid");
+    $stmt->execute([':pid' => (int)$passwordId]);
+    $currentAssignees = array_column($stmt->fetchAll(PDO::FETCH_ASSOC), 'user_id');
+    
+    // All departments
+    $stmt = $pdo->query("SELECT id, name, (SELECT COUNT(*) FROM user_departments WHERE department_id = departments.id) as user_count FROM departments ORDER BY name");
+    $allDepartments = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    
+    // Current department assignees
+    $stmt = $pdo->prepare("SELECT department_id FROM password_department_access WHERE password_id = :pid");
+    $stmt->execute([':pid' => (int)$passwordId]);
+    $currentDepartments = array_column($stmt->fetchAll(PDO::FETCH_ASSOC), 'department_id');
+} catch (Throwable $e) {
+    // Fallar silenciosamente, arrays quedan vacíos
+}
+
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verify_csrf_from_request();
+    
+    // Selected assignees and departments from form
+    $assignees = $_POST['assignees'] ?? [];
+    if (!is_array($assignees)) { $assignees = []; }
+    $assignees = array_values(array_unique(array_filter(array_map(function($v){ return (int)$v; }, $assignees), function($v){ return $v > 0; })));
+    
+    $departments = $_POST['departments'] ?? [];
+    if (!is_array($departments)) { $departments = []; }
+    $departments = array_values(array_unique(array_filter(array_map(function($v){ return (int)$v; }, $departments), function($v){ return $v > 0; })));
+    
     // Validate and sanitize input
     $linea_de_negocio = $_POST['linea_de_negocio'];
     $nombre = $_POST['nombre'];
@@ -102,6 +139,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt = $pdo->prepare($sql);
 
     try {
+        $pdo->beginTransaction();
+        
         $stmt->execute([
             ':linea_de_negocio' => $linea_de_negocio,
             ':nombre' => $nombre,
@@ -113,10 +152,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ':id' => $passwordId
         ]);
 
+        // Update user assignees: delete all and re-insert
+        $pdo->prepare('DELETE FROM passwords_access WHERE password_id = :pid')->execute([':pid' => (int)$passwordId]);
+        if ($assignees) {
+            $insUser = $pdo->prepare('INSERT INTO passwords_access (password_id, user_id, perm) VALUES (:pid, :uid, :perm)');
+            foreach ($assignees as $aid) {
+                $insUser->execute([':pid' => (int)$passwordId, ':uid' => $aid, ':perm' => 'editor']);
+            }
+        }
+        
+        // Update department assignees: delete all and re-insert
+        $pdo->prepare('DELETE FROM password_department_access WHERE password_id = :pid')->execute([':pid' => (int)$passwordId]);
+        if ($departments) {
+            $insDept = $pdo->prepare('INSERT INTO password_department_access (password_id, department_id, perm) VALUES (:pid, :did, :perm)');
+            foreach ($departments as $did) {
+                $insDept->execute([':pid' => (int)$passwordId, ':did' => $did, ':perm' => 'viewer']);
+            }
+        }
+        
+        $pdo->commit();
+
         // Redirect back to the passwords list after successful update
         header('Location: ver-passwords.php');
         exit();
     } catch (PDOException $e) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
         die("Error al actualizar la contraseña: " . $e->getMessage());
     }
 }
@@ -164,6 +226,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <label for="info_adicional">Info Adicional:</label>
         <textarea id="info_adicional" name="info_adicional" placeholder="Ej: Pregunta de seguridad: Nombre de tu mascota"><?= htmlspecialchars($password['info_adicional'] ?? '', ENT_QUOTES, 'UTF-8') ?></textarea>
+
+        <section class="assignees-panel">
+            <div class="assignees-header">
+                <label>Compartir con usuarios</label>
+                <div class="assignees-actions">
+                    <button type="button" id="assign-all" class="btn-secondary">Asignar a todos</button>
+                    <button type="button" id="assign-none" class="btn-secondary">Quitar todos</button>
+                </div>
+            </div>
+            <div class="assignees-list">
+                <?php foreach ($allUsers as $u): $uid=(int)($u['id'] ?? 0); $checked = in_array($uid, $currentAssignees); ?>
+                    <label class="assignee-item">
+                        <input type="checkbox" name="assignees[]" value="<?= $uid ?>" <?= $checked ? 'checked' : '' ?>>
+                        <span class="assignee-email"><?= htmlspecialchars($u['email'], ENT_QUOTES, 'UTF-8') ?></span>
+                        <span class="assignee-role"><?= htmlspecialchars($u['role'] ?? '', ENT_QUOTES, 'UTF-8') ?></span>
+                    </label>
+                <?php endforeach; ?>
+            </div>
+            <small class="assignees-hint">Selecciona los usuarios que tendrán acceso a esta contraseña.</small>
+        </section>
+
+        <section class="assignees-panel">
+            <div class="assignees-header">
+                <label>Compartir con departamentos</label>
+                <div class="assignees-actions">
+                    <button type="button" id="assign-all-depts" class="btn-secondary">Seleccionar todos</button>
+                    <button type="button" id="assign-none-depts" class="btn-secondary">Quitar todos</button>
+                </div>
+            </div>
+            <div class="assignees-list" id="departments-list">
+                <?php if (empty($allDepartments)): ?>
+                    <p class="text-muted" style="padding: 12px; text-align: center;">No hay departamentos creados. <a href="admin-users.php" style="color: #23AAC5;">Crear departamento</a></p>
+                <?php else: ?>
+                    <?php foreach ($allDepartments as $dept): $did=(int)$dept['id']; $checked = in_array($did, $currentDepartments); ?>
+                        <label class="assignee-item">
+                            <input type="checkbox" name="departments[]" value="<?= $did ?>" <?= $checked ? 'checked' : '' ?>>
+                            <span class="assignee-email"><?= htmlspecialchars($dept['name'], ENT_QUOTES, 'UTF-8') ?></span>
+                            <span class="assignee-role"><?= (int)$dept['user_count'] ?> usuario<?= $dept['user_count'] != 1 ? 's' : '' ?></span>
+                        </label>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
+            <small class="assignees-hint">Al compartir con un departamento, todos sus miembros tendrán acceso automáticamente.</small>
+        </section>
 
         <button type="submit">Guardar Cambios</button>
     </form>

@@ -22,6 +22,12 @@ if (!is_array($assignees)) { $assignees = []; }
 // sanitize to unique integer IDs and remove owner if included
 $assignees = array_values(array_unique(array_filter(array_map(function($v){ return (int)$v; }, $assignees), function($v) use ($ownerId){ return $v > 0 && $v !== $ownerId; })));
 
+// Selected departments from form (optional)
+$departments = $_POST['departments'] ?? [];
+if (!is_array($departments)) { $departments = []; }
+// sanitize to unique integer IDs
+$departments = array_values(array_unique(array_filter(array_map(function($v){ return (int)$v; }, $departments), function($v){ return $v > 0; })));
+
 
 // Validate mandatory fields
 if (empty($_POST['linea_de_negocio']) || empty($_POST['nombre']) || empty($_POST['usuario']) || empty($_POST['password']) || empty($_POST['enlace'])) {
@@ -64,6 +70,13 @@ try {
         $ins = $pdo->prepare('INSERT IGNORE INTO passwords_access (password_id, user_id, perm) VALUES (:pid, :uid, :perm)');
         foreach ($assignees as $aid) {
             $ins->execute([':pid' => $passwordId, ':uid' => $aid, ':perm' => 'editor']);
+        }
+    }
+    // Selected departments
+    if ($departments) {
+        $insDept = $pdo->prepare('INSERT IGNORE INTO password_department_access (password_id, department_id, perm) VALUES (:pid, :did, :perm)');
+        foreach ($departments as $did) {
+            $insDept->execute([':pid' => $passwordId, ':did' => $did, ':perm' => 'viewer']);
         }
     }
     $pdo->commit();

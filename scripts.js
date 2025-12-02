@@ -407,9 +407,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Assignees helpers (Asignar a todos / Quitar todos) - only for introducir.php
+    // Assignees helpers (Asignar a todos / Quitar todos) - for introducir.php and edit-password.php
     const introducirForm = document.getElementById('form-introducir');
-    if (introducirForm) {
+    const editPasswordForm = document.getElementById('form-edit-password');
+    
+    if (introducirForm || editPasswordForm) {
         const list = document.querySelector('.assignees-list');
         const btnAll = document.getElementById('assign-all');
         const btnNone = document.getElementById('assign-none');
@@ -419,6 +421,19 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             btnNone.addEventListener('click', () => {
                 list.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+            });
+        }
+
+        // Departments helpers
+        const deptList = document.getElementById('departments-list');
+        const btnAllDepts = document.getElementById('assign-all-depts');
+        const btnNoneDepts = document.getElementById('assign-none-depts');
+        if (deptList && btnAllDepts && btnNoneDepts) {
+            btnAllDepts.addEventListener('click', () => {
+                deptList.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
+            });
+            btnNoneDepts.addEventListener('click', () => {
+                deptList.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
             });
         }
     }

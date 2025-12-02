@@ -9,8 +9,13 @@ try {
     $pdo = getDBConnection();
     $stmt = $pdo->query("SELECT id, email, role FROM users ORDER BY email");
     $allUsers = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    
+    // Cargar departamentos
+    $stmt = $pdo->query("SELECT id, name, (SELECT COUNT(*) FROM user_departments WHERE department_id = departments.id) as user_count FROM departments ORDER BY name");
+    $allDepartments = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 } catch (Throwable $e) {
     $allUsers = [];
+    $allDepartments = [];
 }
 // Prepare reusable header HTML
 ob_start();
@@ -78,6 +83,30 @@ $headerHtml = ob_get_clean();
                 <?php endforeach; ?>
             </div>
             <small class="assignees-hint">Si no eliges nadie, solo tú (creador) tendrás acceso. Podrás compartir más tarde.</small>
+        </section>
+
+        <section class="assignees-panel">
+            <div class="assignees-header">
+                <label>Compartir con departamentos</label>
+                <div class="assignees-actions">
+                    <button type="button" id="assign-all-depts" class="btn-secondary">Seleccionar todos</button>
+                    <button type="button" id="assign-none-depts" class="btn-secondary">Quitar todos</button>
+                </div>
+            </div>
+            <div class="assignees-list" id="departments-list">
+                <?php if (empty($allDepartments)): ?>
+                    <p class="text-muted" style="padding: 12px; text-align: center;">No hay departamentos creados. <a href="admin-users.php" style="color: #23AAC5;">Crear departamento</a></p>
+                <?php else: ?>
+                    <?php foreach ($allDepartments as $dept): ?>
+                        <label class="assignee-item">
+                            <input type="checkbox" name="departments[]" value="<?= (int)$dept['id'] ?>">
+                            <span class="assignee-email"><?= htmlspecialchars($dept['name'], ENT_QUOTES, 'UTF-8') ?></span>
+                            <span class="assignee-role"><?= (int)$dept['user_count'] ?> usuario<?= $dept['user_count'] != 1 ? 's' : '' ?></span>
+                        </label>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
+            <small class="assignees-hint">Al compartir con un departamento, todos sus miembros tendrán acceso automáticamente.</small>
         </section>
         <button type="submit">Guardar</button>
     </form>
