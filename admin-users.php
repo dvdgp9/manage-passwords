@@ -72,20 +72,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $hash = password_hash($password, PASSWORD_DEFAULT);
                 $st = $pdo->prepare('INSERT INTO users (email, password_hash, role, created_at) VALUES (:email, :ph, :role, NOW())');
                 $st->execute([':email' => $email, ':ph' => $hash, ':role' => $role]);
-                $newUserId = (int)$pdo->lastInsertId();
-                
-                // Guardar departamentos del usuario
-                $userDepts = $_POST['user_departments'] ?? [];
-                if (is_array($userDepts) && $userDepts) {
-                    $insDept = $pdo->prepare('INSERT INTO user_departments (user_id, department_id) VALUES (:uid, :did)');
-                    foreach ($userDepts as $did) {
-                        $did = (int)$did;
-                        if ($did > 0) {
-                            $insDept->execute([':uid' => $newUserId, ':did' => $did]);
-                        }
-                    }
-                }
-                
                 $pdo->commit();
                 header('Location: admin-users.php?notice=created');
                 exit;
@@ -101,6 +87,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $email = trim((string)($_POST['email'] ?? ''));
         $role  = trim((string)($_POST['role'] ?? ''));
         $password = (string)($_POST['password'] ?? ''); // opcional
+        $userDepts = $_POST['user_departments'] ?? [];
+        if (!is_array($userDepts)) { $userDepts = []; }
+        $userDepts = array_map('intval', $userDepts);
 
         if ($id <= 0) { $errors[] = 'ID inválido'; }
         if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) { $errors[] = 'Email inválido'; }
@@ -121,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $st->execute([':email' => $email, ':id' => $id]);
                 if ($st->fetch()) { throw new RuntimeException('Ya existe otro usuario con ese email'); }
 
-                // actualizar
+                // actualizar usuario
                 $params = [':email' => $email, ':role' => ($role !== '' ? $role : $u['role']), ':id' => $id];
                 $sql = 'UPDATE users SET email = :email, role = :role';
                 if ($password !== '') {
@@ -132,16 +121,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $upd = $pdo->prepare($sql);
                 $upd->execute($params);
 
-                // Actualizar departamentos del usuario (borrar y reinsertar)
+                // actualizar departamentos del usuario
                 $pdo->prepare('DELETE FROM user_departments WHERE user_id = :uid')->execute([':uid' => $id]);
-                $userDepts = $_POST['user_departments'] ?? [];
-                if (is_array($userDepts) && $userDepts) {
-                    $insDept = $pdo->prepare('INSERT INTO user_departments (user_id, department_id) VALUES (:uid, :did)');
+                if ($userDepts) {
+                    $ins = $pdo->prepare('INSERT INTO user_departments (user_id, department_id) VALUES (:uid, :did)');
                     foreach ($userDepts as $did) {
-                        $did = (int)$did;
-                        if ($did > 0) {
-                            $insDept->execute([':uid' => $id, ':did' => $did]);
-                        }
+                        if ($did > 0) $ins->execute([':uid' => $id, ':did' => $did]);
                     }
                 }
 
@@ -181,27 +166,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Cargar todos los departamentos para el formulario de usuario
+// Cargar todos los departamentos (para el formulario de usuario)
 $allDepartments = [];
 try {
-    $stmt = $pdo->query("SELECT id, name FROM departments ORDER BY name ASC");
-    $allDepartments = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    $st = $pdo->query('SELECT id, name FROM departments ORDER BY name');
+    $allDepartments = $st->fetchAll(PDO::FETCH_ASSOC) ?: [];
 } catch (Throwable $e) {}
 
 // Soporte de edición por GET ?edit=ID
 $editId = isset($_GET['edit']) ? (int)$_GET['edit'] : 0;
 $editUser = null;
-$editUserDepartments = [];
+$editUserDepts = [];
 if ($editId > 0) {
     $st = $pdo->prepare('SELECT id, email, role, created_at, last_login FROM users WHERE id = :id');
     $st->execute([':id' => $editId]);
     $editUser = $st->fetch(PDO::FETCH_ASSOC) ?: null;
-    
-    // Cargar departamentos del usuario en edición
     if ($editUser) {
-        $stmt = $pdo->prepare("SELECT department_id FROM user_departments WHERE user_id = :uid");
-        $stmt->execute([':uid' => $editId]);
-        $editUserDepartments = array_column($stmt->fetchAll(PDO::FETCH_ASSOC), 'department_id');
+        $st = $pdo->prepare('SELECT department_id FROM user_departments WHERE user_id = :uid');
+        $st->execute([':uid' => $editId]);
+        $editUserDepts = array_column($st->fetchAll(PDO::FETCH_ASSOC), 'department_id');
     }
 }
 
@@ -273,12 +256,8 @@ $headerHtml = ob_get_clean();
         <button id="btn-new-user" class="btn-primary">Nuevo usuario</button>
       </div>
 
-    <section id="admin-user-form" class="admin-form-card<?= $editUser ? '' : ' hidden' ?>">
-      <div class="admin-form-header">
-        <h2 id="form-title"><?= $editUser ? 'Editar usuario' : 'Nuevo usuario' ?></h2>
-        <p class="admin-form-subtitle"><?= $editUser ? 'Modifica los datos del usuario' : 'Crea una nueva cuenta de usuario' ?></p>
-      </div>
-      
+    <section id="admin-user-form" class="form-card<?= $editUser ? '' : ' hidden' ?>">
+      <h2 id="form-title"><?= $editUser ? 'Editar usuario' : 'Crear usuario' ?></h2>
       <form id="form-admin-user" method="post" action="admin-users.php<?= $editUser ? '?edit='.(int)$editUser['id'] : '' ?>">
         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf, ENT_QUOTES, 'UTF-8') ?>">
         <input type="hidden" id="form-action" name="action" value="<?= $editUser ? 'update' : 'create' ?>">
@@ -288,15 +267,15 @@ $headerHtml = ob_get_clean();
           <input type="hidden" id="form-id" name="id" value="">
         <?php endif; ?>
 
-        <div class="admin-form-grid">
-          <div class="admin-form-group">
+        <div class="form-grid">
+          <div class="field">
             <label for="email">Email</label>
-            <input type="email" id="email" name="email" required value="<?= htmlspecialchars($editUser['email'] ?? '', ENT_QUOTES, 'UTF-8') ?>" placeholder="usuario@ejemplo.com">
-            <small class="admin-form-hint">Debe ser único y con formato válido.</small>
+            <input type="email" id="email" name="email" required value="<?= htmlspecialchars($editUser['email'] ?? '', ENT_QUOTES, 'UTF-8') ?>" aria-describedby="email-help">
+            <small id="email-help" class="helper-text">Debe ser único y con formato válido.</small>
             <div class="field-error hidden" id="email-error"></div>
           </div>
 
-          <div class="admin-form-group">
+          <div class="field">
             <label for="role">Rol</label>
             <select id="role" name="role" required>
               <?php $roles = ['admin' => 'Administrador', 'editor' => 'Editor', 'lector' => 'Lector'];
@@ -305,60 +284,44 @@ $headerHtml = ob_get_clean();
                 <option value="<?= $val ?>" <?= $cur === $val ? 'selected' : '' ?>><?= $label ?></option>
               <?php endforeach; ?>
             </select>
-            <small class="admin-form-hint">Define los permisos del usuario.</small>
           </div>
 
-          <div class="admin-form-group">
-            <label for="password"><?= $editUser ? 'Nueva contraseña' : 'Contraseña' ?></label>
-            <div class="admin-input-group">
-              <input type="password" id="password" name="password" <?= $editUser ? '' : 'required' ?> placeholder="<?= $editUser ? 'Dejar vacío para mantener' : '••••••••' ?>">
-              <button type="button" id="btn-toggle-password" class="admin-input-btn" title="Mostrar/ocultar">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-              </button>
+          <div class="field field-full">
+            <label for="password"><?= $editUser ? 'Nueva contraseña (opcional)' : 'Contraseña (obligatoria)' ?></label>
+            <div class="password-group">
+              <input type="password" id="password" name="password" <?= $editUser ? '' : 'required' ?> placeholder="<?= $editUser ? 'Dejar vacío para no cambiar' : '' ?>">
+              <button type="button" id="btn-toggle-password" class="btn-secondary">Mostrar</button>
             </div>
             <div class="field-error hidden" id="password-error"></div>
           </div>
 
-          <div class="admin-form-group">
-            <label for="confirm_password">Confirmar contraseña</label>
-            <div class="admin-input-group">
+          <div class="field field-full">
+            <label for="confirm_password">Confirmar contraseña<?= $editUser ? ' (si cambias contraseña)' : '' ?></label>
+            <div class="password-group">
               <input type="password" id="confirm_password" name="confirm_password" <?= $editUser ? '' : 'required' ?> placeholder="Repite la contraseña">
-              <button type="button" id="btn-toggle-confirm" class="admin-input-btn" title="Mostrar/ocultar">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-              </button>
+              <button type="button" id="btn-toggle-confirm" class="btn-secondary">Mostrar</button>
             </div>
             <div class="field-error hidden" id="confirm-error"></div>
           </div>
-        </div>
 
-        <!-- Departamentos del usuario -->
-        <div class="admin-form-section">
-          <div class="admin-form-section-header">
+          <?php if ($editUser && $allDepartments): ?>
+          <div class="field field-full">
             <label>Departamentos</label>
-            <div class="admin-form-section-actions">
-              <button type="button" id="user-dept-all" class="btn-text">Todos</button>
-              <button type="button" id="user-dept-none" class="btn-text">Ninguno</button>
-            </div>
-          </div>
-          <div class="admin-checkbox-grid" id="user-departments-list">
-            <?php if (empty($allDepartments)): ?>
-              <p class="admin-form-empty">No hay departamentos. <a href="#" id="scroll-to-dept">Crear uno</a></p>
-            <?php else: ?>
-              <?php foreach ($allDepartments as $dept): 
-                $checked = in_array((int)$dept['id'], $editUserDepartments);
-              ?>
-                <label class="admin-checkbox-item">
+            <div class="user-depts-list">
+              <?php foreach ($allDepartments as $dept): $checked = in_array((int)$dept['id'], $editUserDepts); ?>
+                <label class="dept-checkbox">
                   <input type="checkbox" name="user_departments[]" value="<?= (int)$dept['id'] ?>" <?= $checked ? 'checked' : '' ?>>
-                  <span class="admin-checkbox-label"><?= htmlspecialchars($dept['name'], ENT_QUOTES, 'UTF-8') ?></span>
+                  <span><?= htmlspecialchars($dept['name'], ENT_QUOTES, 'UTF-8') ?></span>
                 </label>
               <?php endforeach; ?>
-            <?php endif; ?>
+            </div>
           </div>
+          <?php endif; ?>
         </div>
 
-        <div class="admin-form-actions">
+        <div class="form-actions">
+          <button type="submit" class="btn-primary" id="btn-submit-form"><?= $editUser ? 'Guardar cambios' : 'Crear' ?></button>
           <button type="button" class="btn-secondary" id="btn-cancel-form">Cancelar</button>
-          <button type="submit" class="btn-primary" id="btn-submit-form"><?= $editUser ? 'Guardar cambios' : 'Crear usuario' ?></button>
         </div>
       </form>
     </section>
@@ -441,49 +404,29 @@ $headerHtml = ob_get_clean();
       </div>
 
       <!-- Formulario crear/editar departamento -->
-      <section id="department-form-card" class="admin-form-card hidden">
-        <div class="admin-form-header">
-          <h2 id="dept-form-title">Nuevo departamento</h2>
-          <p class="admin-form-subtitle" id="dept-form-subtitle">Crea un nuevo departamento para organizar usuarios</p>
-        </div>
-        
+      <div id="department-form-card" class="form-card hidden">
+        <h3 id="dept-form-title">Nuevo departamento</h3>
         <form id="form-department">
           <input type="hidden" id="dept-id" value="">
           
-          <div class="admin-form-grid">
-            <div class="admin-form-group">
-              <label for="dept-name">Nombre del departamento</label>
+          <div class="form-grid">
+            <div class="field">
+              <label for="dept-name">Nombre *</label>
               <input type="text" id="dept-name" required maxlength="100" placeholder="Ej: Marketing, Ventas, IT...">
-              <small class="admin-form-hint">Nombre único para identificar el departamento.</small>
             </div>
 
-            <div class="admin-form-group">
+            <div class="field">
               <label for="dept-description">Descripción</label>
-              <input type="text" id="dept-description" placeholder="Breve descripción del departamento" maxlength="255">
-              <small class="admin-form-hint">Opcional. Ayuda a identificar el propósito.</small>
+              <textarea id="dept-description" placeholder="Describe el propósito del departamento"></textarea>
             </div>
           </div>
 
-          <!-- Usuarios del departamento (solo visible en edición) -->
-          <div class="admin-form-section" id="dept-users-section" style="display: none;">
-            <div class="admin-form-section-header">
-              <label>Usuarios del departamento</label>
-              <div class="admin-form-section-actions">
-                <button type="button" id="dept-user-all" class="btn-text">Todos</button>
-                <button type="button" id="dept-user-none" class="btn-text">Ninguno</button>
-              </div>
-            </div>
-            <div class="admin-checkbox-grid" id="dept-users-list">
-              <!-- Se llena dinámicamente -->
-            </div>
-          </div>
-
-          <div class="admin-form-actions">
+          <div class="form-actions">
+            <button type="submit" class="btn-primary" id="btn-save-dept">Guardar</button>
             <button type="button" class="btn-secondary" id="btn-cancel-dept">Cancelar</button>
-            <button type="submit" class="btn-primary" id="btn-save-dept">Crear departamento</button>
           </div>
         </form>
-      </section>
+      </div>
 
       <!-- Lista de departamentos -->
       <section class="table-container">
