@@ -318,7 +318,7 @@ label {
     font-weight: 600;
     font-size: 14px;
     color: #0f172a;
-    margin-bottom: 8px;
+    margin-bottom: 6px !important;
     letter-spacing: -0.01em;
 }
 
