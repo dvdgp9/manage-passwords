@@ -166,19 +166,28 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize Admin Users form behaviors on load
     initAdminUsers();
 
-    // Delegated handler for password visibility toggles (robust, ID-agnostic)
-    document.addEventListener('click', (e) => {
-        const btn = e.target && e.target.closest ? e.target.closest('#btn-toggle-password, #btn-toggle-confirm') : null;
-        if (!btn) return;
+    // Toggle password visibility - event delegation on document body
+    document.body.addEventListener('click', function(e) {
+        var btn = e.target;
+        // Check if clicked element is one of the toggle buttons
+        if (btn.id !== 'btn-toggle-password' && btn.id !== 'btn-toggle-confirm') {
+            return;
+        }
         e.preventDefault();
-        const group = btn.closest('.password-group');
-        if (!group) return;
-        const input = group.querySelector('input[type="password"], input[type="text"]');
+        var group = btn.parentElement;
+        if (!group || !group.classList.contains('password-group')) {
+            return;
+        }
+        var input = group.querySelector('input');
         if (!input) return;
-        const isHidden = input.type === 'password';
-        input.type = isHidden ? 'text' : 'password';
-        btn.textContent = isHidden ? 'Ocultar' : 'Mostrar';
-    }, { passive: false });
+        if (input.type === 'password') {
+            input.type = 'text';
+            btn.textContent = 'Ocultar';
+        } else {
+            input.type = 'password';
+            btn.textContent = 'Mostrar';
+        }
+    });
 
     // Handle clear search button
     const clearSearchButton = document.getElementById('clear-search');
