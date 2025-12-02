@@ -48,7 +48,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const emailInput = adminForm.querySelector('#email');
         const roleSelect = adminForm.querySelector('#role');
         const pwdInput = adminForm.querySelector('#password');
+        const pwdToggle = adminForm.querySelector('#btn-toggle-password');
         const confirmInput = adminForm.querySelector('#confirm_password');
+        const confirmToggle = adminForm.querySelector('#btn-toggle-confirm');
         const btnCancel = adminForm.querySelector('#btn-cancel-form');
         const emailErr = adminForm.querySelector('#email-error');
         const pwdErr = adminForm.querySelector('#password-error');
@@ -107,7 +109,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 openEdit(a.getAttribute('data-id'), a.getAttribute('data-email'), a.getAttribute('data-role'));
             });
         });
-        // Password toggles handled by global delegated handler below
+        if (pwdToggle) pwdToggle.addEventListener('click', (e) => { e.preventDefault(); toggleField(pwdInput, pwdToggle); });
+        if (confirmToggle) confirmToggle.addEventListener('click', (e) => { e.preventDefault(); toggleField(confirmInput, confirmToggle); });
         if (btnCancel) btnCancel.addEventListener('click', (e) => {
             e.preventDefault();
             hideForm();
@@ -118,10 +121,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Event delegation fallback (password toggles handled by global delegated handler below)
+        // Event delegation fallback
         document.addEventListener('click', (e) => {
             const t = e.target;
             if (!t) return;
+            // If click is on icons inside buttons, climb to button
             const btn = t.closest ? t.closest('#btn-new-user, #btn-cancel-form, a.modify-btn[data-id]') : null;
             if (!btn) return;
             if (btn.matches('#btn-new-user')) {
