@@ -117,6 +117,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const input = group.querySelector('input[type="password"], input[type="text"]');
             if (!input) return;
             e.preventDefault();
+            e.stopPropagation();
             const isHidden = input.type === 'password';
             input.type = isHidden ? 'text' : 'password';
             btn.textContent = isHidden ? 'Ocultar' : 'Mostrar';
