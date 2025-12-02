@@ -94,6 +94,8 @@ body {
     align-items: center;
     justify-content: space-between;
     gap: 12px;
+    padding: 0 20px;
+    margin: 24px 0 0 0;
 }
 
 .hidden { display: none !important; }
@@ -115,21 +117,17 @@ body {
     color: #b91c1c;
     background: #fee2e2;
     border: 1px solid #fecaca;
-    padding: 8px 10px;
+    padding: 12px 16px;
     border-radius: 8px;
-    width: 100%;
-    max-width: 820px;
-    margin: 10px auto;
+    margin: 10px 20px;
 }
 .alert-notice {
     color: #065f46;
     background: #d1fae5;
     border: 1px solid #a7f3d0;
-    padding: 10px 12px;
+    padding: 12px 16px;
     border-radius: 8px;
-    width: 100%;
-    max-width: 820px;
-    margin: 10px auto;
+    margin: 10px 20px;
 }
 
 /* ======= Admin Users: role select polished ======= */
@@ -1330,6 +1328,15 @@ input[type="checkbox"] {
 
 .admin-section:first-of-type {
     margin-top: 24px;
+}
+
+.admin-section .table-container {
+    padding: 0;
+}
+
+.admin-section .form-card {
+    margin-left: 0;
+    margin-right: 0;
 }
 
 .section-header {
