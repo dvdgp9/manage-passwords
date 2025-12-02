@@ -163,11 +163,25 @@ if ($editId > 0) {
     $editUser = $st->fetch(PDO::FETCH_ASSOC) ?: null;
 }
 
-// Listado básico (sin paginación por ahora)
+// Listado básico con departamentos (sin paginación por ahora)
 $users = [];
 try {
     $st = $pdo->query('SELECT id, email, role, created_at, last_login FROM users ORDER BY created_at DESC');
     $users = $st->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    
+    // Cargar departamentos por usuario
+    foreach ($users as &$user) {
+        $stmt = $pdo->prepare("
+            SELECT d.id, d.name 
+            FROM departments d
+            INNER JOIN user_departments ud ON d.id = ud.department_id
+            WHERE ud.user_id = :uid
+            ORDER BY d.name ASC
+        ");
+        $stmt->execute([':uid' => $user['id']]);
+        $user['departments'] = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    }
+    unset($user); // romper referencia
 } catch (Throwable $e) {
     $errors[] = 'No se pudo cargar el listado de usuarios';
 }
@@ -267,6 +281,85 @@ $headerHtml = ob_get_clean();
       </form>
     </section>
 
+    <!-- Gestión de Departamentos -->
+    <section class="departments-section">
+      <div class="page-header">
+        <h2>Departamentos</h2>
+        <button id="btn-new-department" class="btn-primary">Nuevo departamento</button>
+      </div>
+
+      <!-- Formulario crear/editar departamento -->
+      <div id="department-form-card" class="form-card hidden">
+        <h3 id="dept-form-title">Nuevo departamento</h3>
+        <form id="form-department">
+          <input type="hidden" id="dept-id" value="">
+          
+          <div class="field">
+            <label for="dept-name">Nombre *</label>
+            <input type="text" id="dept-name" required maxlength="100" placeholder="Ej: Marketing, Ventas, IT...">
+          </div>
+
+          <div class="field">
+            <label for="dept-description">Descripción</label>
+            <textarea id="dept-description" placeholder="Describe el propósito del departamento"></textarea>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-primary" id="btn-save-dept">Guardar</button>
+            <button type="button" class="btn-secondary" id="btn-cancel-dept">Cancelar</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Lista de departamentos -->
+      <div class="table-card">
+        <div class="table-card__inner">
+          <table class="tabla-departamentos">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Usuarios</th>
+                <th>Creado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="departments-tbody">
+              <tr><td colspan="5">Cargando...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Modal: Asignar usuarios a departamento -->
+    <div id="modal-assign-users" class="modal hidden">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 id="modal-dept-title">Asignar usuarios</h3>
+          <button type="button" class="modal-close" id="btn-close-modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="assignees-panel">
+            <div class="assignees-header">
+              <label>Selecciona usuarios</label>
+              <div class="assignees-actions">
+                <button type="button" id="assign-all-users" class="btn-secondary">Seleccionar todos</button>
+                <button type="button" id="assign-none-users" class="btn-secondary">Quitar todos</button>
+              </div>
+            </div>
+            <div class="assignees-list" id="modal-users-list">
+              <p>Cargando usuarios...</p>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-primary" id="btn-save-assignments">Guardar asignaciones</button>
+          <button type="button" class="btn-secondary" id="btn-cancel-modal">Cancelar</button>
+        </div>
+      </div>
+    </div>
+
     <section class="table-container">
       <div class="table-card">
         <div class="table-card__inner">
@@ -276,6 +369,7 @@ $headerHtml = ob_get_clean();
                 <th>ID</th>
                 <th>Email</th>
                 <th>Rol</th>
+                <th>Departamentos</th>
                 <th>Creado</th>
                 <th>Último acceso</th>
                 <th>Acciones</th>
@@ -287,6 +381,17 @@ $headerHtml = ob_get_clean();
                   <td><?= (int)$u['id'] ?></td>
                   <td><?= htmlspecialchars($u['email'], ENT_QUOTES, 'UTF-8') ?></td>
                   <td><?= htmlspecialchars($u['role'], ENT_QUOTES, 'UTF-8') ?></td>
+                  <td>
+                    <?php if (!empty($u['departments'])): ?>
+                      <div class="user-departments">
+                        <?php foreach ($u['departments'] as $dept): ?>
+                          <span class="dept-badge"><?= htmlspecialchars($dept['name'], ENT_QUOTES, 'UTF-8') ?></span>
+                        <?php endforeach; ?>
+                      </div>
+                    <?php else: ?>
+                      <span class="text-muted">—</span>
+                    <?php endif; ?>
+                  </td>
                   <td><?= htmlspecialchars($u['created_at'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
                   <td><?= htmlspecialchars($u['last_login'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
                   <td>
@@ -316,7 +421,7 @@ $headerHtml = ob_get_clean();
                 </tr>
               <?php endforeach; ?>
               <?php if (!$users): ?>
-                <tr><td colspan="6">No hay usuarios</td></tr>
+                <tr><td colspan="7">No hay usuarios</td></tr>
               <?php endif; ?>
             </tbody>
           </table>

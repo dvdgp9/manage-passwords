@@ -1,46 +1,82 @@
 # Database Structure – Password Manager
 
-Este documento resume el estado actual de la base de datos relevante y la propuesta objetivo para habilitar multiusuario seguro y sesión persistente (remember-me).
+Este documento resume el estado actual de la base de datos y propuestas de evolución.
 
-Fecha: 2025-08-27
+Última actualización: 2025-12-02
 
-## 1) Estado actual
+## 1) Estado actual (Diciembre 2025)
 
-- Multiusuario con roles (admin/editor/lector).
-- Propiedad por registro (`owner_user_id`) y scoping por usuario.
-- Sesión persistente (remember-me) segura: 60 días, recordarme por defecto, máximo 5 tokens/usuario, sin password extra al restaurar.
+- ✅ Multiusuario con roles (admin/editor/lector)
+- ✅ Sistema de compartición por usuario individual (`passwords_access`)
+- ✅ Propiedad por registro (`owner_user_id`) con scoping
+- ✅ Sesión persistente (remember-me) segura: 60 días, máximo 5 tokens/usuario
+- ✅ Rate limiting por IP
+- ✅ Sistema de contraseñas temporales compartibles (tabla `passwords`)
+- 🔄 **Próximo**: Sistema de departamentos/grupos para gestión masiva de permisos
 
-## 3) Esquema objetivo propuesto
+## 2) Tablas actuales en producción
 
-Renombrar tabla para evitar guiones y añadir metadatos e integridad referencial.
-
-### 3.1) passwords_manager (antes `passwords-manager`)
+### 2.1) `passwords` (contraseñas temporales compartibles)
 
 ```sql
-RENAME TABLE `passwords-manager` TO `passwords_manager`;
-
--- Opcional (MySQL < 8.0: usar utf8mb4_unicode_ci)
-ALTER TABLE `passwords_manager`
-  CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
-ALTER TABLE `passwords_manager`
-  ADD COLUMN `owner_user_id` BIGINT UNSIGNED NULL AFTER `id`,
-  ADD COLUMN `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `info_adicional`,
-  ADD COLUMN `updated_at` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP AFTER `created_at`;
-
-CREATE INDEX idx_pm_owner ON `passwords_manager` (`owner_user_id`);
-CREATE INDEX idx_pm_busqueda ON `passwords_manager` (`linea_de_negocio`, `nombre`, `usuario`);
+CREATE TABLE `passwords` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `password` TEXT NOT NULL,           -- contraseña cifrada
+  `iv` VARCHAR(255) NOT NULL,         -- vector de inicialización
+  `link_hash` VARCHAR(255) NOT NULL,  -- hash único del link de acceso
+  `email` VARCHAR(255) DEFAULT NULL,  -- email del creador (opcional)
+  `is_retrieved` TINYINT(1) DEFAULT 0,-- si ya fue vista
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uniq_link_hash` (`link_hash`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ```
 
-Tipos/longitudes recomendadas si se ajusta más adelante:
-- `usuario`, `nombre`, `linea_de_negocio`: VARCHAR(190) si participan en índices compuestos en utf8mb4.
-- `enlace`: VARCHAR(2048) para URLs largas.
-- `password`: TEXT para almacenar cifrado AEAD base64 con metadatos `{v,alg,nonce,tag,ct}`.
-
-### 3.2) users
+### 2.2) `passwords_manager` (gestor principal de credenciales)
 
 ```sql
-CREATE TABLE IF NOT EXISTS `users` (
+CREATE TABLE `passwords_manager` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `owner_user_id` BIGINT UNSIGNED NULL,
+  `linea_de_negocio` VARCHAR(255) NOT NULL,
+  `nombre` VARCHAR(255) NOT NULL,
+  `descripcion` TEXT,
+  `usuario` VARCHAR(255) NOT NULL,
+  `password` TEXT NOT NULL,           -- contraseña cifrada
+  `enlace` VARCHAR(2048) NOT NULL,
+  `info_adicional` TEXT,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_pm_owner` (`owner_user_id`),
+  KEY `idx_pm_busqueda` (`linea_de_negocio`, `nombre`, `usuario`),
+  CONSTRAINT `fk_passwords_manager_owner` 
+    FOREIGN KEY (`owner_user_id`) REFERENCES `users`(`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+```
+
+### 2.3) `passwords_access` (compartición usuario-a-contraseña)
+
+```sql
+CREATE TABLE `passwords_access` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `password_id` INT NOT NULL,
+  `user_id` BIGINT UNSIGNED NOT NULL,
+  `perm` ENUM('owner','editor','viewer') NOT NULL DEFAULT 'editor',
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uniq_password_user` (`password_id`, `user_id`),
+  KEY `idx_access_user` (`user_id`),
+  CONSTRAINT `fk_access_password` 
+    FOREIGN KEY (`password_id`) REFERENCES `passwords_manager`(`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_access_user` 
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+```
+
+### 2.4) `users`
+
+```sql
+CREATE TABLE `users` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `email` VARCHAR(190) NOT NULL,
   `password_hash` VARCHAR(255) NOT NULL,
@@ -52,14 +88,14 @@ CREATE TABLE IF NOT EXISTS `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ```
 
-### 3.3) user_sessions (remember-me)
+### 2.5) `user_sessions` (remember-me tokens)
 
 ```sql
-CREATE TABLE IF NOT EXISTS `user_sessions` (
+CREATE TABLE `user_sessions` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `user_id` BIGINT UNSIGNED NOT NULL,
-  `token_hash` CHAR(64) NOT NULL, -- SHA-256 hex
-  `user_agent` VARCHAR(255) DEFAULT NULL,
+  `token_hash` CHAR(64) NOT NULL,     -- SHA-256 hex
+  `user_agent` TEXT,
   `ip_hash` CHAR(64) DEFAULT NULL,
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `last_used_at` TIMESTAMP NULL DEFAULT NULL,
@@ -68,51 +104,147 @@ CREATE TABLE IF NOT EXISTS `user_sessions` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uniq_token_hash` (`token_hash`),
   KEY `idx_user_expires` (`user_id`, `expires_at`),
-  CONSTRAINT `fk_user_sessions_user` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+  CONSTRAINT `fk_user_sessions_user` 
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ```
 
-### 3.4) passwords_access (compartición muchos-a-muchos)
-
-Permite compartir cada credencial con múltiples usuarios y definir permiso básico.
-
-Tipos ajustados al esquema actual: `passwords_manager.id` es `INT` (signed) y `users.id` es `BIGINT UNSIGNED`.
+### 2.6) `rate_limits` (control de tasa por IP)
 
 ```sql
-CREATE TABLE IF NOT EXISTS passwords_access (
-  id INT NOT NULL AUTO_INCREMENT,
-  password_id INT NOT NULL,                 -- coincide con passwords_manager.id (INT)
-  user_id BIGINT(20) UNSIGNED NOT NULL,     -- coincide con users.id (BIGINT UNSIGNED)
-  perm ENUM('owner','editor','viewer') NOT NULL DEFAULT 'editor',
-  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (id),
-  UNIQUE KEY uniq_password_user (password_id, user_id),
-  KEY idx_access_user (user_id),
-  CONSTRAINT fk_access_password FOREIGN KEY (password_id)
-    REFERENCES passwords_manager(id) ON DELETE CASCADE,
-  CONSTRAINT fk_access_user FOREIGN KEY (user_id)
-    REFERENCES users(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE `rate_limits` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `ip` VARCHAR(45) NOT NULL,
+  `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_rate_ip_time` (`ip`, `timestamp`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ```
 
-Backfill de propietarios existentes (idempotente):
+## 3) Propuesta: Sistema de Departamentos/Grupos
+
+### Objetivo
+
+Permitir asignar permisos de contraseñas no solo a usuarios individuales, sino también a **departamentos/grupos completos**. Esto facilita la gestión cuando hay muchos usuarios (ej: dar acceso a todo el departamento de Marketing sin tener que seleccionar uno por uno).
+
+### Caso de uso
+
+- Admin crea departamento "Marketing"
+- Admin asigna 10 usuarios al departamento "Marketing"
+- Admin comparte contraseña de "Facebook Ads" con el departamento "Marketing"
+- → Los 10 usuarios automáticamente tienen acceso
+- Si se añade un nuevo usuario a Marketing, automáticamente ve todas las contraseñas compartidas con ese departamento
+
+### Diseño propuesto
+
+#### 3.1) Nueva tabla: `departments`
 
 ```sql
-INSERT IGNORE INTO passwords_access (password_id, user_id, perm)
-SELECT id AS password_id, owner_user_id AS user_id, 'owner'
-FROM passwords_manager
-WHERE owner_user_id IS NOT NULL;
+CREATE TABLE `departments` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(100) NOT NULL,
+  `description` TEXT DEFAULT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uniq_dept_name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ```
 
-Notas:
-- Los registros con `owner_user_id IS NULL` se consideran "globales" (visibles para todos) en la lógica de aplicación.
-- A futuro se puede unificar el tipo de `passwords_manager.id` a `BIGINT UNSIGNED` si interesa, con migración.
+#### 3.2) Nueva tabla: `user_departments` (relación N:M usuarios-departamentos)
 
-### 3.5) Integridad referencial
+Un usuario puede pertenecer a múltiples departamentos.
 
 ```sql
-ALTER TABLE `passwords_manager`
-  ADD CONSTRAINT `fk_passwords_manager_owner` FOREIGN KEY (`owner_user_id`) REFERENCES `users`(`id`) ON DELETE SET NULL;
+CREATE TABLE `user_departments` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `user_id` BIGINT UNSIGNED NOT NULL,
+  `department_id` BIGINT UNSIGNED NOT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uniq_user_dept` (`user_id`, `department_id`),
+  KEY `idx_dept_users` (`department_id`),
+  CONSTRAINT `fk_userdept_user` 
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_userdept_dept` 
+    FOREIGN KEY (`department_id`) REFERENCES `departments`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+```
+
+#### 3.3) Nueva tabla: `password_department_access` (compartir con departamentos)
+
+Similar a `passwords_access`, pero para departamentos completos.
+
+```sql
+CREATE TABLE `password_department_access` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `password_id` INT NOT NULL,
+  `department_id` BIGINT UNSIGNED NOT NULL,
+  `perm` ENUM('owner','editor','viewer') NOT NULL DEFAULT 'viewer',
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uniq_password_dept` (`password_id`, `department_id`),
+  KEY `idx_dept_access` (`department_id`),
+  CONSTRAINT `fk_deptaccess_password` 
+    FOREIGN KEY (`password_id`) REFERENCES `passwords_manager`(`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_deptaccess_dept` 
+    FOREIGN KEY (`department_id`) REFERENCES `departments`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+```
+
+#### 3.4) SQL completo para ejecutar en phpMyAdmin
+
+**⚠️ IMPORTANTE: Ejecuta esto en phpMyAdmin en un solo bloque**
+
+```sql
+-- 1) Crear tabla de departamentos
+CREATE TABLE `departments` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(100) NOT NULL,
+  `description` TEXT DEFAULT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uniq_dept_name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 2) Crear relación usuarios-departamentos
+CREATE TABLE `user_departments` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `user_id` BIGINT UNSIGNED NOT NULL,
+  `department_id` BIGINT UNSIGNED NOT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uniq_user_dept` (`user_id`, `department_id`),
+  KEY `idx_dept_users` (`department_id`),
+  CONSTRAINT `fk_userdept_user` 
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_userdept_dept` 
+    FOREIGN KEY (`department_id`) REFERENCES `departments`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 3) Crear tabla de accesos por departamento
+CREATE TABLE `password_department_access` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `password_id` INT NOT NULL,
+  `department_id` BIGINT UNSIGNED NOT NULL,
+  `perm` ENUM('owner','editor','viewer') NOT NULL DEFAULT 'viewer',
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uniq_password_dept` (`password_id`, `department_id`),
+  KEY `idx_dept_access` (`department_id`),
+  CONSTRAINT `fk_deptaccess_password` 
+    FOREIGN KEY (`password_id`) REFERENCES `passwords_manager`(`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_deptaccess_dept` 
+    FOREIGN KEY (`department_id`) REFERENCES `departments`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 4) (Opcional) Crear departamentos de ejemplo
+INSERT INTO `departments` (`name`, `description`) VALUES
+('Marketing', 'Equipo de marketing y comunicación'),
+('Ventas', 'Equipo comercial y ventas'),
+('IT', 'Tecnología e infraestructura'),
+('RRHH', 'Recursos humanos');
 ```
 
 ## 6) Notas de compatibilidad y rendimiento

@@ -1162,3 +1162,188 @@ input[type="checkbox"] {
     box-shadow: 0 4px 16px rgba(100, 116, 139, 0.3);
     background: linear-gradient(135deg, #475569 0%, #334155 100%);
 }
+
+/* ======= Departments Section ======= */
+.departments-section {
+    margin: 48px 0 32px 0;
+    padding: 0 20px;
+}
+
+.departments-section .page-header {
+    margin-bottom: 24px;
+}
+
+.departments-section h2 {
+    font-size: 22px;
+    color: #0f172a;
+    font-weight: 700;
+}
+
+.tabla-departamentos {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.tabla-departamentos thead {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+}
+
+.tabla-departamentos thead th {
+    padding: 14px 18px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 13px;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.tabla-departamentos tbody tr {
+    background: rgba(255, 255, 255, 0.92);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+    transition: background 0.2s ease;
+}
+
+.tabla-departamentos tbody tr:hover {
+    background: rgba(248, 250, 252, 1);
+}
+
+.tabla-departamentos td {
+    padding: 14px 18px;
+    font-size: 14px;
+    color: #1f2937;
+}
+
+/* Badges de departamentos en tabla de usuarios */
+.user-departments {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.dept-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #23AAC5 0%, #1995ad 100%);
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.text-muted {
+    color: #94a3b8;
+    font-style: italic;
+}
+
+/* ======= Modal Styles ======= */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 20px;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.modal.hidden {
+    display: none;
+    opacity: 0;
+}
+
+.modal-content {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 24px 48px rgba(15, 23, 42, 0.3);
+    max-width: 600px;
+    width: 100%;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.modal-header h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 28px;
+    line-height: 1;
+    color: #64748b;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.modal-close:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+}
+
+.modal-body {
+    padding: 24px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+/* Ajustar assignees-panel dentro del modal */
+.modal-body .assignees-panel {
+    margin: 0;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+}
+
+.modal-body .assignees-list {
+    max-height: 320px;
+}
