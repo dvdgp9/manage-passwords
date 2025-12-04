@@ -135,7 +135,7 @@ Permitir asignar permisos de contraseñas no solo a usuarios individuales, sino 
 - → Los 10 usuarios automáticamente tienen acceso
 - Si se añade un nuevo usuario a Marketing, automáticamente ve todas las contraseñas compartidas con ese departamento
 
-### Diseño propuesto
+### Nueva actualización
 
 #### 3.1) Nueva tabla: `departments`
 

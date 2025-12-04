@@ -13,35 +13,35 @@ $user = current_user();
 // Fetch passwords based on search term
 $searchTerm = $_GET['search'] ?? '';
 
-$pdo = getDBConnection();
-// Construir consulta con scoping por rol (incluye acceso por departamentos)
-$params = [];
-$role = $user['role'] ?? '';
-$userId = (int)($user['id'] ?? 0);
+ $pdo = getDBConnection();
+ // Construir consulta con scoping por rol (incluye acceso por departamentos)
+ $params = [];
+ $role = $user['role'] ?? '';
+ $userId = (int)($user['id'] ?? 0);
 
-if ($role === 'admin') {
-    $sql = "SELECT DISTINCT pm.* FROM passwords_manager pm";
-    $where = [];
-} else {
-    // Join con accesos directos (passwords_access) y por departamento (password_department_access + user_departments)
-    $sql = "SELECT DISTINCT pm.* FROM passwords_manager pm
-            LEFT JOIN passwords_access pa
-              ON pa.password_id = pm.id AND pa.user_id = :uid
-            LEFT JOIN password_department_access pda
-              ON pda.password_id = pm.id
-            LEFT JOIN user_departments ud
-              ON ud.department_id = pda.department_id AND ud.user_id = :uid2";
-    $params[':uid'] = $userId;
-    $params[':uid2'] = $userId;
-    
-    if ($role === 'lector') {
-        // Viewer: solo asignadas explícitamente (directas o por departamento)
-        $where = ["(pa.user_id IS NOT NULL OR ud.user_id IS NOT NULL)"]; 
-    } else {
-        // Editor u otros: asignadas (directas o por departamento) o globales
-        $where = ["(pa.user_id IS NOT NULL OR ud.user_id IS NOT NULL OR pm.owner_user_id IS NULL)"];
-    }
-}
+ if ($role === 'admin') {
+     // El admin ve todas las contraseñas
+     $sql = "SELECT DISTINCT pm.* FROM passwords_manager pm";
+     $where = [];
+ } else {
+     // Resto de roles: solo contraseñas asignadas explícitamente, por departamento o de las que es propietario
+     $sql = "SELECT DISTINCT pm.* FROM passwords_manager pm
+             LEFT JOIN passwords_access pa
+               ON pa.password_id = pm.id AND pa.user_id = :uid
+             LEFT JOIN password_department_access pda
+               ON pda.password_id = pm.id
+             LEFT JOIN user_departments ud
+               ON ud.department_id = pda.department_id AND ud.user_id = :uid2";
+     $params[':uid'] = $userId;
+     $params[':uid2'] = $userId;
+     $params[':uid_owner'] = $userId;
+
+     // Tanto lectores como editores: sólo ven
+     // - accesos directos (passwords_access)
+     // - accesos por departamento (password_department_access + user_departments)
+     // - contraseñas de las que son propietarios
+     $where = ["(pa.user_id IS NOT NULL OR ud.user_id IS NOT NULL OR pm.owner_user_id = :uid_owner)"];
+ }
 
 if (!empty($searchTerm)) {
     $where[] = "(pm.linea_de_negocio LIKE :search1 OR pm.nombre LIKE :search2 OR pm.usuario LIKE :search3 OR pm.descripcion LIKE :search4)";
