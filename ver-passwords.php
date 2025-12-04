@@ -80,29 +80,27 @@ echo "<!DOCTYPE html>
 <body>
     " . $headerHtml . "
     <main class='page'>
-    
-    <div class='page-header'>
-        <h1 class='page-title'>Contraseñas</h1>
-        <p class='page-subtitle'>" . count($passwords) . " credenciales almacenadas" . (!empty($searchTerm) ? " · Filtrado por: <strong>" . htmlspecialchars($searchTerm) . "</strong>" : "") . "</p>
-    </div>
-
-    <div class='search-wrapper'>
-        <form action='ver-passwords.php' method='get' class='search-form'>
-            <div class='search-input-container'>
-                <svg class='search-icon' xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+    <section class='page-hero'>
+        <div class='page-hero__content'>
+            <h1 class='page-hero__title'>Contraseñas</h1>
+            <p class='page-hero__subtitle'>Gestiona y accede a todas tus credenciales de forma segura</p>
+        </div>
+        <form action='ver-passwords.php' method='get' class='search-box'>
+            <div class='search-box__input-wrapper'>
+                <svg class='search-box__icon' xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
                     <circle cx='11' cy='11' r='8'></circle>
-                    <path d='m21 21-4.35-4.35'></path>
+                    <path d='m21 21-4.3-4.3'></path>
                 </svg>
-                <input type='text' id='search' name='search' placeholder='Buscar por nombre, usuario, línea de negocio...' value='" . htmlspecialchars($searchTerm, ENT_QUOTES, 'UTF-8') . "' autocomplete='off'>
-                " . (!empty($searchTerm) ? "<button type='button' id='clear-search' class='clear-search-btn' title='Limpiar búsqueda'>
+                <input type='text' id='search' name='search' placeholder='Buscar por nombre, usuario, descripción...' value='" . htmlspecialchars($searchTerm, ENT_QUOTES, 'UTF-8') . "'>
+                <button type='button' id='clear-search' class='search-box__clear' title='Limpiar búsqueda'>
                     <svg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
                         <path d='M18 6 6 18'></path>
                         <path d='m6 6 12 12'></path>
                     </svg>
-                </button>" : "") . "
+                </button>
             </div>
         </form>
-    </div>
+    </section>
 
     <div class='table-container'>
         <div class='table-card'>

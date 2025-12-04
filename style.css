@@ -496,49 +496,65 @@ h1 {
     }
 }
 
-/* ======= Passwords page: header and search ======= */
-.page-header {
-    max-width: 1120px; /* similar ancho que la tarjeta/tabla */
-    margin: 0 auto 20px auto;
-    padding: 0 16px;
+/* ======= Page Hero: Modern title + search section ======= */
+.page-hero {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 24px 32px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
 }
 
-.page-header .page-title {
-    font-size: 28px;
+.page-hero__content {
+    text-align: center;
+}
+
+.page-hero__title {
+    font-size: 36px;
     font-weight: 700;
     color: #0f172a;
-    margin: 0 0 4px 0;
-    letter-spacing: -0.3px;
+    margin: 0 0 8px 0;
+    letter-spacing: -0.025em;
+    line-height: 1.2;
 }
 
-.page-header .page-subtitle {
-    font-size: 14px;
+.page-hero__subtitle {
+    font-size: 16px;
     color: #64748b;
     margin: 0;
     font-weight: 400;
 }
 
-.page-header .page-subtitle strong {
-    color: #23AAC5;
-    font-weight: 600;
-}
-
-.search-wrapper {
-    max-width: 600px;
-    margin: 0 auto 24px auto;
-}
-
-.search-form {
+/* Search Box */
+.search-box {
     width: 100%;
+    max-width: 560px;
 }
 
-.search-input-container {
+.search-box__input-wrapper {
     position: relative;
     display: flex;
     align-items: center;
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-radius: 14px;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
 }
 
-.search-icon {
+.search-box__input-wrapper:hover {
+    border-color: #cbd5e1;
+}
+
+.search-box__input-wrapper:focus-within {
+    border-color: #23AAC5;
+    box-shadow: 0 4px 20px rgba(35, 170, 197, 0.15), 0 0 0 4px rgba(35, 170, 197, 0.08);
+}
+
+.search-box__icon {
     position: absolute;
     left: 16px;
     color: #94a3b8;
@@ -546,57 +562,93 @@ h1 {
     transition: color 0.2s ease;
 }
 
-.search-input-container:focus-within .search-icon {
+.search-box__input-wrapper:focus-within .search-box__icon {
     color: #23AAC5;
 }
 
-.search-form input#search {
+.search-box input#search {
     width: 100%;
     height: 52px;
-    padding: 0 48px 0 52px;
+    padding: 14px 48px 14px 48px;
+    border: none;
+    border-radius: 14px;
     font-size: 15px;
-    border: 2px solid #e2e8f0;
-    border-radius: 12px;
-    background: #fff;
-    color: #0f172a;
-    transition: all 0.2s ease;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    font-family: 'Montserrat', sans-serif;
+    color: #1e293b;
+    background: transparent;
 }
 
-.search-form input#search::placeholder {
+.search-box input#search:focus {
+    outline: none;
+}
+
+.search-box input#search::placeholder {
     color: #94a3b8;
 }
 
-.search-form input#search:hover {
-    border-color: #cbd5e1;
-}
-
-.search-form input#search:focus {
-    outline: none;
-    border-color: #23AAC5;
-    box-shadow: 0 0 0 4px rgba(35, 170, 197, 0.12);
-}
-
-.search-form .clear-search-btn {
+.search-box__clear {
     position: absolute;
     right: 8px;
     width: 36px;
     height: 36px;
-    padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;
     background: #f1f5f9;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     color: #64748b;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: all 0.2s ease;
 }
 
-.search-form .clear-search-btn:hover {
+.search-box__clear:hover {
     background: #e2e8f0;
-    color: #0f172a;
+    color: #334155;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .page-hero {
+        padding: 28px 16px 24px 16px;
+        gap: 20px;
+    }
+    
+    .page-hero__title {
+        font-size: 28px;
+    }
+    
+    .page-hero__subtitle {
+        font-size: 14px;
+    }
+    
+    .search-box input#search {
+        height: 48px;
+        font-size: 14px;
+    }
+}
+
+/* Legacy search form (keep for backwards compatibility) */
+.search-form {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 8px auto 18px auto;
+    width: 100%;
+    max-width: 840px;
+}
+.search-form label { font-weight: 600; color: #0f172a; }
+.search-form input#search {
+    flex: 1 1 520px;
+    min-width: 240px;
+    height: 40px;
+    padding: 8px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+}
+.search-form .clear-search-btn {
+    height: 40px;
 }
 
 /* Remove collapsed top margins inside page to avoid gap below sticky header */
@@ -967,6 +1019,68 @@ input[type="checkbox"] {
 
 /* Toggle password button states */
 .toggle-password-btn.showing { color: #64748b; }
+
+/* Search form styling */
+.search-form {
+    max-width: 1100px;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.search-form label {
+    font-weight: 500;
+    color: #475569;
+    font-size: 14px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.search-form input {
+    flex: 1;
+    min-width: 300px;
+    padding: 12px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    background: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.search-form input:focus {
+    outline: none;
+    border-color: #23AAC5;
+    box-shadow: 0 0 0 3px rgba(35, 170, 197, 0.1);
+}
+
+/* Modern clear search button */
+.clear-search-btn {
+    padding: 10px 16px;
+    background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    font-size: 13px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(100, 116, 139, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    width: 110px;
+    justify-content: center;
+}
+
+.clear-search-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(100, 116, 139, 0.3);
+    background: linear-gradient(135deg, #475569 0%, #334155 100%);
+}
 
 /* ======= Site Header (Senior UX Design) ======= */
 .site-header {
