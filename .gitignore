@@ -2,7 +2,6 @@
 .env
 .env.*
 /vendor/
-/share/vendor/
 /share/.env
 /composer.lock
 # OS/editor noise
