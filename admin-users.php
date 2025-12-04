@@ -49,6 +49,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $email = trim((string)($_POST['email'] ?? ''));
         $role  = trim((string)($_POST['role'] ?? 'editor'));
         $password = (string)($_POST['password'] ?? '');
+        $nombre = trim((string)($_POST['nombre'] ?? ''));
+        $apellidos = trim((string)($_POST['apellidos'] ?? ''));
         $userDepts = $_POST['user_departments'] ?? [];
         if (!is_array($userDepts)) { $userDepts = []; }
         $userDepts = array_map('intval', $userDepts);
@@ -62,6 +64,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($password === '' || strlen($password) < 8) {
             $errors[] = 'La contraseña es obligatoria y debe tener al menos 8 caracteres';
         }
+        if (mb_strlen($nombre) > 100 || mb_strlen($apellidos) > 100) {
+            $errors[] = 'Nombre y apellidos no pueden superar los 100 caracteres';
+        }
 
         if (!$errors) {
             try {
@@ -73,8 +78,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     throw new RuntimeException('Ya existe un usuario con ese email');
                 }
                 $hash = password_hash($password, PASSWORD_DEFAULT);
-                $st = $pdo->prepare('INSERT INTO users (email, password_hash, role, created_at) VALUES (:email, :ph, :role, NOW())');
-                $st->execute([':email' => $email, ':ph' => $hash, ':role' => $role]);
+                $st = $pdo->prepare('INSERT INTO users (email, password_hash, role, nombre, apellidos, created_at) VALUES (:email, :ph, :role, :nombre, :apellidos, NOW())');
+                $st->execute([
+                    ':email' => $email,
+                    ':ph' => $hash,
+                    ':role' => $role,
+                    ':nombre' => $nombre !== '' ? $nombre : null,
+                    ':apellidos' => $apellidos !== '' ? $apellidos : null,
+                ]);
                 $newUserId = (int)$pdo->lastInsertId();
 
                 // Insertar departamentos iniciales si se han seleccionado
@@ -101,6 +112,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $email = trim((string)($_POST['email'] ?? ''));
         $role  = trim((string)($_POST['role'] ?? ''));
         $password = (string)($_POST['password'] ?? ''); // opcional
+        $nombre = trim((string)($_POST['nombre'] ?? ''));
+        $apellidos = trim((string)($_POST['apellidos'] ?? ''));
         $userDepts = $_POST['user_departments'] ?? [];
         if (!is_array($userDepts)) { $userDepts = []; }
         $userDepts = array_map('intval', $userDepts);
@@ -109,6 +122,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) { $errors[] = 'Email inválido'; }
         if ($role !== '' && !valid_role($role)) { $errors[] = 'Rol inválido'; }
         if ($password !== '' && strlen($password) < 8) { $errors[] = 'Si se define contraseña, mínimo 8 caracteres'; }
+        if (mb_strlen($nombre) > 100 || mb_strlen($apellidos) > 100) {
+            $errors[] = 'Nombre y apellidos no pueden superar los 100 caracteres';
+        }
 
         if (!$errors) {
             try {
@@ -125,8 +141,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if ($st->fetch()) { throw new RuntimeException('Ya existe otro usuario con ese email'); }
 
                 // actualizar usuario
-                $params = [':email' => $email, ':role' => ($role !== '' ? $role : $u['role']), ':id' => $id];
-                $sql = 'UPDATE users SET email = :email, role = :role';
+                $params = [
+                    ':email' => $email,
+                    ':role' => ($role !== '' ? $role : $u['role']),
+                    ':nombre' => $nombre !== '' ? $nombre : null,
+                    ':apellidos' => $apellidos !== '' ? $apellidos : null,
+                    ':id' => $id,
+                ];
+                $sql = 'UPDATE users SET email = :email, role = :role, nombre = :nombre, apellidos = :apellidos';
                 if ($password !== '') {
                     $sql .= ', password_hash = :ph';
                     $params[':ph'] = password_hash($password, PASSWORD_DEFAULT);
@@ -187,12 +209,12 @@ try {
     $allDepartments = $st->fetchAll(PDO::FETCH_ASSOC) ?: [];
 } catch (Throwable $e) {}
 
-// Soporte de edición por GET ?edit=ID
+// Soporte de edición por GET ?edit=ID (datos básicos, el modal usa data-* de la tabla)
 $editId = isset($_GET['edit']) ? (int)$_GET['edit'] : 0;
 $editUser = null;
 $editUserDepts = [];
 if ($editId > 0) {
-    $st = $pdo->prepare('SELECT id, email, role, created_at, last_login FROM users WHERE id = :id');
+    $st = $pdo->prepare('SELECT id, email, role, nombre, apellidos, created_at, last_login FROM users WHERE id = :id');
     $st->execute([':id' => $editId]);
     $editUser = $st->fetch(PDO::FETCH_ASSOC) ?: null;
     if ($editUser) {
@@ -205,7 +227,7 @@ if ($editId > 0) {
 // Listado básico con departamentos (sin paginación por ahora)
 $users = [];
 try {
-    $st = $pdo->query('SELECT id, email, role, created_at, last_login FROM users ORDER BY created_at DESC');
+    $st = $pdo->query('SELECT id, email, role, nombre, apellidos, created_at, last_login FROM users ORDER BY created_at DESC');
     $users = $st->fetchAll(PDO::FETCH_ASSOC) ?: [];
     
     // Cargar departamentos por usuario
@@ -283,6 +305,7 @@ $headerHtml = ob_get_clean();
             <thead>
               <tr>
                 <th>ID</th>
+                <th>Nombre</th>
                 <th>Email</th>
                 <th>Rol</th>
                 <th>Departamentos</th>
@@ -295,6 +318,14 @@ $headerHtml = ob_get_clean();
               <?php foreach ($users as $u): ?>
                 <tr>
                   <td><?= (int)$u['id'] ?></td>
+                  <td>
+                    <?php
+                      $fullName = trim(($u['nombre'] ?? '') . ' ' . ($u['apellidos'] ?? ''));
+                      echo $fullName !== ''
+                        ? htmlspecialchars($fullName, ENT_QUOTES, 'UTF-8')
+                        : '<span class="text-muted">—</span>';
+                    ?>
+                  </td>
                   <td><?= htmlspecialchars($u['email'], ENT_QUOTES, 'UTF-8') ?></td>
                   <td><?= htmlspecialchars($u['role'], ENT_QUOTES, 'UTF-8') ?></td>
                   <td>
@@ -312,7 +343,7 @@ $headerHtml = ob_get_clean();
                   <td><?= htmlspecialchars($u['last_login'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
                   <td>
                     <div class="button-container">
-                      <a class="modify-btn" href="admin-users.php?edit=<?= (int)$u['id'] ?>" title="Editar" aria-label="Editar" data-id="<?= (int)$u['id'] ?>" data-email="<?= htmlspecialchars($u['email'], ENT_QUOTES, 'UTF-8') ?>" data-role="<?= htmlspecialchars($u['role'], ENT_QUOTES, 'UTF-8') ?>">
+                      <a class="modify-btn" href="admin-users.php?edit=<?= (int)$u['id'] ?>" title="Editar" aria-label="Editar" data-id="<?= (int)$u['id'] ?>" data-email="<?= htmlspecialchars($u['email'], ENT_QUOTES, 'UTF-8') ?>" data-role="<?= htmlspecialchars($u['role'], ENT_QUOTES, 'UTF-8') ?>" data-nombre="<?= htmlspecialchars($u['nombre'] ?? '', ENT_QUOTES, 'UTF-8') ?>" data-apellidos="<?= htmlspecialchars($u['apellidos'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                           <path d="M12 20h9"/>
                           <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>
@@ -396,6 +427,16 @@ $headerHtml = ob_get_clean();
             <input type="hidden" id="form-id" name="id" value="">
 
             <div class="modal-form-grid">
+              <div class="form-group">
+                <label for="nombre">Nombre</label>
+                <input type="text" id="nombre" name="nombre" maxlength="100" placeholder="Nombre">
+              </div>
+
+              <div class="form-group">
+                <label for="apellidos">Apellidos</label>
+                <input type="text" id="apellidos" name="apellidos" maxlength="100" placeholder="Apellidos">
+              </div>
+
               <div class="form-group">
                 <label for="email">Email</label>
                 <input type="email" id="email" name="email" required placeholder="usuario@ejemplo.com">

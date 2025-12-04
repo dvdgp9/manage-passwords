@@ -46,6 +46,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const modalTitle = document.getElementById('modal-user-title');
         const formAction = document.getElementById('form-action');
         const formId = document.getElementById('form-id');
+        const nombreInput = adminForm.querySelector('#nombre');
+        const apellidosInput = adminForm.querySelector('#apellidos');
         const emailInput = adminForm.querySelector('#email');
         const roleSelect = adminForm.querySelector('#role');
         const pwdInput = adminForm.querySelector('#password');
@@ -64,6 +66,8 @@ document.addEventListener('DOMContentLoaded', function() {
             modalTitle.textContent = 'Nuevo usuario';
             formAction.value = 'create';
             formId.value = '';
+            if (nombreInput) nombreInput.value = '';
+            if (apellidosInput) apellidosInput.value = '';
             emailInput.value = '';
             roleSelect.value = 'editor';
             pwdInput.value = '';
@@ -80,10 +84,12 @@ document.addEventListener('DOMContentLoaded', function() {
             emailInput.focus();
         };
 
-        const openEdit = async (id, email, role) => {
+        const openEdit = async (id, email, role, nombre, apellidos) => {
             modalTitle.textContent = 'Editar usuario';
             formAction.value = 'update';
             formId.value = String(id || '');
+            if (nombreInput) nombreInput.value = nombre || '';
+            if (apellidosInput) apellidosInput.value = apellidos || '';
             emailInput.value = email || '';
             roleSelect.value = role || 'editor';
             pwdInput.value = '';
@@ -122,7 +128,13 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.tabla-usuarios a.modify-btn[data-id]').forEach(a => {
             a.addEventListener('click', (e) => {
                 e.preventDefault();
-                openEdit(a.getAttribute('data-id'), a.getAttribute('data-email'), a.getAttribute('data-role'));
+                openEdit(
+                    a.getAttribute('data-id'),
+                    a.getAttribute('data-email'),
+                    a.getAttribute('data-role'),
+                    a.getAttribute('data-nombre'),
+                    a.getAttribute('data-apellidos')
+                );
             });
         });
 
