@@ -81,38 +81,81 @@ try {
     }
     $pdo->commit();
 
-    // Display success message and saved data
+    // Prepare reusable header HTML
+    ob_start();
+    include __DIR__ . '/header.php';
+    $headerHtml = ob_get_clean();
+
+    // Display success message and saved data with modern layout
+    $linea = htmlspecialchars($_POST['linea_de_negocio'], ENT_QUOTES, 'UTF-8');
+    $nombre = htmlspecialchars($_POST['nombre'], ENT_QUOTES, 'UTF-8');
+    $descripcion = isset($_POST['descripcion']) ? htmlspecialchars($_POST['descripcion'], ENT_QUOTES, 'UTF-8') : 'N/A';
+    $usuario = htmlspecialchars($_POST['usuario'], ENT_QUOTES, 'UTF-8');
+    $enlaceEsc = htmlspecialchars($enlace, ENT_QUOTES, 'UTF-8');
+    $infoAdicional = isset($_POST['info_adicional']) ? htmlspecialchars($_POST['info_adicional'], ENT_QUOTES, 'UTF-8') : 'N/A';
+
     echo "<!DOCTYPE html>
     <html lang='es'>
     <head>
         <meta charset='UTF-8'>
         <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-        <title>Datos Guardados</title>
+        <title>Contraseña guardada</title>
         <link href='https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap' rel='stylesheet'>
         <link rel='stylesheet' href='style.css'>
     </head>
     <body>
-        <img src='https://ebone.es/wp-content/uploads/2024/11/Logo-Grupo-Lineas-cuadrado-1500px.png' alt='Logo Grupo Ebone' class='logo'>
-        <h1>Datos Guardados Correctamente</h1>
-        <p>Los datos de acceso se han guardado correctamente. Aquí los tienes, por si necesitas revisar:</p>
-        <table>
-            <tr>
-                <th>Línea de Negocio</th>
-                <th>Nombre</th>
-                <th>Descripción</th>
-                <th>Usuario</th>
-                <th>Enlace</th>
-                <th>Info Adicional</th>
-            </tr>
-            <tr>
-                <td>" . htmlspecialchars($_POST['linea_de_negocio']) . "</td>
-                <td>" . htmlspecialchars($_POST['nombre']) . "</td>
-                <td>" . (isset($_POST['descripcion']) ? htmlspecialchars($_POST['descripcion']) : 'N/A') . "</td>
-                <td>" . htmlspecialchars($_POST['usuario']) . "</td>
-                <td><a href='" . htmlspecialchars($enlace) . "' target='_blank'>" . htmlspecialchars($enlace) . "</a></td>
-                <td>" . (isset($_POST['info_adicional']) ? htmlspecialchars($_POST['info_adicional']) : 'N/A') . "</td>
-            </tr>
-        </table>
+        " . $headerHtml . "
+        <main class='page'>
+          <div class='success-container'>
+            <div class='success-card'>
+              <div class='success-card__icon'>
+                <svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+                  <path d='M20 6L9 17l-5-5'></path>
+                </svg>
+              </div>
+              <div class='success-card__content'>
+                <h1 class='success-card__title'>Contraseña guardada correctamente</h1>
+                <p class='success-card__subtitle'>Hemos almacenado la nueva credencial y aplicado los permisos seleccionados.</p>
+              </div>
+              <div class='success-card__actions'>
+                <a href='ver-passwords.php' class='btn-primary'>
+                  Ver todas las contraseñas
+                </a>
+                <a href='introducir.php' class='btn-secondary'>
+                  Crear otra contraseña
+                </a>
+              </div>
+            </div>
+
+            <div class='table-card success-details'>
+              <div class='table-card__inner'>
+                <h2 class='success-details__title'>Resumen de la nueva contraseña</h2>
+                <table class='tabla-passwords tabla-passwords--compact'>
+                  <thead>
+                    <tr>
+                      <th>Línea de Negocio</th>
+                      <th>Nombre</th>
+                      <th>Usuario</th>
+                      <th>Enlace</th>
+                      <th>Descripción</th>
+                      <th>Info Adicional</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>" . $linea . "</td>
+                      <td>" . $nombre . "</td>
+                      <td>" . $usuario . "</td>
+                      <td><a href='" . $enlaceEsc . "' target='_blank'>" . $enlaceEsc . "</a></td>
+                      <td>" . $descripcion . "</td>
+                      <td>" . $infoAdicional . "</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </main>
     </body>
     </html>";
 

@@ -2225,3 +2225,96 @@ input[type="checkbox"] {
     align-items: center;
     gap: 8px;
 }
+
+/* ======= Success page after creating password ======= */
+.success-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 24px 60px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.success-card {
+    background: linear-gradient(135deg, #ecfeff 0%, #f9fafb 100%);
+    border-radius: 20px;
+    border: 1px solid #bae6fd;
+    padding: 24px 24px 20px 24px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 16px 24px;
+    align-items: center;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+}
+
+.success-card__icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 999px;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #16a34a;
+    box-shadow: 0 8px 18px rgba(22, 163, 74, 0.18);
+}
+
+.success-card__title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 4px 0;
+}
+
+.success-card__subtitle {
+    font-size: 14px;
+    color: #64748b;
+    margin: 0;
+}
+
+.success-card__content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.success-card__actions {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 4px;
+}
+
+.success-details {
+    margin-top: 4px;
+}
+
+.success-details__title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #0f172a;
+    margin: 0 0 12px 0;
+}
+
+.tabla-passwords--compact thead th {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.tabla-passwords--compact tbody td {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+@media (max-width: 768px) {
+    .success-card {
+        grid-template-columns: 1fr;
+        text-align: left;
+    }
+
+    .success-card__actions {
+        justify-content: flex-start;
+    }
+}
