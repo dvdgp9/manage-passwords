@@ -66,7 +66,7 @@ $stmt = $pdo->prepare("
 $stmt->execute([$user['id']]);
 $departments = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-// Get user display name
+// Get user display name: nombre completo si existe; si no, email completo
 $displayName = '';
 if (!empty($user['nombre'])) {
     $displayName = $user['nombre'];
@@ -74,7 +74,7 @@ if (!empty($user['nombre'])) {
         $displayName .= ' ' . $user['apellidos'];
     }
 } else {
-    $displayName = explode('@', $user['email'])[0];
+    $displayName = $user['email'];
 }
 
 // Avatar initial

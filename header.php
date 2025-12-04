@@ -14,7 +14,7 @@ $isIntroducirPage = $currentPage === 'introducir.php';
 $isAdminUsersPage = $currentPage === 'admin-users.php';
 $isMiCuentaPage = $currentPage === 'mi-cuenta.php';
 
-// Get user display name (nombre if available, otherwise first part of email)
+// Get user display name (nombre completo si existe; si no, email completo)
 $userDisplayName = '';
 if ($user) {
     if (!empty($user['nombre'])) {
@@ -23,7 +23,7 @@ if ($user) {
             $userDisplayName .= ' ' . $user['apellidos'];
         }
     } else {
-        $userDisplayName = explode('@', $user['email'] ?? 'Usuario')[0];
+        $userDisplayName = $user['email'] ?? 'Usuario';
     }
 }
 ?>
