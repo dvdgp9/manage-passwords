@@ -49,6 +49,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $email = trim((string)($_POST['email'] ?? ''));
         $role  = trim((string)($_POST['role'] ?? 'editor'));
         $password = (string)($_POST['password'] ?? '');
+        $userDepts = $_POST['user_departments'] ?? [];
+        if (!is_array($userDepts)) { $userDepts = []; }
+        $userDepts = array_map('intval', $userDepts);
 
         if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $errors[] = 'Email inválido';
@@ -72,6 +75,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $hash = password_hash($password, PASSWORD_DEFAULT);
                 $st = $pdo->prepare('INSERT INTO users (email, password_hash, role, created_at) VALUES (:email, :ph, :role, NOW())');
                 $st->execute([':email' => $email, ':ph' => $hash, ':role' => $role]);
+                $newUserId = (int)$pdo->lastInsertId();
+
+                // Insertar departamentos iniciales si se han seleccionado
+                if ($userDepts) {
+                    $ins = $pdo->prepare('INSERT INTO user_departments (user_id, department_id) VALUES (:uid, :did)');
+                    foreach ($userDepts as $did) {
+                        if ($did > 0) {
+                            $ins->execute([':uid' => $newUserId, ':did' => $did]);
+                        }
+                    }
+                }
                 $pdo->commit();
                 header('Location: admin-users.php?notice=created');
                 exit;
