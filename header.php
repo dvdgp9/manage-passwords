@@ -11,7 +11,21 @@ $user = current_user();
 $currentPage = basename($_SERVER['PHP_SELF']);
 $isVerPage = in_array($currentPage, ['ver-passwords.php', 'edit-password.php']);
 $isIntroducirPage = $currentPage === 'introducir.php';
- $isAdminUsersPage = $currentPage === 'admin-users.php';
+$isAdminUsersPage = $currentPage === 'admin-users.php';
+$isMiCuentaPage = $currentPage === 'mi-cuenta.php';
+
+// Get user display name (nombre if available, otherwise first part of email)
+$userDisplayName = '';
+if ($user) {
+    if (!empty($user['nombre'])) {
+        $userDisplayName = $user['nombre'];
+        if (!empty($user['apellidos'])) {
+            $userDisplayName .= ' ' . $user['apellidos'];
+        }
+    } else {
+        $userDisplayName = explode('@', $user['email'] ?? 'Usuario')[0];
+    }
+}
 ?>
 <header class="site-header">
   <div class="site-header__inner">
@@ -47,10 +61,13 @@ $isIntroducirPage = $currentPage === 'introducir.php';
     </nav>
     <div class="site-header__user">
       <?php if ($user): ?>
-        <div class="user-info">
-          <div class="user-avatar"><?= strtoupper(substr($user['email'] ?? 'U', 0, 1)) ?></div>
-          <span class="user-label"><?= htmlspecialchars(($user['email'] ?? ''), ENT_QUOTES, 'UTF-8') ?><?= isset($user['role']) && $user['role'] === 'admin' ? ' · Admin' : '' ?></span>
-        </div>
+        <a href="mi-cuenta.php" class="user-info-link<?= $isMiCuentaPage ? ' active' : '' ?>" title="Mi cuenta">
+          <div class="user-avatar"><?= strtoupper(substr($user['nombre'] ?? $user['email'] ?? 'U', 0, 1)) ?></div>
+          <span class="user-label"><?= htmlspecialchars($userDisplayName, ENT_QUOTES, 'UTF-8') ?></span>
+          <svg class="user-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </a>
         <form action="logout.php" method="post" class="logout-form">
           <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf, ENT_QUOTES, 'UTF-8') ?>">
           <button type="submit" class="logout-btn" title="Cerrar sesión">
@@ -59,7 +76,6 @@ $isIntroducirPage = $currentPage === 'introducir.php';
               <polyline points="16,17 21,12 16,7"></polyline>
               <line x1="21" y1="12" x2="9" y2="12"></line>
             </svg>
-            Salir
           </button>
         </form>
       <?php else: ?>
