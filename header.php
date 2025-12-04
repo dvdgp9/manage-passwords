@@ -17,8 +17,8 @@ $isIntroducirPage = $currentPage === 'introducir.php';
   <div class="site-header__inner">
     <div class="site-header__brand">
       <a href="ver-passwords.php" class="brand-link">
-        <img src="https://ebone.es/wp-content/uploads/2024/11/Logo-Grupo-Lineas-cuadrado-1500px.png" alt="Grupo Ebone" class="brand-logo">
-        <span class="brand-title">Gestor de Contraseñas</span>
+        <img src="https://ebone.es/wp-content/uploads/2025/11/Logo-Grupo-Ebone-Horizontal.png" alt="Grupo Ebone" class="brand-logo">
+        <span class="brand-title"></span>
       </a>
     </div>
     <nav class="site-header__nav">
