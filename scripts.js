@@ -36,44 +36,32 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // ===== Admin Users: create/edit form UX (initialized on load) =====
-    const initAdminUsers = () => {
-        const adminFormSection = document.getElementById('admin-user-form');
+    // ===== Admin Users: Modal-based create/edit =====
+    const initAdminUsersModal = () => {
+        const modal = document.getElementById('modal-user');
         const adminForm = document.getElementById('form-admin-user');
         const btnNewUser = document.getElementById('btn-new-user');
-        if (!(adminFormSection && adminForm && btnNewUser)) return;
-        const formTitle = document.getElementById('form-title');
+        if (!modal || !adminForm || !btnNewUser) return;
+
+        const modalTitle = document.getElementById('modal-user-title');
         const formAction = document.getElementById('form-action');
         const formId = document.getElementById('form-id');
         const emailInput = adminForm.querySelector('#email');
         const roleSelect = adminForm.querySelector('#role');
         const pwdInput = adminForm.querySelector('#password');
-        const pwdToggle = adminForm.querySelector('#btn-toggle-password');
         const confirmInput = adminForm.querySelector('#confirm_password');
-        const confirmToggle = adminForm.querySelector('#btn-toggle-confirm');
-        const btnCancel = adminForm.querySelector('#btn-cancel-form');
-        const emailErr = adminForm.querySelector('#email-error');
-        const pwdErr = adminForm.querySelector('#password-error');
-        const confirmErr = adminForm.querySelector('#confirm-error');
+        const passwordLabel = document.getElementById('password-label');
+        const deptsContainer = document.getElementById('user-depts-container');
+        const submitBtn = document.getElementById('btn-submit-user');
 
-        const showError = (el, msg) => {
-            if (!el) return;
-            el.textContent = msg || '';
-            el.classList.toggle('hidden', !msg);
+        const openModal = () => modal.classList.remove('hidden');
+        const closeModal = () => {
+            modal.classList.add('hidden');
+            adminForm.reset();
         };
-        const hideErrors = () => {
-            showError(emailErr, '');
-            showError(pwdErr, '');
-            showError(confirmErr, '');
-        };
-        const toggleField = (input, btn) => {
-            if (!input || !btn) return;
-            const isHidden = input.type === 'password';
-            input.type = isHidden ? 'text' : 'password';
-            btn.textContent = isHidden ? 'Ocultar' : 'Mostrar';
-        };
+
         const openCreate = () => {
-            formTitle.textContent = 'Crear usuario';
+            modalTitle.textContent = 'Nuevo usuario';
             formAction.value = 'create';
             formId.value = '';
             emailInput.value = '';
@@ -82,11 +70,15 @@ document.addEventListener('DOMContentLoaded', function() {
             confirmInput.value = '';
             pwdInput.required = true;
             confirmInput.required = true;
-            hideErrors();
-            adminFormSection.classList.remove('hidden');
+            passwordLabel.textContent = 'Contraseña';
+            if (deptsContainer) deptsContainer.style.display = 'none';
+            submitBtn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg> Crear usuario`;
+            openModal();
+            emailInput.focus();
         };
-        const openEdit = (id, email, role) => {
-            formTitle.textContent = 'Editar usuario';
+
+        const openEdit = async (id, email, role) => {
+            modalTitle.textContent = 'Editar usuario';
             formAction.value = 'update';
             formId.value = String(id || '');
             emailInput.value = email || '';
@@ -95,76 +87,75 @@ document.addEventListener('DOMContentLoaded', function() {
             confirmInput.value = '';
             pwdInput.required = false;
             confirmInput.required = false;
-            hideErrors();
-            adminFormSection.classList.remove('hidden');
+            passwordLabel.textContent = 'Nueva contraseña (opcional)';
+            submitBtn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg> Guardar cambios`;
+            
+            // Show departments container for editing
+            if (deptsContainer) {
+                deptsContainer.style.display = 'block';
+                // Fetch user's current departments and check them
+                try {
+                    const res = await fetch(`api-departments.php?action=user_departments&user_id=${id}`);
+                    const data = await res.json();
+                    if (data.success) {
+                        const userDeptIds = (data.departments || []).map(d => d.id);
+                        deptsContainer.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                            cb.checked = userDeptIds.includes(parseInt(cb.value));
+                        });
+                    }
+                } catch (e) {
+                    console.error('Error loading user departments:', e);
+                }
+            }
+            
+            openModal();
+            emailInput.focus();
         };
-        const hideForm = () => { adminFormSection.classList.add('hidden'); };
 
+        // Open create modal
         btnNewUser.addEventListener('click', (e) => { e.preventDefault(); openCreate(); });
 
-        // Direct bindings
-        document.querySelectorAll('a.modify-btn[data-id]').forEach(a => {
+        // Edit buttons in table
+        document.querySelectorAll('.tabla-usuarios a.modify-btn[data-id]').forEach(a => {
             a.addEventListener('click', (e) => {
                 e.preventDefault();
                 openEdit(a.getAttribute('data-id'), a.getAttribute('data-email'), a.getAttribute('data-role'));
             });
         });
-        if (pwdToggle) pwdToggle.addEventListener('click', (e) => { e.preventDefault(); toggleField(pwdInput, pwdToggle); });
-        if (confirmToggle) confirmToggle.addEventListener('click', (e) => { e.preventDefault(); toggleField(confirmInput, confirmToggle); });
-        if (btnCancel) btnCancel.addEventListener('click', (e) => {
-            e.preventDefault();
-            hideForm();
-            if (window.location.search.includes('edit=')) {
-                const url = new URL(window.location.href);
-                url.searchParams.delete('edit');
-                window.history.replaceState({}, '', url.toString());
-            }
+
+        // Close modal buttons
+        modal.querySelectorAll('[data-close-modal]').forEach(btn => {
+            btn.addEventListener('click', closeModal);
         });
 
-        // Event delegation fallback (sin toggles de contraseña, se manejan globalmente)
-        document.addEventListener('click', (e) => {
-            const t = e.target;
-            if (!t) return;
-            const btn = t.closest ? t.closest('#btn-new-user, #btn-cancel-form, a.modify-btn[data-id]') : null;
-            if (!btn) return;
-            if (btn.matches('#btn-new-user')) {
-                e.preventDefault();
-                openCreate();
-            } else if (btn.matches('#btn-cancel-form')) {
-                e.preventDefault();
-                hideForm();
-                if (window.location.search.includes('edit=')) {
-                    const url = new URL(window.location.href);
-                    url.searchParams.delete('edit');
-                    window.history.replaceState({}, '', url.toString());
-                }
-            } else if (btn.matches('a.modify-btn[data-id]')) {
-                e.preventDefault();
-                openEdit(btn.getAttribute('data-id'), btn.getAttribute('data-email'), btn.getAttribute('data-role'));
-            }
-        }, { passive: false });
+        // Close on backdrop click
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+
+        // Form validation on submit
         adminForm.addEventListener('submit', (e) => {
-            hideErrors();
-            let ok = true;
             const emailVal = (emailInput.value || '').trim();
             const isCreate = formAction.value === 'create';
             const pwdVal = pwdInput.value || '';
             const confirmVal = confirmInput.value || '';
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(emailVal)) { showError(emailErr, 'Introduce un email válido'); ok = false; }
-            if (isCreate) {
-                if (pwdVal.length < 8) { showError(pwdErr, 'La contraseña debe tener al menos 8 caracteres'); ok = false; }
-                if (pwdVal !== confirmVal) { showError(confirmErr, 'Las contraseñas no coinciden'); ok = false; }
-            } else if (pwdVal) {
-                if (pwdVal.length < 8) { showError(pwdErr, 'La contraseña debe tener al menos 8 caracteres'); ok = false; }
-                if (pwdVal !== confirmVal) { showError(confirmErr, 'Las contraseñas no coinciden'); ok = false; }
+            
+            let errors = [];
+            if (!emailRegex.test(emailVal)) errors.push('Introduce un email válido');
+            if (isCreate && pwdVal.length < 8) errors.push('La contraseña debe tener al menos 8 caracteres');
+            if (pwdVal && pwdVal !== confirmVal) errors.push('Las contraseñas no coinciden');
+            if (!isCreate && pwdVal && pwdVal.length < 8) errors.push('La contraseña debe tener al menos 8 caracteres');
+            
+            if (errors.length > 0) {
+                e.preventDefault();
+                alert(errors.join('\n'));
             }
-            if (!ok) { e.preventDefault(); e.stopPropagation(); }
         });
     };
 
-    // Initialize Admin Users form behaviors on load
-    initAdminUsers();
+    // Initialize Admin Users modal
+    initAdminUsersModal();
 
     // Toggle password visibility - event delegation on document body
     document.body.addEventListener('click', function(e) {
@@ -433,7 +424,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const departmentsSection = document.getElementById('departments-tbody');
     if (departmentsSection) {
         const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-        const deptFormCard = document.getElementById('department-form-card');
+        const deptModal = document.getElementById('modal-department');
         const deptForm = document.getElementById('form-department');
         const deptTbody = document.getElementById('departments-tbody');
         const modal = document.getElementById('modal-assign-users');
@@ -541,11 +532,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (action === 'edit') {
                 // Editar departamento
-                document.getElementById('dept-form-title').textContent = 'Editar departamento';
+                document.getElementById('modal-dept-form-title').textContent = 'Editar departamento';
                 document.getElementById('dept-id').value = id;
                 document.getElementById('dept-name').value = name;
                 document.getElementById('dept-description').value = btn.dataset.description === '—' ? '' : btn.dataset.description;
-                deptFormCard.classList.remove('hidden');
+                deptModal.classList.remove('hidden');
                 document.getElementById('dept-name').focus();
 
             } else if (action === 'delete') {
@@ -666,17 +657,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Botón nuevo departamento
         document.getElementById('btn-new-department')?.addEventListener('click', () => {
-            document.getElementById('dept-form-title').textContent = 'Nuevo departamento';
+            document.getElementById('modal-dept-form-title').textContent = 'Nuevo departamento';
             document.getElementById('dept-id').value = '';
             deptForm.reset();
-            deptFormCard.classList.remove('hidden');
+            deptModal.classList.remove('hidden');
             document.getElementById('dept-name').focus();
         });
 
-        // Botón cancelar formulario
-        document.getElementById('btn-cancel-dept')?.addEventListener('click', () => {
-            deptFormCard.classList.add('hidden');
-            deptForm.reset();
+        // Close modal buttons for department modal
+        deptModal?.querySelectorAll('[data-close-modal]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                deptModal.classList.add('hidden');
+                deptForm.reset();
+            });
+        });
+
+        // Close on backdrop click
+        deptModal?.addEventListener('click', (e) => {
+            if (e.target === deptModal) {
+                deptModal.classList.add('hidden');
+                deptForm.reset();
+            }
         });
 
         // Submit formulario departamento
@@ -712,7 +713,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
 
                 alert(data.message || 'Guardado correctamente');
-                deptFormCard.classList.add('hidden');
+                deptModal.classList.add('hidden');
                 deptForm.reset();
                 loadDepartments();
 

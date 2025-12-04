@@ -77,6 +77,26 @@ try {
             echo json_encode(['success' => true, 'department' => $dept, 'users' => $users]);
             break;
 
+        case 'user_departments':
+            // GET: Obtener departamentos de un usuario específico
+            $userId = (int)($_GET['user_id'] ?? 0);
+            if ($userId <= 0) {
+                throw new RuntimeException('user_id inválido');
+            }
+
+            $stmt = $pdo->prepare("
+                SELECT d.id, d.name
+                FROM departments d
+                INNER JOIN user_departments ud ON d.id = ud.department_id
+                WHERE ud.user_id = :user_id
+                ORDER BY d.name ASC
+            ");
+            $stmt->execute([':user_id' => $userId]);
+            $departments = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            echo json_encode(['success' => true, 'departments' => $departments]);
+            break;
+
         case 'create':
             // POST: Crear departamento
             $name = trim((string)($_POST['name'] ?? ''));

@@ -253,78 +253,14 @@ $headerHtml = ob_get_clean();
     <section class="admin-section">
       <div class="section-header">
         <h2>Gestión de Usuarios</h2>
-        <button id="btn-new-user" class="btn-primary">Nuevo usuario</button>
+        <button id="btn-new-user" class="btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          Nuevo usuario
+        </button>
       </div>
-
-    <section id="admin-user-form" class="form-card<?= $editUser ? '' : ' hidden' ?>">
-      <h2 id="form-title"><?= $editUser ? 'Editar usuario' : 'Crear usuario' ?></h2>
-      <form id="form-admin-user" method="post" action="admin-users.php<?= $editUser ? '?edit='.(int)$editUser['id'] : '' ?>">
-        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf, ENT_QUOTES, 'UTF-8') ?>">
-        <input type="hidden" id="form-action" name="action" value="<?= $editUser ? 'update' : 'create' ?>">
-        <?php if ($editUser): ?>
-          <input type="hidden" id="form-id" name="id" value="<?= (int)$editUser['id'] ?>">
-        <?php else: ?>
-          <input type="hidden" id="form-id" name="id" value="">
-        <?php endif; ?>
-
-        <div class="form-grid">
-          <div class="field">
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" required value="<?= htmlspecialchars($editUser['email'] ?? '', ENT_QUOTES, 'UTF-8') ?>" aria-describedby="email-help">
-            <small id="email-help" class="helper-text">Debe ser único y con formato válido.</small>
-            <div class="field-error hidden" id="email-error"></div>
-          </div>
-
-          <div class="field">
-            <label for="role">Rol</label>
-            <select id="role" name="role" required>
-              <?php $roles = ['admin' => 'Administrador', 'editor' => 'Editor', 'lector' => 'Lector'];
-              $cur = $editUser['role'] ?? 'editor';
-              foreach ($roles as $val => $label): ?>
-                <option value="<?= $val ?>" <?= $cur === $val ? 'selected' : '' ?>><?= $label ?></option>
-              <?php endforeach; ?>
-            </select>
-          </div>
-
-          <div class="field field-full">
-            <label for="password"><?= $editUser ? 'Nueva contraseña (opcional)' : 'Contraseña (obligatoria)' ?></label>
-            <div class="password-group">
-              <input type="password" id="password" name="password" <?= $editUser ? '' : 'required' ?> placeholder="<?= $editUser ? 'Dejar vacío para no cambiar' : '' ?>">
-              <button type="button" id="btn-toggle-password" class="btn-secondary">Mostrar</button>
-            </div>
-            <div class="field-error hidden" id="password-error"></div>
-          </div>
-
-          <div class="field field-full">
-            <label for="confirm_password">Confirmar contraseña<?= $editUser ? ' (si cambias contraseña)' : '' ?></label>
-            <div class="password-group">
-              <input type="password" id="confirm_password" name="confirm_password" <?= $editUser ? '' : 'required' ?> placeholder="Repite la contraseña">
-              <button type="button" id="btn-toggle-confirm" class="btn-secondary">Mostrar</button>
-            </div>
-            <div class="field-error hidden" id="confirm-error"></div>
-          </div>
-
-          <?php if ($editUser && $allDepartments): ?>
-          <div class="field field-full">
-            <label>Departamentos</label>
-            <div class="user-depts-list">
-              <?php foreach ($allDepartments as $dept): $checked = in_array((int)$dept['id'], $editUserDepts); ?>
-                <label class="dept-checkbox">
-                  <input type="checkbox" name="user_departments[]" value="<?= (int)$dept['id'] ?>" <?= $checked ? 'checked' : '' ?>>
-                  <span><?= htmlspecialchars($dept['name'], ENT_QUOTES, 'UTF-8') ?></span>
-                </label>
-              <?php endforeach; ?>
-            </div>
-          </div>
-          <?php endif; ?>
-        </div>
-
-        <div class="form-actions">
-          <button type="submit" class="btn-primary" id="btn-submit-form"><?= $editUser ? 'Guardar cambios' : 'Crear' ?></button>
-          <button type="button" class="btn-secondary" id="btn-cancel-form">Cancelar</button>
-        </div>
-      </form>
-    </section>
 
     <section class="table-container">
       <div class="table-card">
@@ -400,32 +336,13 @@ $headerHtml = ob_get_clean();
     <section class="admin-section">
       <div class="section-header">
         <h2>Gestión de Departamentos</h2>
-        <button id="btn-new-department" class="btn-primary">Nuevo departamento</button>
-      </div>
-
-      <!-- Formulario crear/editar departamento -->
-      <div id="department-form-card" class="form-card hidden">
-        <h3 id="dept-form-title">Nuevo departamento</h3>
-        <form id="form-department">
-          <input type="hidden" id="dept-id" value="">
-          
-          <div class="form-grid">
-            <div class="field">
-              <label for="dept-name">Nombre *</label>
-              <input type="text" id="dept-name" required maxlength="100" placeholder="Ej: Marketing, Ventas, IT...">
-            </div>
-
-            <div class="field">
-              <label for="dept-description">Descripción</label>
-              <textarea id="dept-description" placeholder="Describe el propósito del departamento"></textarea>
-            </div>
-          </div>
-
-          <div class="form-actions">
-            <button type="submit" class="btn-primary" id="btn-save-dept">Guardar</button>
-            <button type="button" class="btn-secondary" id="btn-cancel-dept">Cancelar</button>
-          </div>
-        </form>
+        <button id="btn-new-department" class="btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          Nuevo departamento
+        </button>
       </div>
 
       <!-- Lista de departamentos -->
@@ -450,6 +367,134 @@ $headerHtml = ob_get_clean();
         </div>
       </section>
     </section><!-- Fin sección departamentos -->
+
+    <!-- Modal: Crear/Editar Usuario -->
+    <div id="modal-user" class="modal hidden">
+      <div class="modal-content modal-content--md">
+        <div class="modal-header">
+          <h3 id="modal-user-title">Nuevo usuario</h3>
+          <button type="button" class="modal-close" data-close-modal="modal-user">&times;</button>
+        </div>
+        <form id="form-admin-user" method="post" action="admin-users.php">
+          <div class="modal-body">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf, ENT_QUOTES, 'UTF-8') ?>">
+            <input type="hidden" id="form-action" name="action" value="create">
+            <input type="hidden" id="form-id" name="id" value="">
+
+            <div class="modal-form-grid">
+              <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required placeholder="usuario@ejemplo.com">
+              </div>
+
+              <div class="form-group">
+                <label for="role">Rol</label>
+                <select id="role" name="role" required>
+                  <option value="editor">Editor</option>
+                  <option value="lector">Lector</option>
+                  <option value="admin">Administrador</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="password" id="password-label">Contraseña</label>
+                <div class="password-input-wrapper">
+                  <input type="password" id="password" name="password" required minlength="8" placeholder="Mínimo 8 caracteres">
+                  <button type="button" class="password-toggle" data-target="password">
+                    <svg class="eye-open" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                      <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                    <svg class="eye-closed hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                      <line x1="1" y1="1" x2="23" y2="23"></line>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="confirm_password">Confirmar contraseña</label>
+                <div class="password-input-wrapper">
+                  <input type="password" id="confirm_password" name="confirm_password" minlength="8" placeholder="Repite la contraseña">
+                  <button type="button" class="password-toggle" data-target="confirm_password">
+                    <svg class="eye-open" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                      <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                    <svg class="eye-closed hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                      <line x1="1" y1="1" x2="23" y2="23"></line>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <div class="form-group form-group--full" id="user-depts-container" style="display:none;">
+                <label>Departamentos</label>
+                <div class="checkbox-grid" id="user-depts-list">
+                  <?php foreach ($allDepartments as $dept): ?>
+                    <label class="checkbox-item">
+                      <input type="checkbox" name="user_departments[]" value="<?= (int)$dept['id'] ?>">
+                      <span class="checkbox-label"><?= htmlspecialchars($dept['name'], ENT_QUOTES, 'UTF-8') ?></span>
+                    </label>
+                  <?php endforeach; ?>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn-secondary" data-close-modal="modal-user">Cancelar</button>
+            <button type="submit" class="btn-primary" id="btn-submit-user">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                <polyline points="7 3 7 8 15 8"></polyline>
+              </svg>
+              Crear usuario
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal: Crear/Editar Departamento -->
+    <div id="modal-department" class="modal hidden">
+      <div class="modal-content modal-content--sm">
+        <div class="modal-header">
+          <h3 id="modal-dept-form-title">Nuevo departamento</h3>
+          <button type="button" class="modal-close" data-close-modal="modal-department">&times;</button>
+        </div>
+        <form id="form-department">
+          <div class="modal-body">
+            <input type="hidden" id="dept-id" value="">
+            
+            <div class="modal-form-stack">
+              <div class="form-group">
+                <label for="dept-name">Nombre del departamento</label>
+                <input type="text" id="dept-name" required maxlength="100" placeholder="Ej: Marketing, Ventas, IT...">
+              </div>
+
+              <div class="form-group">
+                <label for="dept-description">Descripción <span class="optional-label">(opcional)</span></label>
+                <textarea id="dept-description" rows="3" placeholder="Describe el propósito de este departamento"></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn-secondary" data-close-modal="modal-department">Cancelar</button>
+            <button type="submit" class="btn-primary" id="btn-save-dept">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                <polyline points="7 3 7 8 15 8"></polyline>
+              </svg>
+              Guardar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
 
     <!-- Modal: Asignar usuarios a departamento -->
     <div id="modal-assign-users" class="modal hidden">
