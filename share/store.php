@@ -14,9 +14,9 @@ header("Permissions-Policy: geolocation=(), microphone=(), camera=()");
 
 require 'includes/db.php';
 require 'includes/rate_limit.php';
-require 'includes/phpmailer/src/Exception.php';
-require 'includes/phpmailer/src/PHPMailer.php';
-require 'includes/phpmailer/src/SMTP.php';
+require 'includes/phpmailer/Exception.php';
+require 'includes/phpmailer/PHPMailer.php';
+require 'includes/phpmailer/SMTP.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
@@ -87,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ]);
 
         // Generate the shareable link
-        $shareable_link = "https://passwords.ebone.es/retrieve.php?hash=" . $link_hash;
+        $shareable_link = "https://passwords.ebone.es/share/retrieve.php?hash=" . $link_hash;
 
         // If email is provided, send the email
         if (!empty($email)) {
