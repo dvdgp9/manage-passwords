@@ -2323,6 +2323,16 @@ input[type="checkbox"] {
 .list-filter {
     position: relative;
     margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.list-filter__icon {
+    position: absolute;
+    left: 10px;
+    color: #94a3b8;
+    pointer-events: none;
+    z-index: 1;
 }
 
 .list-filter__input {
@@ -2349,17 +2359,7 @@ input[type="checkbox"] {
     color: #94a3b8;
 }
 
-.list-filter__icon {
-    position: absolute;
-    left: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #94a3b8;
-    pointer-events: none;
-}
-
-.list-filter__input:focus + .list-filter__icon,
-.list-filter__input:not(:placeholder-shown) + .list-filter__icon {
+.list-filter:focus-within .list-filter__icon {
     color: #23AAC5;
 }
 

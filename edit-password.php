@@ -72,7 +72,7 @@ $allDepartments = [];
 $currentDepartments = [];
 try {
     // All users
-    $stmt = $pdo->query("SELECT id, email, role FROM users ORDER BY email");
+    $stmt = $pdo->query("SELECT id, email, role, nombre, apellidos FROM users ORDER BY email");
     $allUsers = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
     
     // Current user assignees
@@ -236,14 +236,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             </div>
             <div class="list-filter">
-                <input type="text" class="list-filter__input" placeholder="Buscar usuario...">
                 <svg class="list-filter__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+                <input type="text" class="list-filter__input" placeholder="Buscar usuario...">
             </div>
             <div class="assignees-list">
                 <?php foreach ($allUsers as $u): $uid=(int)($u['id'] ?? 0); $checked = in_array($uid, $currentAssignees); ?>
+                    <?php
+                        $displayName = trim(($u['nombre'] ?? '') . ' ' . ($u['apellidos'] ?? ''));
+                        $displayLabel = $displayName !== '' ? $displayName . ' (' . $u['email'] . ')' : $u['email'];
+                    ?>
                     <label class="assignee-item">
                         <input type="checkbox" name="assignees[]" value="<?= $uid ?>" <?= $checked ? 'checked' : '' ?>>
-                        <span class="assignee-email"><?= htmlspecialchars($u['email'], ENT_QUOTES, 'UTF-8') ?></span>
+                        <span class="assignee-email"><?= htmlspecialchars($displayLabel, ENT_QUOTES, 'UTF-8') ?></span>
                         <span class="assignee-role"><?= htmlspecialchars($u['role'] ?? '', ENT_QUOTES, 'UTF-8') ?></span>
                     </label>
                 <?php endforeach; ?>
@@ -260,8 +264,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             </div>
             <div class="list-filter">
-                <input type="text" class="list-filter__input" placeholder="Buscar departamento...">
                 <svg class="list-filter__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+                <input type="text" class="list-filter__input" placeholder="Buscar departamento...">
             </div>
             <div class="assignees-list" id="departments-list">
                 <?php if (empty($allDepartments)): ?>

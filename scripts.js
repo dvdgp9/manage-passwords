@@ -769,6 +769,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ======= Compact list filter (reusable) =======
+    // Normalize text: remove accents and convert to lowercase
+    function normalizeText(str) {
+        return (str || '')
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '');
+    }
+
     // Filters .assignee-item or .checkbox-item based on text content
     function initListFilters() {
         document.querySelectorAll('.list-filter__input').forEach(input => {
@@ -786,12 +794,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             input.addEventListener('input', () => {
-                const query = input.value.toLowerCase().trim();
+                const query = normalizeText(input.value.trim());
                 const items = listContainer.querySelectorAll('.assignee-item, .checkbox-item');
                 let visibleCount = 0;
 
                 items.forEach(item => {
-                    const text = item.textContent.toLowerCase();
+                    const text = normalizeText(item.textContent);
                     const matches = query === '' || text.includes(query);
                     item.classList.toggle('filter-hidden', !matches);
                     if (matches) visibleCount++;
