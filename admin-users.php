@@ -487,6 +487,10 @@ $headerHtml = ob_get_clean();
 
               <div class="form-group form-group--full" id="user-depts-container" style="display:none;">
                 <label>Departamentos</label>
+                <div class="list-filter">
+                  <input type="text" class="list-filter__input" placeholder="Buscar departamento...">
+                  <svg class="list-filter__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+                </div>
                 <div class="checkbox-grid" id="user-depts-list">
                   <?php foreach ($allDepartments as $dept): ?>
                     <label class="checkbox-item">
@@ -566,6 +570,10 @@ $headerHtml = ob_get_clean();
                 <button type="button" id="assign-all-users" class="btn-secondary">Seleccionar todos</button>
                 <button type="button" id="assign-none-users" class="btn-secondary">Quitar todos</button>
               </div>
+            </div>
+            <div class="list-filter">
+              <input type="text" class="list-filter__input" placeholder="Buscar usuario...">
+              <svg class="list-filter__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
             </div>
             <div class="assignees-list" id="modal-users-list">
               <p>Cargando usuarios...</p>

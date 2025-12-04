@@ -2318,3 +2318,63 @@ input[type="checkbox"] {
         justify-content: flex-start;
     }
 }
+
+/* ======= Compact search filter for lists ======= */
+.list-filter {
+    position: relative;
+    margin-bottom: 10px;
+}
+
+.list-filter__input {
+    width: 100%;
+    height: 36px;
+    padding: 6px 12px 6px 34px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: 'Montserrat', sans-serif;
+    color: #1e293b;
+    background: #ffffff;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.list-filter__input:focus {
+    outline: none;
+    border-color: #23AAC5;
+    box-shadow: 0 0 0 3px rgba(35, 170, 197, 0.1);
+}
+
+.list-filter__input::placeholder {
+    color: #94a3b8;
+}
+
+.list-filter__icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    pointer-events: none;
+}
+
+.list-filter__input:focus + .list-filter__icon,
+.list-filter__input:not(:placeholder-shown) + .list-filter__icon {
+    color: #23AAC5;
+}
+
+.assignee-item.filter-hidden {
+    display: none !important;
+}
+
+.checkbox-item.filter-hidden {
+    display: none !important;
+}
+
+.filter-no-results {
+    padding: 12px;
+    text-align: center;
+    color: #94a3b8;
+    font-size: 13px;
+    font-style: italic;
+}

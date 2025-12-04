@@ -767,4 +767,67 @@ document.addEventListener('DOMContentLoaded', function() {
         loadAllUsers();
         loadDepartments();
     }
+
+    // ======= Compact list filter (reusable) =======
+    // Filters .assignee-item or .checkbox-item based on text content
+    function initListFilters() {
+        document.querySelectorAll('.list-filter__input').forEach(input => {
+            const listContainer = input.closest('.assignees-panel, .form-group')?.querySelector('.assignees-list, .checkbox-grid');
+            if (!listContainer) return;
+
+            // Create no-results message if not exists
+            let noResults = listContainer.querySelector('.filter-no-results');
+            if (!noResults) {
+                noResults = document.createElement('div');
+                noResults.className = 'filter-no-results';
+                noResults.textContent = 'No se encontraron resultados';
+                noResults.style.display = 'none';
+                listContainer.appendChild(noResults);
+            }
+
+            input.addEventListener('input', () => {
+                const query = input.value.toLowerCase().trim();
+                const items = listContainer.querySelectorAll('.assignee-item, .checkbox-item');
+                let visibleCount = 0;
+
+                items.forEach(item => {
+                    const text = item.textContent.toLowerCase();
+                    const matches = query === '' || text.includes(query);
+                    item.classList.toggle('filter-hidden', !matches);
+                    if (matches) visibleCount++;
+                });
+
+                noResults.style.display = (visibleCount === 0 && query !== '') ? 'block' : 'none';
+            });
+
+            // Clear filter when modal closes (reset)
+            const modal = input.closest('.modal');
+            if (modal) {
+                const observer = new MutationObserver(() => {
+                    if (modal.classList.contains('hidden')) {
+                        input.value = '';
+                        input.dispatchEvent(new Event('input'));
+                    }
+                });
+                observer.observe(modal, { attributes: true, attributeFilter: ['class'] });
+            }
+        });
+    }
+
+    // Initialize filters on DOM ready
+    initListFilters();
+
+    // Re-init filters when modal content is dynamically loaded (for admin assign users)
+    const modalUsersList = document.getElementById('modal-users-list');
+    if (modalUsersList) {
+        const observer = new MutationObserver(() => {
+            // Re-attach filter after list is rebuilt
+            const filterInput = document.querySelector('#modal-assign-users .list-filter__input');
+            if (filterInput) {
+                filterInput.value = '';
+                filterInput.dispatchEvent(new Event('input'));
+            }
+        });
+        observer.observe(modalUsersList, { childList: true });
+    }
 });
