@@ -46,9 +46,9 @@ function env_required(string $key): string {
 
 // Database connection details from env (required)
 $host = env_required('DB_HOST');
-$dbname = env_required('passworddb');
-$dbUser = env_required('passuser');
-$dbPass = env_required('userpassdb');
+$dbname = env_required('DB_NAME');
+$dbUser = env_required('DB_USER');
+$dbPass = env_required('DB_PASS');
 $charset = env_get('DB_CHARSET', 'utf8mb4');
 
 // Encryption settings from env
