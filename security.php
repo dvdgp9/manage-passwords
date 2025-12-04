@@ -86,7 +86,7 @@ function current_user(): ?array {
         try {
             if (!function_exists('getDBConnection')) return null;
             $pdo = getDBConnection();
-            $stmt = $pdo->prepare('SELECT id, email, role FROM users WHERE id = :id');
+            $stmt = $pdo->prepare('SELECT id, email, role, nombre, apellidos, created_at, last_login FROM users WHERE id = :id');
             $stmt->execute([':id' => $_SESSION['user_id']]);
             $u = $stmt->fetch(PDO::FETCH_ASSOC);
             return $u ?: null;
