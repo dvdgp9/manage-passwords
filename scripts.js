@@ -984,10 +984,10 @@ function addBulkImportRow() {
     row.innerHTML = `
         <td><input type="text" class="bulk-linea" placeholder="Línea"></td>
         <td><input type="text" class="bulk-nombre" placeholder="Nombre"></td>
+        <td><input type="text" class="bulk-descripcion" placeholder="Descripción"></td>
         <td><input type="text" class="bulk-usuario" placeholder="Usuario"></td>
         <td><input type="text" class="bulk-password" placeholder="Contraseña"></td>
         <td><input type="text" class="bulk-enlace" placeholder="Enlace"></td>
-        <td><input type="text" class="bulk-descripcion" placeholder="Descripción"></td>
         <td><input type="text" class="bulk-info" placeholder="Info adicional"></td>
         <td><button type="button" class="btn-remove-row" onclick="removeBulkImportRow(this)">&times;</button></td>
     `;
@@ -1062,10 +1062,10 @@ function handleBulkImportPaste(event) {
             
             const linea = (cols[0] || '').trim();
             const nombre = (cols[1] || '').trim();
-            const usuario = (cols[2] || '').trim();
-            const password = (cols[3] || '').trim();
-            const enlace = (cols[4] || '').trim();
-            const descripcion = (cols[5] || '').trim();
+            const descripcion = (cols[2] || '').trim();
+            const usuario = (cols[3] || '').trim();
+            const password = (cols[4] || '').trim();
+            const enlace = (cols[5] || '').trim();
             const info = (cols[6] || '').trim();
             
             // Skip completely empty rows
@@ -1075,10 +1075,10 @@ function handleBulkImportPaste(event) {
             row.innerHTML = `
                 <td><input type="text" class="bulk-linea" value="${escapeHtmlAttr(linea)}"></td>
                 <td><input type="text" class="bulk-nombre" value="${escapeHtmlAttr(nombre)}"></td>
+                <td><input type="text" class="bulk-descripcion" value="${escapeHtmlAttr(descripcion)}"></td>
                 <td><input type="text" class="bulk-usuario" value="${escapeHtmlAttr(usuario)}"></td>
                 <td><input type="text" class="bulk-password" value="${escapeHtmlAttr(password)}"></td>
                 <td><input type="text" class="bulk-enlace" value="${escapeHtmlAttr(enlace)}"></td>
-                <td><input type="text" class="bulk-descripcion" value="${escapeHtmlAttr(descripcion)}"></td>
                 <td><input type="text" class="bulk-info" value="${escapeHtmlAttr(info)}"></td>
                 <td><button type="button" class="btn-remove-row" onclick="removeBulkImportRow(this)">&times;</button></td>
             `;
@@ -1121,10 +1121,10 @@ async function executeBulkImport() {
     tbody.querySelectorAll('tr').forEach(tr => {
         const linea = tr.querySelector('.bulk-linea')?.value?.trim() || '';
         const nombre = tr.querySelector('.bulk-nombre')?.value?.trim() || '';
+        const descripcion = tr.querySelector('.bulk-descripcion')?.value?.trim() || '';
         const usuario = tr.querySelector('.bulk-usuario')?.value?.trim() || '';
         const password = tr.querySelector('.bulk-password')?.value?.trim() || '';
         const enlace = tr.querySelector('.bulk-enlace')?.value?.trim() || '';
-        const descripcion = tr.querySelector('.bulk-descripcion')?.value?.trim() || '';
         const info = tr.querySelector('.bulk-info')?.value?.trim() || '';
         
         // Only add rows that have at least linea or nombre

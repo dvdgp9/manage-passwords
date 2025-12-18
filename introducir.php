@@ -162,10 +162,10 @@ $headerHtml = ob_get_clean();
                     <ol>
                         <li><strong>Línea de Negocio</strong> - Ej: General, ES, CF...</li>
                         <li><strong>Nombre</strong> - Nombre de la cuenta/servicio</li>
+                        <li><strong>Descripción</strong> - (opcional)</li>
                         <li><strong>Usuario</strong> - Usuario o email</li>
                         <li><strong>Contraseña</strong> - La contraseña (se cifrará)</li>
                         <li><strong>Enlace</strong> - URL del servicio</li>
-                        <li><strong>Descripción</strong> - (opcional)</li>
                         <li><strong>Info Adicional</strong> - (opcional)</li>
                     </ol>
                 </div>
@@ -177,10 +177,10 @@ $headerHtml = ob_get_clean();
                             <tr>
                                 <th>Línea Negocio</th>
                                 <th>Nombre</th>
+                                <th>Descripción</th>
                                 <th>Usuario</th>
                                 <th>Contraseña</th>
                                 <th>Enlace</th>
-                                <th>Descripción</th>
                                 <th>Info Adicional</th>
                                 <th></th>
                             </tr>
