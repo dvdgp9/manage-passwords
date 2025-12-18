@@ -27,6 +27,7 @@ $headerHtml = ob_get_clean();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<?php echo htmlspecialchars($csrf); ?>">
     <title>Introducir Contraseña</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
@@ -36,7 +37,17 @@ $headerHtml = ob_get_clean();
     <?= $headerHtml ?>
     <main class="page introducir-page">
     <div class="introducir-container">
-    <h1>Almacenar nueva contraseña</h1>
+    <div class="introducir-header">
+        <h1>Almacenar nueva contraseña</h1>
+        <button type="button" class="btn-bulk-import" id="btn-open-bulk-import">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+            Importación en lote
+        </button>
+    </div>
     <form id="form-introducir" action="guardar.php" method="post">
         <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf); ?>">
         <label for="linea_de_negocio">Línea de Negocio:</label>
@@ -124,6 +135,146 @@ $headerHtml = ob_get_clean();
     </form>
     </div>
     </main>
+
+    <!-- Modal Bulk Import -->
+    <div class="modal hidden" id="modal-bulk-import">
+        <div class="modal-backdrop" data-close-modal></div>
+        <div class="modal-content modal-content--large">
+            <div class="modal-header">
+                <h2 id="modal-bulk-import-title">Importación en lote</h2>
+                <button type="button" class="modal-close" data-close-modal aria-label="Cerrar">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="bulk-import-info">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M12 16v-4"></path>
+                        <path d="M12 8h.01"></path>
+                    </svg>
+                    <div>
+                        <strong>Importa desde Excel</strong>
+                        <p>Copia las columnas desde tu hoja de cálculo y pégalas directamente en la tabla. El sistema creará todas las contraseñas automáticamente.</p>
+                    </div>
+                </div>
+
+                <div class="bulk-import-columns">
+                    <strong>Columnas esperadas (en este orden):</strong>
+                    <ol>
+                        <li><strong>Línea de Negocio</strong> - Ej: General, ES, CF...</li>
+                        <li><strong>Nombre</strong> - Nombre de la cuenta/servicio</li>
+                        <li><strong>Usuario</strong> - Usuario o email</li>
+                        <li><strong>Contraseña</strong> - La contraseña (se cifrará)</li>
+                        <li><strong>Enlace</strong> - URL del servicio</li>
+                        <li><strong>Descripción</strong> - (opcional)</li>
+                        <li><strong>Info Adicional</strong> - (opcional)</li>
+                    </ol>
+                </div>
+
+                <!-- Tabla editable -->
+                <div class="bulk-table-wrapper">
+                    <table class="bulk-import-table" id="bulk-import-table">
+                        <thead>
+                            <tr>
+                                <th>Línea Negocio</th>
+                                <th>Nombre</th>
+                                <th>Usuario</th>
+                                <th>Contraseña</th>
+                                <th>Enlace</th>
+                                <th>Descripción</th>
+                                <th>Info Adicional</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="bulk-import-body">
+                            <!-- filas dinámicas -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="bulk-table-actions">
+                    <button type="button" class="btn-secondary btn-sm" id="btn-add-bulk-row">+ Añadir fila</button>
+                    <button type="button" class="btn-secondary btn-sm" id="btn-clear-bulk-table">Limpiar tabla</button>
+                    <span class="bulk-row-count" id="bulk-row-count">0 filas con datos</span>
+                </div>
+                <div class="bulk-import-error" id="bulk-import-error"></div>
+
+                <!-- Sección de acceso compartido -->
+                <div class="bulk-access-section">
+                    <h3>Acceso compartido (se aplicará a todas las contraseñas importadas)</h3>
+                    
+                    <section class="assignees-panel assignees-panel--compact">
+                        <div class="assignees-header">
+                            <label>Compartir con usuarios</label>
+                            <div class="assignees-actions">
+                                <button type="button" id="bulk-assign-all" class="btn-secondary btn-xs">Todos</button>
+                                <button type="button" id="bulk-assign-none" class="btn-secondary btn-xs">Ninguno</button>
+                            </div>
+                        </div>
+                        <div class="list-filter">
+                            <svg class="list-filter__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+                            <input type="text" class="list-filter__input" placeholder="Buscar usuario..." id="bulk-user-filter">
+                        </div>
+                        <div class="assignees-list assignees-list--compact" id="bulk-users-list">
+                            <?php foreach ($allUsers as $u): $uid=(int)($u['id'] ?? 0); $checked = ($uid === (int)($currentUser['id'] ?? -1)); ?>
+                                <?php
+                                    $displayName = trim(($u['nombre'] ?? '') . ' ' . ($u['apellidos'] ?? ''));
+                                    $displayLabel = $displayName !== '' ? $displayName . ' (' . $u['email'] . ')' : $u['email'];
+                                ?>
+                                <label class="assignee-item">
+                                    <input type="checkbox" name="bulk_assignees[]" value="<?= $uid ?>" <?= $checked ? 'checked' : '' ?>>
+                                    <span class="assignee-email"><?= htmlspecialchars($displayLabel, ENT_QUOTES, 'UTF-8') ?></span>
+                                    <span class="assignee-role"><?= htmlspecialchars($u['role'] ?? '', ENT_QUOTES, 'UTF-8') ?></span>
+                                </label>
+                            <?php endforeach; ?>
+                        </div>
+                    </section>
+
+                    <section class="assignees-panel assignees-panel--compact">
+                        <div class="assignees-header">
+                            <label>Compartir con departamentos</label>
+                            <div class="assignees-actions">
+                                <button type="button" id="bulk-assign-all-depts" class="btn-secondary btn-xs">Todos</button>
+                                <button type="button" id="bulk-assign-none-depts" class="btn-secondary btn-xs">Ninguno</button>
+                            </div>
+                        </div>
+                        <div class="list-filter">
+                            <svg class="list-filter__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+                            <input type="text" class="list-filter__input" placeholder="Buscar departamento..." id="bulk-dept-filter">
+                        </div>
+                        <div class="assignees-list assignees-list--compact" id="bulk-depts-list">
+                            <?php if (empty($allDepartments)): ?>
+                                <p class="text-muted" style="padding: 12px; text-align: center;">No hay departamentos creados.</p>
+                            <?php else: ?>
+                                <?php foreach ($allDepartments as $dept): ?>
+                                    <label class="assignee-item">
+                                        <input type="checkbox" name="bulk_departments[]" value="<?= (int)$dept['id'] ?>">
+                                        <span class="assignee-email"><?= htmlspecialchars($dept['name'], ENT_QUOTES, 'UTF-8') ?></span>
+                                        <span class="assignee-role"><?= (int)$dept['user_count'] ?> usuario<?= $dept['user_count'] != 1 ? 's' : '' ?></span>
+                                    </label>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Resultados -->
+                <div class="bulk-import-results" id="bulk-import-results" style="display: none;">
+                    <h4>Resultados de la importación</h4>
+                    <div id="bulk-import-results-content"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" data-close-modal>Cancelar</button>
+                <button type="button" class="btn-primary" id="btn-execute-bulk-import">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="17 8 12 3 7 8"/>
+                        <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                    Importar contraseñas
+                </button>
+            </div>
+        </div>
+    </div>
 
     </body>
     </html>

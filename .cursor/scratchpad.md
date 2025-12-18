@@ -154,6 +154,20 @@ P2 – Medios/Mejoras
   - Actualizados enlaces de navegación de `index.html` → `index.php` en `ver-passwords.php`, `introducir.php` y `edit-password.php`.
   - [Nuevo][UX] Añadido botón de copiar en la columna de contraseña en `ver-passwords.php` (icono SVG inline estilo Untitled UI) con manejador en `scripts.js` usando `navigator.clipboard.writeText` y fallback `execCommand('copy')`. Estilos en `style.css` (`.copy-btn`, feedback `.copied`/`.copy-error`).
 
+- Executor (Bulk Import Feature - 18/12/2024):
+  - **Implementado** `bulk-import.php`: API endpoint que recibe filas JSON, valida campos obligatorios, cifra contraseñas, inserta en `passwords_manager` y crea accesos en `passwords_access` y `password_department_access`.
+  - **Modificado** `introducir.php`: Añadido botón "Importación en lote" y modal completo con:
+    - Tabla editable para pegar datos desde Excel (7 columnas: Línea Negocio, Nombre, Usuario, Contraseña, Enlace, Descripción, Info Adicional)
+    - Sección de acceso compartido (usuarios y departamentos) idéntica al formulario normal
+    - Instrucciones de uso y orden de columnas
+  - **Añadido** en `scripts.js`: Funcionalidad completa de bulk import:
+    - `handleBulkImportPaste()`: detecta pegado tabular, parsea columnas separadas por tabs, auto-detecta y omite fila de cabeceras
+    - Gestión de filas (añadir, eliminar, limpiar tabla)
+    - `executeBulkImport()`: envía JSON al backend con CSRF, muestra resultados y errores
+    - Filtros de búsqueda en listas de usuarios/departamentos
+    - Notificaciones toast de éxito/error
+  - **Añadido** en `style.css`: Estilos completos para modal grande, tabla editable, botones, notificaciones, responsive
+
 # Executor's Feedback or Assistance Requests
 
 - Validación manual solicitada (entorno):

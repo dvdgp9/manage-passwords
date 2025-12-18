@@ -2378,3 +2378,401 @@ input[type="checkbox"] {
     font-size: 13px;
     font-style: italic;
 }
+
+/* ======= Bulk Import Styles ======= */
+.introducir-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+}
+
+.introducir-header h1 {
+    margin: 0;
+}
+
+.btn-bulk-import {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    background: linear-gradient(135deg, #23AAC5 0%, #1a8fa8 100%);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'Montserrat', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(35, 170, 197, 0.25);
+}
+
+.btn-bulk-import:hover {
+    background: linear-gradient(135deg, #1a9bb5 0%, #158394 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(35, 170, 197, 0.35);
+}
+
+.btn-bulk-import svg {
+    flex-shrink: 0;
+}
+
+/* Modal Large variant */
+.modal-content--large {
+    max-width: 1100px;
+    width: 95%;
+}
+
+/* Bulk Import Info Box */
+.bulk-import-info {
+    display: flex;
+    gap: 12px;
+    padding: 14px 16px;
+    background: linear-gradient(135deg, #e0f7fa 0%, #e8f5e9 100%);
+    border: 1px solid #b2ebf2;
+    border-radius: 10px;
+    margin-bottom: 16px;
+}
+
+.bulk-import-info svg {
+    flex-shrink: 0;
+    color: #00838f;
+}
+
+.bulk-import-info strong {
+    display: block;
+    color: #00695c;
+    margin-bottom: 4px;
+}
+
+.bulk-import-info p {
+    margin: 0;
+    font-size: 13px;
+    color: #37474f;
+    line-height: 1.5;
+}
+
+/* Bulk Import Columns Instructions */
+.bulk-import-columns {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+}
+
+.bulk-import-columns strong {
+    display: block;
+    font-size: 13px;
+    color: #334155;
+    margin-bottom: 8px;
+}
+
+.bulk-import-columns ol {
+    margin: 0;
+    padding-left: 20px;
+    font-size: 12px;
+    color: #64748b;
+    columns: 2;
+    column-gap: 24px;
+}
+
+.bulk-import-columns li {
+    margin-bottom: 4px;
+    break-inside: avoid;
+}
+
+.bulk-import-columns li strong {
+    display: inline;
+    color: #1e293b;
+    font-size: 12px;
+}
+
+/* Bulk Table Wrapper */
+.bulk-table-wrapper {
+    max-height: 300px;
+    overflow: auto;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #fff;
+}
+
+/* Bulk Import Table */
+.bulk-import-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.bulk-import-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.bulk-import-table th {
+    background: #f1f5f9;
+    padding: 10px 8px;
+    text-align: left;
+    font-weight: 600;
+    color: #475569;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    border-bottom: 2px solid #e2e8f0;
+    white-space: nowrap;
+}
+
+.bulk-import-table td {
+    padding: 4px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.bulk-import-table input[type="text"] {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 13px;
+    font-family: 'Montserrat', sans-serif;
+    color: #1e293b;
+    background: #fff;
+    transition: all 0.15s ease;
+    box-sizing: border-box;
+}
+
+.bulk-import-table input[type="text"]:focus {
+    outline: none;
+    border-color: #23AAC5;
+    box-shadow: 0 0 0 2px rgba(35, 170, 197, 0.15);
+}
+
+.bulk-import-table input[type="text"]::placeholder {
+    color: #cbd5e1;
+}
+
+.btn-remove-row {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    color: #94a3b8;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.15s ease;
+}
+
+.btn-remove-row:hover {
+    background: #fee2e2;
+    border-color: #fca5a5;
+    color: #dc2626;
+}
+
+/* Bulk Table Actions */
+.bulk-table-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+.bulk-row-count {
+    margin-left: auto;
+    font-size: 12px;
+    color: #64748b;
+}
+
+/* Bulk Import Error */
+.bulk-import-error {
+    color: #dc2626;
+    font-size: 13px;
+    margin-top: 10px;
+    padding: 10px 14px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    display: none;
+}
+
+.bulk-import-error:not(:empty) {
+    display: block;
+}
+
+/* Bulk Access Section */
+.bulk-access-section {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.bulk-access-section h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #334155;
+    margin: 0 0 14px 0;
+}
+
+.bulk-access-section .assignees-panel {
+    margin-bottom: 16px;
+}
+
+/* Compact variant for bulk modal */
+.assignees-panel--compact {
+    padding: 12px;
+}
+
+.assignees-panel--compact .assignees-header label {
+    font-size: 13px;
+}
+
+.assignees-list--compact {
+    max-height: 140px;
+}
+
+.btn-xs {
+    padding: 4px 10px;
+    font-size: 11px;
+}
+
+/* Bulk Import Results */
+.bulk-import-results {
+    margin-top: 16px;
+    padding: 14px;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 8px;
+}
+
+.bulk-import-results h4 {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    color: #166534;
+}
+
+.bulk-stats {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.bulk-stat {
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+.bulk-stat--success {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.bulk-errors {
+    margin-top: 12px;
+    padding: 12px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 6px;
+}
+
+.bulk-errors h5 {
+    margin: 0 0 8px 0;
+    font-size: 13px;
+    color: #991b1b;
+}
+
+.bulk-errors ul {
+    margin: 0;
+    padding-left: 20px;
+    font-size: 12px;
+    color: #7f1d1d;
+}
+
+.bulk-errors li {
+    margin-bottom: 4px;
+}
+
+/* Bulk Notification Toast */
+.bulk-notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 14px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 10000;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+
+.bulk-notification.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.bulk-notification--success {
+    background: #10b981;
+    color: #fff;
+}
+
+.bulk-notification--error {
+    background: #ef4444;
+    color: #fff;
+}
+
+/* Button small variant */
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 12px;
+}
+
+/* Spinner for loading state */
+.spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 0.8s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+    .introducir-header {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+    }
+    
+    .btn-bulk-import {
+        justify-content: center;
+    }
+    
+    .bulk-import-columns ol {
+        columns: 1;
+    }
+    
+    .modal-content--large {
+        width: 98%;
+        max-height: 95vh;
+    }
+    
+    .bulk-table-wrapper {
+        max-height: 200px;
+    }
+}
