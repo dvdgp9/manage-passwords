@@ -24,10 +24,11 @@ try {
     
     bootstrap_security(true);
     
-    // Verificar CSRF
+    // Verificar CSRF (manualmente ya que viene en JSON body)
     $input = json_decode(file_get_contents('php://input'), true);
     $csrfToken = $input['csrf_token'] ?? '';
-    if (!verify_csrf_token($csrfToken)) {
+    $validCsrf = isset($_SESSION['csrf_token']) && is_string($csrfToken) && hash_equals($_SESSION['csrf_token'], $csrfToken);
+    if (!$validCsrf) {
         http_response_code(403);
         echo json_encode(['success' => false, 'message' => 'Token CSRF inválido']);
         exit;
@@ -175,12 +176,12 @@ try {
         'stats' => $stats
     ]);
 
-} catch (Exception $e) {
+} catch (Throwable $e) {
     if (isset($pdo) && $pdo->inTransaction()) {
         $pdo->rollBack();
     }
     
-    error_log("Error bulk_import: " . $e->getMessage());
+    error_log("Error bulk_import: " . $e->getMessage() . " in " . $e->getFile() . ":" . $e->getLine());
     http_response_code(500);
     echo json_encode(['success' => false, 'message' => 'Error del servidor: ' . $e->getMessage()]);
 }
