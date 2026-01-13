@@ -164,11 +164,21 @@ body {
 
 .page-header {
     width: 100%;
-    max-width: 1200px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
     gap: 12px;
+    padding: 32px 0 24px 0;
+    border-bottom: 2px solid #e2e8f0;
+    margin-bottom: 32px;
+}
+
+.page-header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+    letter-spacing: -0.02em;
 }
 
 .hidden { display: none !important; }
@@ -254,8 +264,15 @@ h1 {
 /* Page container to center content while keeping sticky header flush to top */
 .page {
     width: 100%;
-    max-width: 1900px;
+    max-width: 1400px;
     margin: 0 auto;
+    padding: 0 40px 60px 40px;
+}
+
+@media (max-width: 768px) {
+    .page {
+        padding: 0 20px 40px 20px;
+    }
 }
 
 /* ======= Auth (Login) Page ======= */
@@ -1302,13 +1319,11 @@ input[type="checkbox"] {
 
 .tabla-usuarios {
     width: 100%;
-    border-collapse: separate;
+    border-collapse: collapse;
     border-spacing: 0;
     table-layout: auto;
-    min-width: 720px;
-    background: rgba(255, 255, 255, 0.92);
-    border-bottom: 1px solid rgba(226, 232, 240, 0.8);
-    transition: background 0.2s ease;
+    min-width: 900px;
+    background: #ffffff;
 }
 .tabla-usuarios thead th {
     color: #0f172a;
@@ -1336,24 +1351,19 @@ input[type="checkbox"] {
 .tabla-usuarios th:nth-child(8), .tabla-usuarios td:nth-child(8) { width: 120px; min-width: 120px; white-space: nowrap; }
 
 .tabla-usuarios tbody tr {
-    background: rgba(255, 255, 255, 0.92);
-    border-bottom: 1px solid rgba(226, 232, 240, 0.8);
-    transition: background 0.2s ease;
+    background: #ffffff;
+    transition: background 0.15s ease;
 }
-.tabla-usuarios tbody tr:nth-child(even) { background: rgba(248, 250, 252, 0.95); }
-.tabla-usuarios tbody tr:hover { background: #f1fbfd; }
-.tabla-usuarios tbody tr:last-child td { border-bottom: none; }
+.tabla-usuarios tbody tr:nth-child(even) { background: #f8fafc; }
+.tabla-usuarios tbody tr:hover { background: #f0f9ff; }
 .tabla-usuarios td {
     padding: 14px 16px;
     font-size: 14px;
     line-height: 1.5;
     color: #374151;
     vertical-align: middle;
-    border-right: 1px solid rgba(226, 232, 240, 0.65);
-    overflow: hidden;
-    text-overflow: ellipsis;
+    border-bottom: 1px solid #e5e7eb;
 }
-.tabla-usuarios td:last-child { border-right: none; }
 .tabla-usuarios a { color: #0f8cad; font-weight: 600; text-decoration: none; transition: color 0.2s ease, text-decoration-color 0.2s ease; }
 .tabla-usuarios a:hover { color: #0b7285; text-decoration: underline; text-decoration-color: rgba(11, 114, 133, 0.6); }
 
@@ -1645,41 +1655,102 @@ input[type="checkbox"] {
     }
 }
 
-.tabla-departamentos {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
+/* ======= Admin Panel (Clean Layout) ======= */
+.admin-panel {
+    margin-bottom: 48px;
 }
 
-.tabla-departamentos thead {
-    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+.admin-panel__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.admin-panel__header h2 {
+    font-size: 20px;
+    color: #1e293b;
+    font-weight: 700;
+    margin: 0;
+}
+
+.admin-panel__table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+}
+
+.admin-panel__table-wrapper::-webkit-scrollbar {
+    height: 8px;
+}
+
+.admin-panel__table-wrapper::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+}
+
+.admin-panel__table-wrapper::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+.admin-panel__table-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+@media (max-width: 768px) {
+    .admin-panel__header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    
+    .admin-panel__header h2 {
+        font-size: 18px;
+    }
+}
+
+.tabla-departamentos {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    background: #ffffff;
 }
 
 .tabla-departamentos thead th {
-    padding: 14px 18px;
+    padding: 14px 16px;
     text-align: left;
-    font-weight: 600;
+    font-weight: 700;
     font-size: 13px;
-    color: #475569;
+    color: #0f172a;
     text-transform: uppercase;
     letter-spacing: 0.03em;
-    border-bottom: 2px solid #e2e8f0;
+    border-bottom: 2px solid rgba(35, 170, 197, 0.3);
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
 }
 
 .tabla-departamentos tbody tr {
-    background: rgba(255, 255, 255, 0.92);
-    border-bottom: 1px solid rgba(226, 232, 240, 0.8);
-    transition: background 0.2s ease;
+    background: #ffffff;
+    transition: background 0.15s ease;
+}
+
+.tabla-departamentos tbody tr:nth-child(even) {
+    background: #f8fafc;
 }
 
 .tabla-departamentos tbody tr:hover {
-    background: rgba(248, 250, 252, 1);
+    background: #f0f9ff;
 }
 
 .tabla-departamentos td {
-    padding: 14px 18px;
+    padding: 14px 16px;
     font-size: 14px;
-    color: #1f2937;
+    color: #374151;
+    border-bottom: 1px solid #e5e7eb;
 }
 
 /* Badges de departamentos en tabla de usuarios */

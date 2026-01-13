@@ -286,8 +286,8 @@ $headerHtml = ob_get_clean();
     <?php endif; ?>
 
     <!-- ========== GESTIÓN DE USUARIOS ========== -->
-    <section class="admin-section">
-      <div class="section-header">
+    <section class="admin-panel">
+      <div class="admin-panel__header">
         <h2>Gestión de Usuarios</h2>
         <button id="btn-new-user" class="btn-primary">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -298,9 +298,7 @@ $headerHtml = ob_get_clean();
         </button>
       </div>
 
-    <section class="table-container">
-      <div class="table-card">
-        <div class="table-card__inner">
+      <div class="admin-panel__table-wrapper">
           <table class="tabla-usuarios">
             <thead>
               <tr>
@@ -372,14 +370,12 @@ $headerHtml = ob_get_clean();
               <?php endif; ?>
             </tbody>
           </table>
-        </div>
       </div>
-    </section>
     </section><!-- Fin sección usuarios -->
 
     <!-- ========== GESTIÓN DE DEPARTAMENTOS ========== -->
-    <section class="admin-section">
-      <div class="section-header">
+    <section class="admin-panel">
+      <div class="admin-panel__header">
         <h2>Gestión de Departamentos</h2>
         <button id="btn-new-department" class="btn-primary">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -390,10 +386,7 @@ $headerHtml = ob_get_clean();
         </button>
       </div>
 
-      <!-- Lista de departamentos -->
-      <section class="table-container">
-        <div class="table-card">
-          <div class="table-card__inner">
+      <div class="admin-panel__table-wrapper">
             <table class="tabla-departamentos">
             <thead>
               <tr>
@@ -408,9 +401,7 @@ $headerHtml = ob_get_clean();
               <tr><td colspan="5">Cargando...</td></tr>
             </tbody>
             </table>
-          </div>
-        </div>
-      </section>
+      </div>
     </section><!-- Fin sección departamentos -->
 
     <!-- Modal: Crear/Editar Usuario -->
