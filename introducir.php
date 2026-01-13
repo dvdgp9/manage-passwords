@@ -38,7 +38,10 @@ $headerHtml = ob_get_clean();
     <main class="page introducir-page">
     <div class="introducir-container">
     <div class="introducir-header">
-        <h1>Almacenar nueva contraseña</h1>
+        <div class="header-titles">
+            <h1>Almacenar nueva contraseña</h1>
+            <p class="header-subtitle">Completa los datos para guardar una nueva credencial de forma segura.</p>
+        </div>
         <button type="button" class="btn-bulk-import" id="btn-open-bulk-import">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
