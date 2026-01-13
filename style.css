@@ -17,8 +17,8 @@ body {
 }
 .introducir-container {
     width: 100%;
-    max-width: 900px;
-    padding: 0 16px;
+    max-width: 1000px;
+    padding: 0 24px;
 }
 .introducir-container h1 {
     text-align: center;
@@ -679,8 +679,8 @@ h1 {
     border: 1px solid #e2e8f0;
     border-radius: 16px;
     box-shadow: 0 24px 45px -32px rgba(15, 23, 42, 0.35), 0 12px 32px -20px rgba(148, 163, 184, 0.45);
-    padding: 24px 22px 24px 22px;
-    max-width: 680px;
+    padding: 28px 32px;
+    max-width: 800px;
     width: 100%;
     margin: 0 auto;
     position: relative;
@@ -752,20 +752,208 @@ input[type="checkbox"] {
 }
 
 /* Primary submit button */
+/* Form Grid Layout */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px 20px;
+    margin-bottom: 20px;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-field--full {
+    grid-column: 1 / -1;
+}
+
+.form-field label {
+    margin-bottom: 6px;
+}
+
+.form-field label .optional {
+    font-weight: 400;
+    color: #94a3b8;
+    font-size: 12px;
+}
+
+/* Password field with inline buttons */
+.password-field-group {
+    display: flex;
+    gap: 8px;
+    align-items: stretch;
+}
+
+.password-field-group input {
+    flex: 1;
+}
+
+.password-field-group .password-buttons {
+    display: flex;
+    gap: 4px;
+    margin: 0;
+}
+
+.password-field-group .password-buttons button {
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.password-field-group .password-buttons button:hover {
+    background: #e2e8f0;
+    color: #23AAC5;
+    border-color: #23AAC5;
+}
+
+/* Sharing Section (collapsible) */
+.sharing-section {
+    margin: 20px 0;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #f8fafc;
+    overflow: hidden;
+}
+
+.sharing-section__toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    font-weight: 600;
+    font-size: 14px;
+    color: #1e293b;
+    cursor: pointer;
+    list-style: none;
+    background: #f8fafc;
+    transition: background 0.2s ease;
+}
+
+.sharing-section__toggle::-webkit-details-marker {
+    display: none;
+}
+
+.sharing-section__toggle:hover {
+    background: #f1f5f9;
+}
+
+.sharing-section__toggle svg:first-child {
+    color: #23AAC5;
+}
+
+.sharing-section__hint {
+    margin-left: auto;
+    font-weight: 400;
+    font-size: 12px;
+    color: #94a3b8;
+}
+
+.sharing-section__chevron {
+    color: #94a3b8;
+    transition: transform 0.2s ease;
+}
+
+.sharing-section[open] .sharing-section__chevron {
+    transform: rotate(180deg);
+}
+
+.sharing-section__content {
+    padding: 16px;
+    background: #ffffff;
+    border-top: 1px solid #e2e8f0;
+}
+
+/* Sharing Grid (side by side panels) */
+.sharing-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+/* Compact assignees panel */
+.assignees-panel--compact {
+    margin: 0;
+    padding: 0;
+}
+
+.assignees-panel--compact .assignees-header {
+    margin-bottom: 8px;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.assignees-panel--compact .assignees-header label {
+    font-size: 13px;
+    margin: 0;
+}
+
+.assignees-panel--compact .assignees-list {
+    max-height: 160px;
+    padding: 8px;
+    gap: 4px;
+}
+
+.assignees-panel--compact .assignee-item {
+    padding: 8px 10px;
+}
+
+.assignees-panel--compact .assignee-email {
+    font-size: 12px;
+}
+
+.assignees-panel--compact .assignee-role {
+    font-size: 10px;
+    padding: 2px 8px;
+}
+
+/* Extra small buttons */
+.btn-xs {
+    padding: 4px 10px !important;
+    font-size: 11px !important;
+    border-radius: 6px;
+    background: #e2e8f0;
+    color: #475569;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn-xs:hover {
+    background: #cbd5e1;
+    color: #1e293b;
+}
+
+/* Primary submit button */
 .introducir-page form button[type="submit"] {
     width: 100%;
-    padding: 12px 20px;
+    padding: 14px 20px;
     background: linear-gradient(135deg, #23AAC5 0%, #158ca3 100%);
     color: #ffffff;
     border: none;
     border-radius: 10px;
     cursor: pointer;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 15px;
     font-family: 'Montserrat', sans-serif;
     box-shadow: 0 3px 10px rgba(35, 170, 197, 0.28);
     transition: all 0.2s ease;
-    margin-top: 4px;
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
 }
 
 .introducir-page form button[type="submit"]:hover {
@@ -778,46 +966,23 @@ input[type="checkbox"] {
     transform: translateY(0);
 }
 
-/* Secondary buttons (toggle, paste, etc.) */
-.introducir-page .password-buttons {
-    display: flex;
-    gap: 8px;
-    margin-top: 4px;
-}
-
-.introducir-page .password-buttons button {
-    width: auto;
-    padding: 10px 16px;
-    background: linear-gradient(135deg, #64748b 0%, #475569 100%);
-    color: #ffffff;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 500;
-    font-size: 13px;
-    font-family: 'Montserrat', sans-serif;
-    box-shadow: 0 2px 8px rgba(100, 116, 139, 0.2);
-    transition: all 0.2s ease;
-}
-
-.password-buttons button:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 14px rgba(100, 116, 139, 0.3);
-    background: linear-gradient(135deg, #475569 0%, #334155 100%);
-}
-
-/* Form field spacing */
-.introducir-page form > label,
-.introducir-page form > input,
-.introducir-page form > textarea,
-.introducir-page form > .password-buttons,
-.introducir-page form > section {
-    margin-bottom: 14px;
-}
-
-.introducir-page form > button[type="submit"] {
-    margin-top: 20px;
-    margin-bottom: 0;
+/* Responsive form grid */
+@media (max-width: 640px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .sharing-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .password-field-group {
+        flex-direction: column;
+    }
+    
+    .password-field-group .password-buttons {
+        justify-content: flex-start;
+    }
 }
 
 /* Table Styles */

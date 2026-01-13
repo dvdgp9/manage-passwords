@@ -50,88 +50,127 @@ $headerHtml = ob_get_clean();
     </div>
     <form id="form-introducir" action="guardar.php" method="post">
         <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf); ?>">
-        <label for="linea_de_negocio">Línea de Negocio:</label>
-
-        <input type="text" id="linea_de_negocio" name="linea_de_negocio" placeholder="General, ES, CF, EFit,..." required>
-
-        <label for="nombre">Nombre:</label>
-        <input type="text" id="nombre" name="nombre" placeholder="Ej: Facebook, Gmail, Canva,..." required>
-
-        <label for="descripcion">Descripción:</label>
-        <textarea id="descripcion" name="descripcion" placeholder="Describe para qué es esta cuenta"></textarea>
-
-        <label for="usuario">Usuario:</label>
-        <input type="text" id="usuario" name="usuario" placeholder="Ej: usuario@example.com" required>
-
-        <label for="password">Contraseña:</label>
-        <input type="password" id="password" name="password" placeholder="Introduce la contraseña" required>
-        <div class="password-buttons">
-            <button type="button" id="btn-toggle-password">Mostrar</button>
-            <button type="button" id="btn-paste-password">Pegar Contraseña</button>
+        
+        <!-- Grid de campos principales -->
+        <div class="form-grid">
+            <div class="form-field">
+                <label for="linea_de_negocio">Línea de Negocio</label>
+                <input type="text" id="linea_de_negocio" name="linea_de_negocio" placeholder="General, ES, CF, EFit,..." required>
+            </div>
+            
+            <div class="form-field">
+                <label for="nombre">Nombre</label>
+                <input type="text" id="nombre" name="nombre" placeholder="Ej: Facebook, Gmail, Canva,..." required>
+            </div>
+            
+            <div class="form-field">
+                <label for="usuario">Usuario</label>
+                <input type="text" id="usuario" name="usuario" placeholder="Ej: usuario@example.com" required>
+            </div>
+            
+            <div class="form-field">
+                <label for="enlace">Enlace</label>
+                <input type="text" id="enlace" name="enlace" placeholder="Ej: https://example.com" required>
+            </div>
+            
+            <div class="form-field form-field--full">
+                <label for="password">Contraseña</label>
+                <div class="password-field-group">
+                    <input type="password" id="password" name="password" placeholder="Introduce la contraseña" required>
+                    <div class="password-buttons">
+                        <button type="button" id="btn-toggle-password">
+                            <svg class="eye-open" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        </button>
+                        <button type="button" id="btn-paste-password" title="Pegar desde portapapeles">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-field">
+                <label for="descripcion">Descripción <span class="optional">(opcional)</span></label>
+                <textarea id="descripcion" name="descripcion" placeholder="Describe para qué es esta cuenta" rows="2"></textarea>
+            </div>
+            
+            <div class="form-field">
+                <label for="info_adicional">Info Adicional <span class="optional">(opcional)</span></label>
+                <textarea id="info_adicional" name="info_adicional" placeholder="Ej: Pregunta de seguridad..." rows="2"></textarea>
+            </div>
         </div>
 
-        <label for="enlace">Enlace:</label>
-        <input type="text" id="enlace" name="enlace" placeholder="Ej: example.com" required>
+        <!-- Sección de compartir colapsable -->
+        <details class="sharing-section" open>
+            <summary class="sharing-section__toggle">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                Compartir acceso
+                <span class="sharing-section__hint">Opcional - puedes compartir más tarde</span>
+                <svg class="sharing-section__chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </summary>
+            
+            <div class="sharing-section__content">
+                <div class="sharing-grid">
+                    <section class="assignees-panel assignees-panel--compact">
+                        <div class="assignees-header">
+                            <label>Usuarios</label>
+                            <div class="assignees-actions">
+                                <button type="button" id="assign-all" class="btn-xs">Todos</button>
+                                <button type="button" id="assign-none" class="btn-xs">Ninguno</button>
+                            </div>
+                        </div>
+                        <div class="list-filter">
+                            <svg class="list-filter__icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+                            <input type="text" class="list-filter__input" placeholder="Buscar...">
+                        </div>
+                        <div class="assignees-list">
+                            <?php foreach ($allUsers as $u): $uid=(int)($u['id'] ?? 0); $checked = ($uid === (int)($currentUser['id'] ?? -1)); ?>
+                                <?php
+                                    $displayName = trim(($u['nombre'] ?? '') . ' ' . ($u['apellidos'] ?? ''));
+                                    $displayLabel = $displayName !== '' ? $displayName : $u['email'];
+                                ?>
+                                <label class="assignee-item">
+                                    <input type="checkbox" name="assignees[]" value="<?= $uid ?>" <?= $checked ? 'checked' : '' ?>>
+                                    <span class="assignee-email"><?= htmlspecialchars($displayLabel, ENT_QUOTES, 'UTF-8') ?></span>
+                                    <span class="assignee-role"><?= htmlspecialchars($u['role'] ?? '', ENT_QUOTES, 'UTF-8') ?></span>
+                                </label>
+                            <?php endforeach; ?>
+                        </div>
+                    </section>
 
-        <label for="info_adicional">Info Adicional:</label>
-        <textarea id="info_adicional" name="info_adicional" placeholder="Ej: Pregunta de seguridad: Nombre de tu mascota"></textarea>
-
-        <section class="assignees-panel">
-            <div class="assignees-header">
-                <label>Compartir con usuarios</label>
-                <div class="assignees-actions">
-                    <button type="button" id="assign-all" class="btn-secondary">Asignar a todos</button>
-                    <button type="button" id="assign-none" class="btn-secondary">Quitar todos</button>
+                    <section class="assignees-panel assignees-panel--compact">
+                        <div class="assignees-header">
+                            <label>Departamentos</label>
+                            <div class="assignees-actions">
+                                <button type="button" id="assign-all-depts" class="btn-xs">Todos</button>
+                                <button type="button" id="assign-none-depts" class="btn-xs">Ninguno</button>
+                            </div>
+                        </div>
+                        <div class="list-filter">
+                            <svg class="list-filter__icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+                            <input type="text" class="list-filter__input" placeholder="Buscar...">
+                        </div>
+                        <div class="assignees-list" id="departments-list">
+                            <?php if (empty($allDepartments)): ?>
+                                <p class="text-muted">No hay departamentos. <a href="admin-users.php">Crear</a></p>
+                            <?php else: ?>
+                                <?php foreach ($allDepartments as $dept): ?>
+                                    <label class="assignee-item">
+                                        <input type="checkbox" name="departments[]" value="<?= (int)$dept['id'] ?>">
+                                        <span class="assignee-email"><?= htmlspecialchars($dept['name'], ENT_QUOTES, 'UTF-8') ?></span>
+                                        <span class="assignee-role"><?= (int)$dept['user_count'] ?> usu.</span>
+                                    </label>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
+                    </section>
                 </div>
             </div>
-            <div class="list-filter">
-                <svg class="list-filter__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
-                <input type="text" class="list-filter__input" placeholder="Buscar usuario...">
-            </div>
-            <div class="assignees-list">
-                <?php foreach ($allUsers as $u): $uid=(int)($u['id'] ?? 0); $checked = ($uid === (int)($currentUser['id'] ?? -1)); ?>
-                    <?php
-                        $displayName = trim(($u['nombre'] ?? '') . ' ' . ($u['apellidos'] ?? ''));
-                        $displayLabel = $displayName !== '' ? $displayName . ' (' . $u['email'] . ')' : $u['email'];
-                    ?>
-                    <label class="assignee-item">
-                        <input type="checkbox" name="assignees[]" value="<?= $uid ?>" <?= $checked ? 'checked' : '' ?>>
-                        <span class="assignee-email"><?= htmlspecialchars($displayLabel, ENT_QUOTES, 'UTF-8') ?></span>
-                        <span class="assignee-role"><?= htmlspecialchars($u['role'] ?? '', ENT_QUOTES, 'UTF-8') ?></span>
-                    </label>
-                <?php endforeach; ?>
-            </div>
-            <small class="assignees-hint">Si no eliges nadie, solo tú (creador) tendrás acceso. Podrás compartir más tarde.</small>
-        </section>
+        </details>
 
-        <section class="assignees-panel">
-            <div class="assignees-header">
-                <label>Compartir con departamentos</label>
-                <div class="assignees-actions">
-                    <button type="button" id="assign-all-depts" class="btn-secondary">Seleccionar todos</button>
-                    <button type="button" id="assign-none-depts" class="btn-secondary">Quitar todos</button>
-                </div>
-            </div>
-            <div class="list-filter">
-                <svg class="list-filter__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
-                <input type="text" class="list-filter__input" placeholder="Buscar departamento...">
-            </div>
-            <div class="assignees-list" id="departments-list">
-                <?php if (empty($allDepartments)): ?>
-                    <p class="text-muted" style="padding: 12px; text-align: center;">No hay departamentos creados. <a href="admin-users.php" style="color: #23AAC5;">Crear departamento</a></p>
-                <?php else: ?>
-                    <?php foreach ($allDepartments as $dept): ?>
-                        <label class="assignee-item">
-                            <input type="checkbox" name="departments[]" value="<?= (int)$dept['id'] ?>">
-                            <span class="assignee-email"><?= htmlspecialchars($dept['name'], ENT_QUOTES, 'UTF-8') ?></span>
-                            <span class="assignee-role"><?= (int)$dept['user_count'] ?> usuario<?= $dept['user_count'] != 1 ? 's' : '' ?></span>
-                        </label>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-            </div>
-            <small class="assignees-hint">Al compartir con un departamento, todos sus miembros tendrán acceso automáticamente.</small>
-        </section>
-        <button type="submit">Guardar</button>
+        <button type="submit">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+            Guardar contraseña
+        </button>
     </form>
     </div>
     </main>
