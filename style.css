@@ -814,12 +814,12 @@ input[type="checkbox"] {
 
 .table-card {
     width: 100%;
-    max-width: 1200px;
+    max-width: 1400px;
     background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
-    border: 1px solid #e2e8f0;
-    border-radius: 18px;
-    box-shadow: 0 24px 45px -32px rgba(15, 23, 42, 0.35), 0 12px 32px -20px rgba(148, 163, 184, 0.45);
-    overflow: hidden;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 24px 48px -12px rgba(15, 23, 42, 0.25), 
+                0 8px 16px -8px rgba(15, 23, 42, 0.15);
     position: relative;
 }
 
@@ -1304,6 +1304,7 @@ input[type="checkbox"] {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
+    table-layout: auto;
     min-width: 720px;
     background: rgba(255, 255, 255, 0.92);
     border-bottom: 1px solid rgba(226, 232, 240, 0.8);
@@ -1311,22 +1312,28 @@ input[type="checkbox"] {
 }
 .tabla-usuarios thead th {
     color: #0f172a;
-    padding: 16px 20px;
-    border-bottom: 1px solid rgba(148, 163, 184, 0.45);
-    border-right: 1px solid rgba(148, 163, 184, 0.25);
+    padding: 14px 16px;
+    border-bottom: 2px solid rgba(35, 170, 197, 0.3);
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
     white-space: nowrap;
     text-align: left;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
 }
 .tabla-usuarios thead th:last-child { border-right: none; }
 .tabla-usuarios th, .tabla-usuarios td { text-align: left; }
 
-/* Column widths: 1=ID, 2=Email, 3=Rol, 4=Creado, 5=Último, 6=Acciones */
-.tabla-usuarios th:nth-child(1), .tabla-usuarios td:nth-child(1) { width: 8%; }
-.tabla-usuarios th:nth-child(2), .tabla-usuarios td:nth-child(2) { width: 34%; }
-.tabla-usuarios th:nth-child(3), .tabla-usuarios td:nth-child(3) { width: 12%; }
-.tabla-usuarios th:nth-child(4), .tabla-usuarios td:nth-child(4) { width: 18%; }
-.tabla-usuarios th:nth-child(5), .tabla-usuarios td:nth-child(5) { width: 18%; }
-.tabla-usuarios th:nth-child(6), .tabla-usuarios td:nth-child(6) { width: 10%; white-space: nowrap; }
+/* Column widths: 1=ID, 2=Nombre, 3=Email, 4=Rol, 5=Departamentos, 6=Creado, 7=Último acceso, 8=Acciones */
+.tabla-usuarios th:nth-child(1), .tabla-usuarios td:nth-child(1) { width: 60px; min-width: 60px; }
+.tabla-usuarios th:nth-child(2), .tabla-usuarios td:nth-child(2) { width: 160px; min-width: 140px; }
+.tabla-usuarios th:nth-child(3), .tabla-usuarios td:nth-child(3) { width: 240px; min-width: 200px; font-weight: 500; }
+.tabla-usuarios th:nth-child(4), .tabla-usuarios td:nth-child(4) { width: 120px; min-width: 100px; }
+.tabla-usuarios th:nth-child(5), .tabla-usuarios td:nth-child(5) { width: 200px; min-width: 160px; }
+.tabla-usuarios th:nth-child(6), .tabla-usuarios td:nth-child(6) { width: 160px; min-width: 140px; font-size: 13px; }
+.tabla-usuarios th:nth-child(7), .tabla-usuarios td:nth-child(7) { width: 160px; min-width: 140px; font-size: 13px; }
+.tabla-usuarios th:nth-child(8), .tabla-usuarios td:nth-child(8) { width: 120px; min-width: 120px; white-space: nowrap; }
 
 .tabla-usuarios tbody tr {
     background: rgba(255, 255, 255, 0.92);
@@ -1337,27 +1344,90 @@ input[type="checkbox"] {
 .tabla-usuarios tbody tr:hover { background: #f1fbfd; }
 .tabla-usuarios tbody tr:last-child td { border-bottom: none; }
 .tabla-usuarios td {
-    padding: 16px 20px;
+    padding: 14px 16px;
     font-size: 14px;
     line-height: 1.5;
-    color: #1f2937;
+    color: #374151;
     vertical-align: middle;
     border-right: 1px solid rgba(226, 232, 240, 0.65);
-    word-break: break-word;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .tabla-usuarios td:last-child { border-right: none; }
 .tabla-usuarios a { color: #0f8cad; font-weight: 600; text-decoration: none; transition: color 0.2s ease, text-decoration-color 0.2s ease; }
 .tabla-usuarios a:hover { color: #0b7285; text-decoration: underline; text-decoration-color: rgba(11, 114, 133, 0.6); }
 
-/* ======= Auth (Login) Page ======= */
+/* Responsive adjustments for tablets and smaller */
+@media (max-width: 1200px) {
+    .tabla-usuarios {
+        font-size: 13px;
+        min-width: 960px;
+    }
+    
+    .tabla-usuarios th:nth-child(3), .tabla-usuarios td:nth-child(3) {
+        width: 200px;
+        min-width: 180px;
+    }
+}
+
+@media (max-width: 768px) {
+    .tabla-usuarios {
+        font-size: 12px;
+    }
+    
+    .tabla-usuarios thead th,
+    .tabla-usuarios td {
+        padding: 12px 10px;
+    }
+    
+    .table-card {
+        padding: 16px;
+        border-radius: 12px;
+    }
+}
+
+/* ======= Action Buttons in Tables ======= */
 .button-container {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
-    gap: 20px;
+    gap: 12px;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
     white-space: nowrap;
+}
+
+.button-container .modify-btn,
+.button-container .delete-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.button-container .modify-btn {
+    color: #23AAC5;
+}
+
+.button-container .modify-btn:hover {
+    background: rgba(35, 170, 197, 0.1);
+    color: #158ca3;
+    transform: translateY(-1px);
+}
+
+.button-container .delete-btn {
+    color: #dc2626;
+}
+
+.button-container .delete-btn:hover {
+    background: rgba(220, 38, 38, 0.1);
+    color: #b91c1c;
+    transform: translateY(-1px);
 }
 
 .auth-page h1 {
@@ -1530,28 +1600,49 @@ input[type="checkbox"] {
 
 /* ======= Admin Sections (Users & Departments) ======= */
 .admin-section {
-    margin: 40px 0;
+    margin: 48px auto;
     padding: 0 20px;
+    max-width: 1440px;
 }
 
 .admin-section:first-of-type {
-    margin-top: 24px;
+    margin-top: 32px;
 }
 
 .section-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 24px;
-    padding-bottom: 16px;
-    border-bottom: 2px solid #e2e8f0;
+    margin-bottom: 28px;
+    padding-bottom: 18px;
+    border-bottom: 3px solid #e2e8f0;
+    gap: 20px;
+    flex-wrap: wrap;
 }
 
 .section-header h2 {
-    font-size: 22px;
+    font-size: 24px;
     color: #0f172a;
     font-weight: 700;
     margin: 0;
+    letter-spacing: -0.02em;
+}
+
+@media (max-width: 768px) {
+    .admin-section {
+        padding: 0 12px;
+        margin: 32px auto;
+    }
+    
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+    
+    .section-header h2 {
+        font-size: 20px;
+    }
 }
 
 .tabla-departamentos {
@@ -1596,18 +1687,27 @@ input[type="checkbox"] {
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
+    align-items: center;
 }
 
 .dept-badge {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
     background: linear-gradient(135deg, #23AAC5 0%, #1995ad 100%);
     color: #ffffff;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 600;
-    padding: 4px 10px;
-    border-radius: 12px;
+    padding: 5px 12px;
+    border-radius: 14px;
     text-transform: uppercase;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.03em;
+    box-shadow: 0 2px 4px rgba(35, 170, 197, 0.25);
+    transition: all 0.2s ease;
+}
+
+.dept-badge:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(35, 170, 197, 0.35);
 }
 
 .text-muted {
