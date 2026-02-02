@@ -293,3 +293,118 @@ ALTER TABLE `passwords_manager`
 8. Actualizar app: scoping por `owner_user_id` y gates de auth.
 
 Notas: Validar `SHOW CREATE TABLE` actual para ajustar tipos exactos y colaciones.
+
+---
+
+# Plan: Mejora de Funcionalidad Share Passwords
+
+## Background and Motivation
+
+El sistema actual de compartir contraseñas mediante enlaces temporales tiene limitaciones importantes:
+
+1. **Campo de contraseña limitado**: Usa un `input type="text"` simple que no permite introducir información adicional (como contexto, usuario asociado, notas, etc.)
+2. **Un solo uso obligatorio**: Cada enlace solo se puede usar una vez, lo cual es restrictivo cuando se necesita compartir la misma contraseña con varias personas
+3. **Email genérico**: Cuando se envía por correo, el mensaje es estándar y no permite personalización (título ni mensaje), resultando poco informativo para el destinatario
+
+Estas limitaciones reducen la utilidad real del sistema en escenarios de trabajo colaborativo.
+
+## Key Challenges and Analysis
+
+### Desafíos técnicos identificados:
+
+1. **Estructura de base de datos**: La tabla `passwords` (del share) actual no tiene campos para:
+   - Número máximo de recuperaciones permitidas
+   - Contador de recuperaciones realizadas
+   - Título del recurso compartido
+   - Mensaje personalizado
+
+2. **Lógica de retrieve.php**: Actualmente elimina el registro inmediatamente después de la recuperación. Hay que cambiar esto a un sistema de conteo.
+
+3. **Envío de email**: El email actual es estático en `store.php`. Necesita campos dinámicos para título y mensaje.
+
+4. **UI/UX**: Añadir nuevos campos sin sobrecargar el formulario actual.
+
+## High-level Task Breakdown
+
+### Fase 1: Base de Datos
+- [ ] **Tarea 1.1**: Añadir columnas a tabla `passwords` (share)
+  - `max_retrievals` (INT, DEFAULT 1) - Número máximo de veces que se puede recuperar
+  - `retrieval_count` (INT, DEFAULT 0) - Contador de recuperaciones realizadas
+  - `title` (VARCHAR(255), NULL) - Título del recurso compartido
+  - `message` (TEXT, NULL) - Mensaje personalizado para el email
+  - **Criterio de éxito**: La tabla tiene las nuevas columnas y los enlaces existentes funcionan (default=1 uso)
+
+### Fase 2: Frontend (Formulario)
+- [ ] **Tarea 2.1**: Actualizar `share/index.html`
+  - Cambiar `input type="text"` por `textarea` para el campo de contraseña
+  - Añadir input numérico para "Número de usos permitidos" (mínimo 1, default 1)
+  - Añadir campo de texto para "Título" (visible solo si se introduce email)
+  - Añadir textarea para "Mensaje personalizado" (visible solo si se introduce email)
+  - JavaScript para mostrar/ocultar campos condicionales
+  - **Criterio de éxito**: Formulario muestra nuevos campos y se ocultan/muestran correctamente según el email
+
+- [ ] **Tarea 2.2**: Actualizar `share/styles.css`
+  - Estilos para textarea de contraseña
+  - Estilos para campos condicionales del email
+  - Asegurar responsive design
+  - **Criterio de éxito**: Visualmente atractivo y funcional en móvil y desktop
+
+### Fase 3: Backend (Almacenamiento)
+- [ ] **Tarea 3.1**: Actualizar `share/store.php`
+  - Recibir y validar nuevos campos del formulario
+  - Insertar nuevos campos en la base de datos
+  - Actualizar template de email para usar título y mensaje personalizado
+  - Email subject dinámico basado en el título proporcionado
+  - **Criterio de éxito**: Los datos se guardan correctamente y el email se envía con contenido personalizado
+
+### Fase 4: Backend (Recuperación)
+- [ ] **Tarea 4.1**: Actualizar `share/retrieve.php`
+  - Modificar lógica: en lugar de eliminar, incrementar `retrieval_count`
+  - Validar que `retrieval_count < max_retrievals`
+  - Solo eliminar cuando se alcance el límite
+  - Mostrar información al usuario: "Quedan X usos de este enlace"
+  - **Criterio de éxito**: Un enlace con 3 usos funciona exactamente 3 veces y falla en el cuarto
+
+### Fase 5: Testing
+- [ ] **Tarea 5.1**: Tests manuales
+  - Crear enlace con 3 usos permitidos, verificar que funcione 3 veces
+  - Verificar que el cuarto intento falle con mensaje apropiado
+  - Verificar envío de email con título y mensaje personalizado
+  - Verificar que textarea permite multilinea (saltos de línea se preservan)
+  - **Criterio de éxito**: Todos los tests pasan manualmente
+
+## Project Status Board (Share Passwords Enhancement)
+
+| Tarea | Estado | Notas |
+|-------|--------|-------|
+| 1.1 - Migración BD | ✅ Completado | SQL entregado al usuario |
+| 2.1 - Formulario HTML | ✅ Completado | textarea, campos condicionales, JS |
+| 2.2 - Estilos CSS | ✅ Completado | Estilos para nuevos elementos |
+| 3.1 - Store.php | ✅ Completado | Nuevos campos + email dinámico |
+| 4.1 - Retrieve.php | ✅ Completado | Lógica de conteo implementada |
+| 5.1 - Testing | Pendiente | Usuario debe probar manualmente |
+
+## SQL de Migración (Ejecutar en phpMyAdmin)
+
+```sql
+-- Añadir columnas necesarias a la tabla passwords (del share)
+ALTER TABLE `passwords` 
+ADD COLUMN `max_retrievals` INT NOT NULL DEFAULT 1 AFTER `email`,
+ADD COLUMN `retrieval_count` INT NOT NULL DEFAULT 0 AFTER `max_retrievals`,
+ADD COLUMN `title` VARCHAR(255) DEFAULT NULL AFTER `retrieval_count`,
+ADD COLUMN `message` TEXT DEFAULT NULL AFTER `title`;
+```
+
+## Notas de Implementación
+
+1. **Backward compatibility**: Los enlaces existentes tienen `max_retrievals=1` y `retrieval_count=0`, por lo que seguirán funcionando como antes (un solo uso).
+
+2. **UX para campos condicionales**: Los campos de título y mensaje solo deben mostrarse cuando el usuario escriba algo en el campo de email, para no saturar la UI.
+
+3. **Validaciones**:
+   - `max_retrievals` debe ser >= 1
+   - `email` debe ser válido si se proporciona
+   - `title` máximo 255 caracteres
+   - `message` texto libre, límites razonables (ej. 2000 chars)
+
+4. **Email dinámico**: Si hay título personalizado, usarlo como Subject. Si hay mensaje, insertarlo antes del enlace en el cuerpo del email.

@@ -54,6 +54,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $password = $_POST['password'];
     $email = $_POST['email'] ?? ''; // Make email optional
+    $max_retrievals = max(1, min(100, (int)($_POST['max_retrievals'] ?? 1))); // Between 1 and 100
+    $title = trim($_POST['title'] ?? '');
+    $message = trim($_POST['message'] ?? '');
+    
+    // Limit title and message length
+    if (strlen($title) > 255) {
+        $title = substr($title, 0, 255);
+    }
+    if (strlen($message) > 2000) {
+        $message = substr($message, 0, 2000);
+    }
+    
     $link_hash = hash('sha256', uniqid());
 
     // 1) Generate IV
@@ -76,14 +88,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         // Insert into the DB (note the iv column!)
         $stmt = $pdo->prepare("
-        INSERT INTO passwords (password, iv, link_hash, email)
-        VALUES (?, ?, ?, ?)
+        INSERT INTO passwords (password, iv, link_hash, email, max_retrievals, retrieval_count, title, message)
+        VALUES (?, ?, ?, ?, ?, 0, ?, ?)
         ");
         $stmt->execute([
         $encrypted_password,
         $iv_encoded,
         $link_hash,
-        $email
+        $email,
+        $max_retrievals,
+        $title ?: null,
+        $message ?: null
         ]);
 
         // Generate the shareable link
@@ -111,8 +126,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Email content
             $mail->setFrom(EMAIL_FROM, EMAIL_FROM_NAME);
             $mail->addAddress($email);
-            $mail->Subject = 'Compartir contraseña segura';
-            $mail->Body = "¡Hola!\n\nTe han enviado una contraseña. El siguiente enlace es de un solo uso, así que apunta la contraseña en un lugar seguro cuando lo abras. Si crees que se trata de un error, ignora este mensaje.\n\n" . $shareable_link . "\n\nEste enlace expirará en 7 días.\n\nQue tengas un buen día,\nEl equipo de Marketing/IT del Grupo Ebone";
+            
+            // Dynamic subject based on title
+            $mail->Subject = !empty($title) ? $title : 'Te han compartido información de forma segura';
+            
+            // Build email body
+            $greeting = "¡Hola!\n\n";
+            
+            // Add custom message if provided
+            if (!empty($message)) {
+                $body_message = $message . "\n\n";
+            } else {
+                $body_message = "Te han enviado información de forma segura.\n\n";
+            }
+            
+            // Usage info
+            if ($max_retrievals > 1) {
+                $usage_info = "Este enlace se puede usar hasta " . $max_retrievals . " veces. ";
+            } else {
+                $usage_info = "Este enlace es de un solo uso, así que guarda la información en un lugar seguro cuando lo abras. ";
+            }
+            $usage_info .= "Si crees que se trata de un error, ignora este mensaje.\n\n";
+            
+            $link_section = "Accede aquí:\n" . $shareable_link . "\n\n";
+            $expiry_info = "Este enlace expirará en 7 días.\n\n";
+            $signature = "Que tengas un buen día,\nEl equipo de Marketing/IT del Grupo Ebone";
+            
+            $mail->Body = $greeting . $body_message . $usage_info . $link_section . $expiry_info . $signature;
 
             $mail->send();
             $email_sent = true;

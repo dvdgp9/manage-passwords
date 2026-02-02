@@ -6,14 +6,16 @@ $encryption_key = ENCRYPTION_KEY;
 
 $message = '';
 $decrypted_password = null;
+$remaining_uses = 0;
+$is_last_use = false;
 
 if (isset($_GET['hash'])) {
     $link_hash = $_GET['hash'];
 
     try {
-        // Retrieve the password and IV from the database
+        // Retrieve the password, IV, and usage info from the database
         $stmt = $pdo->prepare("
-            SELECT password, iv
+            SELECT password, iv, max_retrievals, retrieval_count, title
             FROM passwords
             WHERE link_hash = ?
               AND created_at >= NOW() - INTERVAL 7 DAY
@@ -22,7 +24,14 @@ if (isset($_GET['hash'])) {
         $row = $stmt->fetch();
 
         if ($row) {
-            if (isset($_POST['confirm'])) {
+            $max_retrievals = (int)$row['max_retrievals'];
+            $retrieval_count = (int)$row['retrieval_count'];
+            $title = $row['title'] ?? '';
+            
+            // Check if there are remaining uses
+            if ($retrieval_count >= $max_retrievals) {
+                $message = "Este enlace ya ha alcanzado el número máximo de usos permitidos.";
+            } elseif (isset($_POST['confirm'])) {
                 // If the user confirms, decrypt the password
                 $iv = base64_decode($row['iv']); // Decode the IV from base64
                 $decrypted_password = openssl_decrypt(
@@ -33,20 +42,45 @@ if (isset($_GET['hash'])) {
                     $iv                     // Initialization vector
                 );
 
-                // Prepare the success message
-                $message = "Tu contraseña es: " . htmlspecialchars($decrypted_password);
+                // Increment the retrieval count
+                $new_count = $retrieval_count + 1;
+                
+                if ($new_count >= $max_retrievals) {
+                    // This was the last use, delete the record
+                    $stmt = $pdo->prepare("DELETE FROM passwords WHERE link_hash = ?");
+                    $stmt->execute([$link_hash]);
+                    $remaining_uses = 0;
+                    $is_last_use = true;
+                } else {
+                    // Update the counter
+                    $stmt = $pdo->prepare("UPDATE passwords SET retrieval_count = ? WHERE link_hash = ?");
+                    $stmt->execute([$new_count, $link_hash]);
+                    $remaining_uses = $max_retrievals - $new_count;
+                }
 
-                // Delete the password from the database
-                $stmt = $pdo->prepare("DELETE FROM passwords WHERE link_hash = ?");
-                $stmt->execute([$link_hash]);
+                // Prepare the success message
+                $message = "Tu información es:";
             } else {
+                // Calculate remaining uses for the confirmation page
+                $remaining_uses = $max_retrievals - $retrieval_count;
+                $is_last_use = ($remaining_uses === 1);
+                
+                // Build confirmation message
+                if ($remaining_uses === 1) {
+                    $usage_msg = "Este enlace solo se puede usar <strong>1 vez más</strong>. Después de consultarlo, será eliminado.";
+                } else {
+                    $usage_msg = "Este enlace se puede usar <strong>" . $remaining_uses . " veces más</strong>.";
+                }
+                
                 // Show the confirmation page
+                $title_display = !empty($title) ? "<p><strong>Título:</strong> " . htmlspecialchars($title) . "</p>" : "";
+                
                 echo "<!DOCTYPE html>
                 <html lang='es'>
                 <head>
                     <meta charset='UTF-8'>
                     <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-                    <title>Recuperar Contraseña</title>
+                    <title>Recuperar Información</title>
                     <link href='https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap' rel='stylesheet'>
                     <link href='styles.css' rel='stylesheet'>
                     <link rel='icon' type='image/png' href='favicon.png'>
@@ -54,10 +88,12 @@ if (isset($_GET['hash'])) {
                 <body>
                     <div class='container'>
                         <img src='https://ebone.es/wp-content/uploads/2024/11/Logo-Grupo-Lineas-cuadrado-1500px.png' alt='Logo Grupo Ebone' class='logo'>
-                        <h1>Recuperar Contraseña</h1>
-                        <p>¿Estás segura/o de que deseas recuperar la contraseña? Este enlace solo se puede usar una vez.</p>
+                        <h1>Recuperar Información</h1>
+                        " . $title_display . "
+                        <div class='remaining-uses" . ($is_last_use ? " last-use" : "") . "'>" . $usage_msg . "</div>
+                        <p>¿Estás segura/o de que deseas recuperar la información?</p>
                         <form method='POST'>
-                            <button type='submit' name='confirm' class='confirm-button'>Sí, recuperar contraseña</button>
+                            <button type='submit' name='confirm' class='confirm-button'>Sí, mostrar información</button>
                         </form>
                         <div class='footer'>
                             © 2025 Grupo Ebone. Todos los derechos reservados.
@@ -71,7 +107,7 @@ if (isset($_GET['hash'])) {
             $message = "El enlace no es válido o ha expirado.";
         }
     } catch (PDOException $e) {
-        $message = "Ocurrió algún error al recuperar la contraseña: " . $e->getMessage();
+        $message = "Ocurrió algún error al recuperar la información: " . $e->getMessage();
     }
 } else {
     header("Location: index.html");
@@ -83,18 +119,37 @@ if (isset($_GET['hash'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recuperar Contraseña</title>
+    <title>Recuperar Información</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <link href="styles.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="favicon.png">
+    <style>
+        .password-content {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            text-align: left;
+            font-family: 'Courier New', monospace;
+            background-color: #f5f5f5;
+            padding: 1rem;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            margin: 1rem 0;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <img src="https://ebone.es/wp-content/uploads/2024/11/Logo-Grupo-Lineas-cuadrado-1500px.png" alt="Logo Grupo Ebone" class="logo">
-        <h1>Recuperar Contraseña</h1>
-        <div class="message" id="password-message"><?php echo $message; ?></div>
+        <h1>Recuperar Información</h1>
+        <div class="message"><?php echo htmlspecialchars($message); ?></div>
         <?php if (!empty($decrypted_password)): ?>
-            <button class="copy-button" onclick="copyPassword()">Copiar Contraseña</button>
+            <div class="password-content" id="password-content"><?php echo htmlspecialchars($decrypted_password); ?></div>
+            <button class="copy-button" onclick="copyPassword()">Copiar Información</button>
+            <?php if ($is_last_use): ?>
+                <p class="remaining-uses last-use" style="margin-top: 1rem;">Este era el último uso. El enlace ha sido eliminado.</p>
+            <?php elseif ($remaining_uses > 0): ?>
+                <p class="remaining-uses" style="margin-top: 1rem;">Usos restantes: <?php echo $remaining_uses; ?></p>
+            <?php endif; ?>
         <?php endif; ?>
         <div class="footer">
             © 2025 Grupo Ebone. Todos los derechos reservados.
@@ -103,15 +158,15 @@ if (isset($_GET['hash'])) {
 
     <script>
         function copyPassword() {
-            const messageElement = document.getElementById('password-message');
-            const passwordText = messageElement.innerText.replace("Tu contraseña es: ", "");
+            const contentElement = document.getElementById('password-content');
+            const text = contentElement.innerText;
 
-            navigator.clipboard.writeText(passwordText)
+            navigator.clipboard.writeText(text)
                 .then(() => {
-                    alert('Contraseña copiada al portapapeles.');
+                    alert('Información copiada al portapapeles.');
                 })
                 .catch(() => {
-                    alert('Error al copiar la contraseña.');
+                    alert('Error al copiar la información.');
                 });
         }
     </script>

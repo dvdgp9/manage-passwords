@@ -7,23 +7,54 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <link href="styles.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="favicon.png">
-
 </head>
 <body>
     <div class="container">
         <img src="https://ebone.es/wp-content/uploads/2024/11/Logo-Grupo-Lineas-cuadrado-1500px.png" alt="Logo Grupo Ebone" class="logo">
         <h1>Comparte contraseñas de manera segura</h1>
-        <p class="texto-intro">Introduce la contraseña que quieres compartir y pulsa en "Generar enlace". También puedes enviarla de manera segura directamente por correo si introduces el email del destinatario.</p>
+        <p class="texto-intro">Introduce la información que quieres compartir y pulsa en "Generar enlace". También puedes enviarla de manera segura directamente por correo si introduces el email del destinatario.</p>
         <form action="store.php" method="POST">
-            <label for="password">Contraseña:</label>
-            <input type="text" id="password" name="password" required>
+            <label for="password">Información a compartir:</label>
+            <textarea id="password" name="password" rows="4" placeholder="Escribe aquí la contraseña, credenciales o información que desees compartir..." required></textarea>
+            
+            <label for="max_retrievals">Número de usos permitidos:</label>
+            <input type="number" id="max_retrievals" name="max_retrievals" min="1" max="100" value="1">
+            <p class="field-hint">Cuántas veces se podrá consultar este enlace antes de que expire.</p>
+            
             <label for="email">Correo electrónico del destinatario (opcional):</label>
-            <input type="email" id="email" name="email">
+            <input type="email" id="email" name="email" placeholder="ejemplo@dominio.com">
+            
+            <div id="email-options" class="email-options hidden">
+                <label for="title">Título (aparecerá en el asunto del correo):</label>
+                <input type="text" id="title" name="title" maxlength="255" placeholder="Ej: Credenciales de acceso a...">
+                
+                <label for="message">Mensaje personalizado (opcional):</label>
+                <textarea id="message" name="message" rows="3" maxlength="2000" placeholder="Añade un mensaje para el destinatario..."></textarea>
+            </div>
+            
             <button type="submit">Generar enlace</button>
         </form>
         <div class="footer">
             © 2025 Grupo Ebone. Todos los derechos reservados.
         </div>
     </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const emailInput = document.getElementById('email');
+            const emailOptions = document.getElementById('email-options');
+            
+            function toggleEmailOptions() {
+                if (emailInput.value.trim() !== '') {
+                    emailOptions.classList.remove('hidden');
+                } else {
+                    emailOptions.classList.add('hidden');
+                }
+            }
+            
+            emailInput.addEventListener('input', toggleEmailOptions);
+            toggleEmailOptions();
+        });
+    </script>
 </body>
 </html>
