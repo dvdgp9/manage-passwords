@@ -1,37 +1,48 @@
 <?php
 require 'includes/db.php';
 
-// Enable error logging
+// Enable error display for debugging
 error_reporting(E_ALL);
-ini_set('log_errors', 1);
-ini_set('error_log', __DIR__ . '/cleanup.log');
+ini_set('display_errors', 1);
+
+echo "Starting cleanup...\n";
+
+// Check if $pdo exists
+if (!isset($pdo)) {
+    die("ERROR: Database connection not established (\$pdo not defined)\n");
+}
+
+echo "Database connection OK\n";
 
 try {
-    // Log start
-    error_log("[CLEANUP] Started at " . date('Y-m-d H:i:s'));
+    // Count entries before cleanup
+    $stmt = $pdo->query("SELECT COUNT(*) FROM passwords");
+    $beforeCount = $stmt->fetchColumn();
+    echo "Total entries before cleanup: $beforeCount\n";
+    
+    // Show entries older than 7 days
+    $stmt = $pdo->query("SELECT COUNT(*) FROM passwords WHERE created_at < NOW() - INTERVAL 7 DAY");
+    $oldCount = $stmt->fetchColumn();
+    echo "Entries older than 7 days: $oldCount\n";
+    
+    // Show oldest entry
+    $stmt = $pdo->query("SELECT MIN(created_at) as oldest FROM passwords");
+    $oldest = $stmt->fetchColumn();
+    echo "Oldest entry: " . ($oldest ?: 'none') . "\n";
     
     // Delete passwords older than 7 days
     $stmt = $pdo->prepare("DELETE FROM passwords WHERE created_at < NOW() - INTERVAL 7 DAY");
     $stmt->execute();
     $deletedCount = $stmt->rowCount();
     
-    $message = "[CLEANUP] Deleted $deletedCount old password entries.";
-    echo $message . "\n";
-    error_log($message);
+    echo "Deleted $deletedCount old entries\n";
     
-    // Also log how many entries remain
+    // Count entries after cleanup
     $stmt = $pdo->query("SELECT COUNT(*) FROM passwords");
-    $remaining = $stmt->fetchColumn();
-    error_log("[CLEANUP] Remaining entries: $remaining");
-    
-    // Log oldest entry
-    $stmt = $pdo->query("SELECT MIN(created_at) as oldest FROM passwords");
-    $oldest = $stmt->fetchColumn();
-    error_log("[CLEANUP] Oldest entry: " . ($oldest ?: 'none'));
+    $afterCount = $stmt->fetchColumn();
+    echo "Total entries after cleanup: $afterCount\n";
     
 } catch (PDOException $e) {
-    $error = "[CLEANUP ERROR] " . $e->getMessage();
-    error_log($error);
-    die($error . "\n");
+    die("ERROR: " . $e->getMessage() . "\n");
 }
 ?>
