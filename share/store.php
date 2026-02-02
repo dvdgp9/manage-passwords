@@ -142,17 +142,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             // Usage info
             if ($max_retrievals > 1) {
-                $usage_info = "Este enlace se puede usar hasta " . $max_retrievals . " veces. ";
+                $usage_info = "Este enlace permite hasta " . $max_retrievals . " consultas. Cada vez que se accede, se consume un uso. ";
             } else {
-                $usage_info = "Este enlace es de un solo uso, así que guarda la información en un lugar seguro cuando lo abras. ";
+                $usage_info = "Este enlace permite una única consulta. Una vez que accedas, el enlace se eliminará automáticamente. ";
             }
-            $usage_info .= "Si crees que se trata de un error, ignora este mensaje.\n\n";
+            $usage_info .= "Además, el enlace expirará automáticamente pasados 7 días por razones de seguridad.\n\n";
+            $usage_info .= "Si crees que se trata de un error o no esperabas este mensaje, ignóralo.\n\n";
             
             $link_section = "Accede aquí:\n" . $shareable_link . "\n\n";
-            $expiry_info = "Este enlace expirará en 7 días.\n\n";
             $signature = "Que tengas un buen día,\nEl equipo de Marketing/IT del Grupo Ebone";
             
-            $mail->Body = $greeting . $body_message . $usage_info . $link_section . $expiry_info . $signature;
+            $mail->Body = $greeting . $body_message . $usage_info . $link_section . $signature;
 
             $mail->send();
             $email_sent = true;

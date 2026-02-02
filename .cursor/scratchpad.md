@@ -189,6 +189,8 @@ P2 – Medios/Mejoras
 - Evitar cifrado sin autenticación; preferir AEAD siempre.
 - No exponer secretos en repositorio; usar `.env` y rotación.
 - Verificar acceso y CSRF en todos los endpoints de cambio de estado.
+- **Share passwords enhancement**: El texto del email debe ser claro sobre los dos tipos de expiración (por usos y por tiempo) para evitar confusión.
+- **Cron job cleanup.php**: Funciona correctamente eliminando enlaces con más de 7 días, independientemente del contador de usos.
 
 ---
 
@@ -383,6 +385,8 @@ Estas limitaciones reducen la utilidad real del sistema en escenarios de trabajo
 | 3.1 - Store.php | ✅ Completado | Nuevos campos + email dinámico |
 | 4.1 - Retrieve.php | ✅ Completado | Lógica de conteo implementada |
 | 5.1 - Testing | Pendiente | Usuario debe probar manualmente |
+| 5.2 - Mejora email | ✅ Completado | Texto más claro sobre expiración |
+| 5.3 - Revisar cron cleanup | ✅ Completado | Funciona correctamente |
 
 ## SQL de Migración (Ejecutar en phpMyAdmin)
 
