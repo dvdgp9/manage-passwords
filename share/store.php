@@ -25,8 +25,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Get real IP address even behind proxy
     $ip = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'];
     
-    // Check rate limit (3 passwords per 5 minutes)
-    if (isRateLimited($ip, 3, 300)) {
+    // Check rate limit (10 passwords per 5 minutes)
+    if (isRateLimited($ip, 10, 300)) {
         http_response_code(429); // Too Many Requests
         echo "<!DOCTYPE html>
         <html lang='es'>
